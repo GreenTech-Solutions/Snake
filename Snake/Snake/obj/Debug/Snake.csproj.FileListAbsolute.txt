@@ -1,0 +1,11 @@
+D:\Documents\Snake\Snake\Snake\bin\Debug\Snake.exe.config
+D:\Documents\Snake\Snake\Snake\bin\Debug\Snake.exe
+D:\Documents\Snake\Snake\Snake\bin\Debug\Snake.pdb
+D:\Documents\Snake\Snake\Snake\obj\Debug\Snake.csprojResolveAssemblyReference.cache
+D:\Documents\Snake\Snake\Snake\obj\Debug\Snake.MainMenu.resources
+D:\Documents\Snake\Snake\Snake\obj\Debug\Snake.Properties.Resources.resources
+D:\Documents\Snake\Snake\Snake\obj\Debug\Snake.Resources.resources
+D:\Documents\Snake\Snake\Snake\obj\Debug\Snake.csproj.GenerateResource.Cache
+D:\Documents\Snake\Snake\Snake\obj\Debug\Snake.exe
+D:\Documents\Snake\Snake\Snake\obj\Debug\Snake.pdb
+D:\Documents\Snake\Snake\Snake\obj\Debug\Snake.SandForm.resources
