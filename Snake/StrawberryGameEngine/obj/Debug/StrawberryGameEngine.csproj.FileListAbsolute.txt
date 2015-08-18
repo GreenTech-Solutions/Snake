@@ -1,5 +1,0 @@
-D:\Documents\Snake\Snake\StrawberryGameEngine\obj\Debug\StrawberryGameEngine.csprojResolveAssemblyReference.cache
-D:\Documents\Snake\Snake\StrawberryGameEngine\bin\Debug\StrawberryGameEngine.dll
-D:\Documents\Snake\Snake\StrawberryGameEngine\bin\Debug\StrawberryGameEngine.pdb
-D:\Documents\Snake\Snake\StrawberryGameEngine\obj\Debug\StrawberryGameEngine.dll
-D:\Documents\Snake\Snake\StrawberryGameEngine\obj\Debug\StrawberryGameEngine.pdb

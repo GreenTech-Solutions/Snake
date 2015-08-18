@@ -214,3 +214,9 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+/Snake/GameControl/obj
+/Snake/GameControl/bin
+/Snake/Snake/obj
+/Snake/Snake/bin
+/Snake/StrawberryGameEngine/obj
+/Snake/StrawberryGameEngine/bin
