@@ -3,17 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Drawing;
 
 namespace GameControl
 {
-    public class Game
+    public class Coord
     {
-        internal Map map = new Map();
+        public int x { get; set; }
+        public int y { get; set; }
 
-        public Game()
+        public Coord(int x, int y)
         {
+            this.x = x;
+            this.y = y;
         }
-
     }
 }
