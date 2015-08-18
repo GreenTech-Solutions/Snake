@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameControl", "GameControl\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StrawberryGameEngine", "StrawberryGameEngine\StrawberryGameEngine.csproj", "{C4FFD539-A42C-49BA-B7CA-BE832C161D4A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StrawberryGameEngineTests", "StrawberryGameEngineTests\StrawberryGameEngineTests.csproj", "{3DEEE45B-347C-4065-9FD2-09F4ECAE3E9B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{C4FFD539-A42C-49BA-B7CA-BE832C161D4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C4FFD539-A42C-49BA-B7CA-BE832C161D4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C4FFD539-A42C-49BA-B7CA-BE832C161D4A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3DEEE45B-347C-4065-9FD2-09F4ECAE3E9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DEEE45B-347C-4065-9FD2-09F4ECAE3E9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DEEE45B-347C-4065-9FD2-09F4ECAE3E9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DEEE45B-347C-4065-9FD2-09F4ECAE3E9B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

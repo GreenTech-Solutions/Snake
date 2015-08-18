@@ -113,6 +113,18 @@ namespace StrawberryGameEngine
         {
             public Func func;
             public Purpose purpose;
+
+            public Function(Func func)
+            {
+                this.func = func;
+                purpose = Purpose.NO;
+            }
+
+            public Function(Func func, Purpose purpose)
+            {
+                this.func = func;
+                this.purpose = purpose;
+            }
         }
 
         public class ProcessManager
