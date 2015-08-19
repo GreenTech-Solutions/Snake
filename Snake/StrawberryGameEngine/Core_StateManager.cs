@@ -14,27 +14,30 @@ namespace StrawberryGameEngine
         // Менеджер состояний                        ---Исправить класс используя State как элемент цепи
         public class StateManager
         {
-            // Массив для хранения данных
+            // Вершина стека состояний
             private State CurrentState;
             // Размер
             private int size;
 
             public StateManager()
             {
-                this.size = 0;
-                this.CurrentState = null;
+                Clear();
             }
 
+            // Обнуляет поля
             private void Clear()
             {
-                CurrentState = null;
-                size = 0;
+                this.CurrentState = null;
+                this.size = 0;
             }
 
             // Проверка на пустоту
-            public bool IsEmpty()
+            public bool IsEmpty
             {
-                return this.size == 0;
+                get
+                {
+                    return this.size == 0;
+                }
             }
 
             // размер стека
@@ -51,20 +54,20 @@ namespace StrawberryGameEngine
             {
                 try
                 {
-                    CurrentState = new State(CallerFunction);
-                    if (CurrentState != null)
+                    if (this.IsEmpty)
                     {
-                        State temp;
-                        temp = CurrentState;
-                        CurrentState.Prev = temp;
+                        CurrentState = new State(CallerFunction);
+                        this.size++;
+                        return true;
                     }
+                    CurrentState.Prev = CurrentState;
+                    CurrentState.function = CallerFunction;
+                    return true;
                 }
                 catch
                 {
                     throw;
                 }
-                // если состояние получилось установить
-                return true;
             }
 
             // Возвращение к предыдущему состоянию
@@ -72,12 +75,16 @@ namespace StrawberryGameEngine
             {
                 try
                 {
-                    if (this.size == 0)
+                    if (this.IsEmpty)
                     {
-                        throw new InvalidOperationException();
+                        return null;
                     }
+                    else
+                    {
                     return this.CurrentState.function;
-                } catch
+                    }
+                }
+                catch
                 {
                     throw;
                 }
@@ -115,7 +122,7 @@ namespace StrawberryGameEngine
             {
                 try
                 {
-                    if (this.IsEmpty())
+                    if (this.IsEmpty)
                     {
                         return null;
                     }
@@ -131,6 +138,32 @@ namespace StrawberryGameEngine
 
                     throw;
                 } finally
+                {
+                    this.Clear();
+                }
+            }
+
+            public void PopAll(ref State[] states)
+            {
+                try
+                {
+                    if (this.IsEmpty)
+                    {
+                        states = null;
+                        return;
+                    }
+                    State[] ReturnArray = new State[this.size];
+                    for (int i = 0; i < this.size; i++)
+                    {
+                        this.Pop(ref ReturnArray[i]);
+                    }
+                    return;
+                }
+                catch
+                {
+                    throw;
+                }
+                finally
                 {
                     this.Clear();
                 }
@@ -191,11 +224,6 @@ namespace StrawberryGameEngine
                 this.func = func;
                 this.purpose = purpose;
             }
-        }
-
-        public class ProcessManager
-        {
-
         }
 
         public class App

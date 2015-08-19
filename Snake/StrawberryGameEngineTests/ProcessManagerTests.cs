@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace StrawberryGameEngine.Core.Tests
 {
     [TestClass()]
-    public class StateManagerTests
+    public class ProcessManagerTests
     {
         [TestMethod()]
         public void PushTest()
@@ -22,14 +22,14 @@ namespace StrawberryGameEngine.Core.Tests
                 int c = b;
                 int d = c;
                 x = c;
-                if (x!=0)
+                if (x != 0)
                 {
                     Assert.Fail();
                 }
             };
-            StateManager manager = new StateManager();
+            ProcessManager manager = new ProcessManager();
             manager.Push(new Function(func));
-            if (manager.Count!=1)
+            if (!(manager.First.ProcessID ==  1 && manager.Last==null))
             {
                 Assert.Fail();
             }
@@ -47,13 +47,13 @@ namespace StrawberryGameEngine.Core.Tests
                 int d = c;
                 x = c;
             };
-            StateManager manager = new StateManager();
+            ProcessManager manager = new ProcessManager();
             manager.Push(new Function(func));
-            manager.Pop();
+            manager.Pop(1);
             if (!manager.IsEmpty)
             {
                 Assert.Fail();
-            } 
+            }
         }
 
         [TestMethod()]
@@ -68,7 +68,7 @@ namespace StrawberryGameEngine.Core.Tests
                 int d = c;
                 x = c;
             };
-            StateManager manager = new StateManager();
+            ProcessManager manager = new ProcessManager();
             manager.Push(new Function(func));
             manager.PopAll();
             if (!manager.IsEmpty)
