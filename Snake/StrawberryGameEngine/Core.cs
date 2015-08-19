@@ -11,19 +11,24 @@ namespace StrawberryGameEngine
         // Макет используемых приложением выполняемых функций
         public delegate void Func();
 
+        // Менеджер состояний                        ---Исправить класс используя State как элемент цепи
         public class StateManager
         {
             // Массив для хранения данных
-            private Function[] _array;
-            // Вместимость по умолчанию
-            private const int default_capactity = 10;
+            private State CurrentState;
             // Размер
             private int size;
 
             public StateManager()
             {
                 this.size = 0;
-                this._array = new Function[default_capactity];
+                this.CurrentState = null;
+            }
+
+            private void Clear()
+            {
+                CurrentState = null;
+                size = 0;
             }
 
             // Проверка на пустоту
@@ -44,15 +49,20 @@ namespace StrawberryGameEngine
             // Установка текущего состояния
             public bool Push(Function CallerFunction)
             {
-                // Если возникло переполнение                              ---Есть проблемы с производительностью
-                if (this.size == this._array.Length)
+                try
                 {
-                    Function[] NewArray = new Function[2 * this._array.Length];
-                    Array.Copy(this._array, 0, NewArray, 0, this.size);
-                    this._array = NewArray;
+                    CurrentState = new State(CallerFunction);
+                    if (CurrentState != null)
+                    {
+                        State temp;
+                        temp = CurrentState;
+                        CurrentState.Prev = temp;
+                    }
                 }
-
-                this._array[this.size++] = CallerFunction; 
+                catch
+                {
+                    throw;
+                }
                 // если состояние получилось установить
                 return true;
             }
@@ -60,20 +70,70 @@ namespace StrawberryGameEngine
             // Возвращение к предыдущему состоянию
             public Function Pop()
             {
-                if (this.size == 0)
+                try
                 {
-                    throw new InvalidOperationException();
+                    if (this.size == 0)
+                    {
+                        throw new InvalidOperationException();
+                    }
+                    return this.CurrentState.function;
+                } catch
+                {
+                    throw;
                 }
+                finally
+                {
+                    this.CurrentState = this.CurrentState.Prev;
+                    this.size--;
+                }
+            }
 
-                return this._array[--this.size];
+            public void Pop(ref State state)
+            {
+                try
+                {
+                    if (this.size == 0)
+                    {
+                        throw new InvalidOperationException();
+                    }
+                    state = this.CurrentState;
+
+                }
+                catch
+                {
+                    throw;
+                }
+                finally
+                {
+                    this.CurrentState = this.CurrentState.Prev;
+                    this.size--;
+                }
             }
 
             // Удаление всех состояний
             public Function[] PopAll()
             {
-                Function[] ReturnArray = _array;
-                _array = new Function[default_capactity];
-                return ReturnArray;
+                try
+                {
+                    if (this.IsEmpty())
+                    {
+                        return null;
+                    }
+                    Function[] ReturnArray = new Function[this.size];
+                    for (int i = 0; i < this.size; i++)
+                    {
+                        ReturnArray[i] = this.Pop();
+                    }
+                    return ReturnArray;
+                }
+                catch
+                {
+
+                    throw;
+                } finally
+                {
+                    this.Clear();
+                }
             }
 
             // Вызов функции текущего состояния
@@ -97,13 +157,19 @@ namespace StrawberryGameEngine
         public class State
         {
             // ссылка на предыдущее состояние
-            State Prev;
+            public State Prev;
             // указатель на функцию
-            Function function;
+            public Function function;
 
             public State()
             {
                 function = null;
+                Prev = null;
+            }
+
+            public State(Function func)
+            {
+                this.function = func;
                 Prev = null;
             }
         }
