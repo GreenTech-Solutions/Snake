@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace StrawberryGameEngine
 {
-    public interface App
+    namespace Core
+    {
+        public interface App
     {
         // Ширина и высота окна
         int Width { get; set; }
@@ -14,7 +16,7 @@ namespace StrawberryGameEngine
         // Имя окна
         string WindowName { get; set; }
         // Открыта ли программа на весь экран
-        bool ISFullScreen { get; set; }
+        bool ISFullScreen { get; }
 
         // Инициализация оконной системы
         void Init();
@@ -30,5 +32,6 @@ namespace StrawberryGameEngine
 
         // Переводит приложение в полноэкранный режим
         void ToggleFullscreen();
+    }
     }
 }
