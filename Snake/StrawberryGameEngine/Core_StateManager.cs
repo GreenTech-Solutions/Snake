@@ -225,10 +225,5 @@ namespace StrawberryGameEngine
                 this.purpose = purpose;
             }
         }
-
-        public class App
-        {
-
-        }
     }
 }
