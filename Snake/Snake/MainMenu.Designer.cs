@@ -53,6 +53,7 @@
             this.StartNewGameButton.TabIndex = 1;
             this.StartNewGameButton.Text = "New Game";
             this.StartNewGameButton.UseVisualStyleBackColor = true;
+            this.StartNewGameButton.Click += new System.EventHandler(this.StartNewGameButton_Click);
             // 
             // SettingsButton
             // 

@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Resources;
 using System.Reflection;
+using Win32API;
+using StrawberryGameEngine.Core;
 
 namespace Snake
 {
@@ -21,10 +23,10 @@ namespace Snake
 
         private void SandForm_Load(object sender, EventArgs e)
         {
-            Image EmptyCell = Resources.TestTexture;
-
-            DataGridViewRow line = new DataGridViewRow();
-            Map.Rows.Add();
+            WindowCreationInfo inf = new WindowCreationInfo(new Size(640, 480), "Test", 32, true, false, false, true);
+            Main_SDL main = new Main_SDL();
+            main.Init(inf);
+            main.ResizeWindow(1,1);
         }
     }
 }

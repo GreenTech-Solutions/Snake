@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using StrawberryGameEngine.Core;
 
 namespace Snake
 {
@@ -15,6 +16,12 @@ namespace Snake
         public MainMenu()
         {
             InitializeComponent();
+        }
+
+        private void StartNewGameButton_Click(object sender, EventArgs e)
+        {
+            WindowCreationInfo inf = new WindowCreationInfo(new Size(640,480), "Test", 32, true, false, false, true);
+            
         }
     }
 }

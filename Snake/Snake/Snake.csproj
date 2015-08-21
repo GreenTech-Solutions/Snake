@@ -109,6 +109,16 @@
   <ItemGroup>
     <None Include="Resources\TextureTestEmpty.png" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\StrawberryGameEngine\StrawberryGameEngine.csproj">
+      <Project>{c4ffd539-a42c-49ba-b7ca-be832c161d4a}</Project>
+      <Name>StrawberryGameEngine</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Win32Api\Win32Api.csproj">
+      <Project>{5bf7c7e3-43d6-4fbc-9a12-d7afa5e3de88}</Project>
+      <Name>Win32Api</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
