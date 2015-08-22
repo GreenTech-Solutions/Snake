@@ -11,6 +11,7 @@ using System.Resources;
 using System.Reflection;
 using Win32API;
 using StrawberryGameEngine.Core;
+using System.Threading;
 
 namespace Snake
 {
@@ -23,10 +24,15 @@ namespace Snake
 
         private void SandForm_Load(object sender, EventArgs e)
         {
-            WindowCreationInfo inf = new WindowCreationInfo(new Size(640, 480), "Test", 32, true, false, false, true);
-            Main_SDL main = new Main_SDL();
+            WindowCreationInfo inf = new WindowCreationInfo(new Size(1366, 768), "Hello From c#", 32, true, false);
+            Main_WF main = new Main_WF();
             main.Init(inf);
-            main.ResizeWindow(1,1);
+            main.Run();
+            main.ResizeWindow(new Size(640, 480));
+            main.ToggleFullscreen();
+            Thread.Sleep(500);
+            main.ToggleFullscreen();
+            //main.ShutDown();
         }
     }
 }

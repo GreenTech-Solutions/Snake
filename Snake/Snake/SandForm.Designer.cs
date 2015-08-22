@@ -37,6 +37,7 @@
             this.ClientSize = new System.Drawing.Size(371, 254);
             this.Name = "SandForm";
             this.Text = "SandForm";
+            this.WindowState = System.Windows.Forms.FormWindowState.Minimized;
             this.Load += new System.EventHandler(this.SandForm_Load);
             this.ResumeLayout(false);
 

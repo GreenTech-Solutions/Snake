@@ -19,9 +19,7 @@ namespace Snake
         }
 
         private void StartNewGameButton_Click(object sender, EventArgs e)
-        {
-            WindowCreationInfo inf = new WindowCreationInfo(new Size(640,480), "Test", 32, true, false, false, true);
-            
+        {            
         }
     }
 }
