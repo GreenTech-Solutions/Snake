@@ -46,6 +46,7 @@
     <Compile Include="Core_Main_WF.cs" />
     <Compile Include="Core_ProcessManager.cs" />
     <Compile Include="Core_StateManager.cs" />
+    <Compile Include="Graphics_TextureManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

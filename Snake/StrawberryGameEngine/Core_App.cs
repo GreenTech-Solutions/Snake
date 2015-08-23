@@ -9,29 +9,53 @@ namespace StrawberryGameEngine
     namespace Core
     {
         public interface App
-    {
-        // Ширина и высота окна
-        int Width { get; set; }
-        int Height { get; set; }
-        // Имя окна
-        string WindowName { get; set; }
-        // Открыта ли программа на весь экран
-        bool ISFullScreen { get; }
+        {
+            /// <summary>
+            /// Ширина  окна
+            /// </summary>
+            int Width { get; set; }
 
-        // Инициализация оконной системы
-        void Init();
+            /// <summary>
+            /// Высота окна
+            /// </summary>
+            int Height { get; set; }
 
-        // Установка дефолтного состояния при запуске или запуск игрового цикла
-        void Run();
+            /// <summary>
+            /// Заголовок окна
+            /// </summary>
+            string WindowName { get; set; }
 
-        // Завершение программы
-        void ShutDown();
+            /// <summary>
+            /// Сообщает, открыто ли главное окно на весь экран
+            /// </summary>
+            bool ISFullScreen { get; }
 
-        // Изменение размеров окна
-        void ResizeWindow(int width, int Height);
+            /// <summary>
+            /// Инициализация всех подсистем движка
+            /// </summary>
+            void Init();
 
-        // Переводит приложение в полноэкранный режим
-        void ToggleFullscreen();
-    }
+            /// <summary>
+            /// Запуск игрового цикла
+            /// </summary>
+            void Run();
+
+            /// <summary>
+            /// Завершение программы
+            /// </summary>
+            void ShutDown();
+
+            /// <summary>
+            /// Изменение размеров окна
+            /// </summary>
+            /// <param name="width">Новая ширина окна</param>
+            /// <param name="Height">Новая высота окна</param>
+            void ResizeWindow(int width, int Height);
+
+            /// <summary>
+            /// Переключает окно между полноэкранным и нормальным режимами
+            /// </summary>
+            void ToggleFullscreen();
+        }
     }
 }

@@ -25,14 +25,32 @@ namespace Snake
         private void SandForm_Load(object sender, EventArgs e)
         {
             WindowCreationInfo inf = new WindowCreationInfo(new Size(1366, 768), "Hello From c#", 32, true, false);
-            Main_WF main = new Main_WF();
-            main.Init(inf);
-            main.Run();
-            main.ResizeWindow(new Size(640, 480));
-            main.ToggleFullscreen();
-            Thread.Sleep(500);
-            main.ToggleFullscreen();
+            //Main_WF main = new Main_WF();
+            //main.Init(inf);
+            //main.Run();
+            //main.ResizeWindow(new Size(640, 480));
+            //main.ToggleFullscreen();
+            //Thread.Sleep(500);
+            //main.ToggleFullscreen();
+
             //main.ShutDown();
+        }
+
+        private void SandForm_Shown(object sender, EventArgs args)
+        {
+            DrawLine();
+        }
+
+        private void DrawLine()
+        {
+            Graphics g = this.CreateGraphics();
+            g.DrawLine(new Pen(Color.Red), 10, 10, 100, 100);
+            g.DrawRectangle(new Pen(Color.Blue), new Rectangle(10,10,100,250));
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            DrawLine();
         }
     }
 }

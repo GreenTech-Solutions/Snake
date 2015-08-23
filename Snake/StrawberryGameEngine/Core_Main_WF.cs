@@ -115,7 +115,7 @@ namespace StrawberryGameEngine
             }
 
             // Переключение в полноэкранный режим и обратно
-            public void ToggleFullscreen()
+            public void ToggleFullscreen()                   // --- Beta
             {
                 if (ISFullScreen)
                 {
