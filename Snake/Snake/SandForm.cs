@@ -11,6 +11,7 @@ using System.Resources;
 using System.Reflection;
 using Win32API;
 using StrawberryGameEngine.Core;
+using StrawberryGameEngine.Video;
 using System.Threading;
 
 namespace Snake
@@ -38,14 +39,17 @@ namespace Snake
 
         private void SandForm_Shown(object sender, EventArgs args)
         {
-            DrawLine();
+            
         }
+
+        TextureManager m;
 
         private void DrawLine()
         {
-            Graphics g = this.CreateGraphics();
-            g.DrawLine(new Pen(Color.Red), 10, 10, 100, 100);
-            g.DrawRectangle(new Pen(Color.Blue), new Rectangle(10,10,100,250));
+            m = new TextureManager(this);
+            //int t = m.LoadTextureFromMemory(Resources.SnakeMain);
+            //m.ChangeTextureInfo(t, new TextureInfo(0, 0, 30));
+            //m.DrawTexture(t);
         }
 
         private void button1_Click(object sender, EventArgs e)
