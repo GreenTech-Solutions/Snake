@@ -50,8 +50,13 @@ namespace Snake
             int t = m.LoadTextureFromMemory(Resources.SnakeMain);
             m.ChangeTextureInfo(t, new TextureInfo(0, 0, 100));
             m.SetTextureSize(t, SystemInformation.PrimaryMonitorSize);
+            //m.DrawTexture(t);
+            Size textureSize = new Size((int)m.GetTextureWidth(t), (int)m.GetTextureHeight(t));
+            int f = m.CreateTextureSection(t, new Section(textureSize.Width/2,0,textureSize.Width,textureSize.Height/2));
+            m.DrawTextureSection(f);
+            m.RemoveAllTextureSections();
             m.DrawTexture(t);
-            m.RemoveAllTextures();
+            m.DrawTextureSection(f);
             m.ReloadTextures();
         }
 
