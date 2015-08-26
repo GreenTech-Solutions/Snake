@@ -770,7 +770,7 @@ namespace StrawberryGameEngine
             /// <param name="y">Расположение по Oy</param>
             /// <param name="Scale">Масштабирование</param>
             /// <param name="rotation">Угол вращения</param>
-            public TextureInfo(int x = 0, int y=0, float Scale = 100, RotateFlipType rotation = 0)
+            public TextureInfo(int x = 0, int y=0, float Scale = 100, RotateFlipType rotation = 0) : this()
             {
                 try
                 {
@@ -787,5 +787,4 @@ namespace StrawberryGameEngine
             }
         }
     }
-
 }
