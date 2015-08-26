@@ -47,9 +47,12 @@ namespace Snake
         private void DrawLine()
         {
             m = new TextureManager(this);
-            //int t = m.LoadTextureFromMemory(Resources.SnakeMain);
-            //m.ChangeTextureInfo(t, new TextureInfo(0, 0, 30));
-            //m.DrawTexture(t);
+            int t = m.LoadTextureFromMemory(Resources.SnakeMain);
+            m.ChangeTextureInfo(t, new TextureInfo(0, 0, 100));
+            m.SetTextureSize(t, SystemInformation.PrimaryMonitorSize);
+            m.DrawTexture(t);
+            m.RemoveAllTextures();
+            m.ReloadTextures();
         }
 
         private void button1_Click(object sender, EventArgs e)

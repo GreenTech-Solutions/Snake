@@ -11,18 +11,28 @@ namespace StrawberryGameEngine
 {
     namespace Video
     {
+        /// <summary>
+        /// Менеджер текстур
+        /// </summary>
         public class TextureManager
         {
+            #region General
             // Переменные для назначения уникального ID в словарях
             static int TextureID = 0;
             static int TextureSectionID = 0;
 
             Form window = new Form();
 
+            Graphics g;
+
             public TextureManager(Form window)
             {
                 this.window = window;
+                g = this.window.CreateGraphics();
                 int t = this.LoadTextureFromMemory(Resources.Strawberry);
+                this.ChangeTextureInfo(t, new TextureInfo(0, 0));
+                Textures[t].Height = SystemInformation.PrimaryMonitorSize.Height;
+                Textures[t].Width = SystemInformation.PrimaryMonitorSize.Width;
                 this.DrawTexture(t);
             }
 
@@ -40,7 +50,9 @@ namespace StrawberryGameEngine
             /// Список идентификаторов текстур, отрисованных на экране(Отрицательные для фрагментов)
             /// </summary>
             protected List<int> TexturesOnScreen = new List<int>();
+            #endregion
 
+            #region Load & Create
             /// <summary>
             /// Загрузка изображения из файла
             /// </summary>
@@ -62,6 +74,18 @@ namespace StrawberryGameEngine
             }
 
             /// <summary>
+            /// Создаёт фрагмент текстуры из указанной по заданным параметрам
+            /// </summary>
+            /// <param name="ID">ID текстуры</param>
+            /// <param name="section">Тип фрагмента</param>
+            public void CreateTextureSection(int ID, Section section)
+            {
+                TextureSections.Add(TextureSectionID++, new TextureSection(Textures[ID], section));
+            }
+            #endregion
+
+            #region Changing
+            /// <summary>
             /// Изменение информации о текстуре
             /// </summary>
             /// <param name="ID">ID текстуры</param>
@@ -70,19 +94,107 @@ namespace StrawberryGameEngine
             {
                 Textures[ID].Info = info;
             }
-            
+
             /// <summary>
-            /// Создаёт фрагмент текстуры из указанной по заданным параметрам
+            /// Масштабирование текстуры
             /// </summary>
-            /// <param name="ID">ID текстуры</param>
-            /// <param name="section">Тип фрагмента</param>
-            public void CreateTextureSection(int ID, Section section)
+            /// <param name="image">Исходное изображение</param>
+            /// <param name="scale">Масштаб(1 - изначальный масштаб)</param>
+            /// <returns></returns>
+            private Bitmap ScaleImage(Bitmap image, float scale)
             {
-                TextureSections.Add(TextureSectionID++, new TextureSection(Textures[ID],section));
+                float temp1 = scale * image.Width;
+                float temp2 = scale * image.Height;
+                int newWidth = (int)temp1;
+                int newHeight = (int)temp2;
+                Size newSize = new Size(newWidth, newHeight);
+                return new Bitmap(image, newSize);
             }
 
             /// <summary>
-            /// Удаляет текстуру
+            /// Изменяет размер указанной текстуры
+            /// </summary>
+            /// <param name="ID">ID текстуры</param>
+            /// <param name="newSize">Новый размер</param>
+            public void SetTextureSize(int ID, Size newSize)
+            {
+                Textures[ID].ChangeSize(newSize);
+            }
+            #endregion
+
+            #region Draw
+            /// <summary>
+            /// Рисует текстуру
+            /// </summary>
+            /// <param name="ID">ID текстуры</param>
+            /// <param name="window">Ссылка на форму</param>
+            public void DrawTexture(int ID)
+            {
+                Bitmap img = Textures[ID].image;
+                TextureInfo inf = Textures[ID].Info;
+                if (inf != null)
+                {
+                    img = ScaleImage(img, inf.Scale / 100);
+                    img.RotateFlip(inf.Rotation);
+                    g.DrawImageUnscaled(img, new Point((int)inf.x, (int)inf.y));
+                    TexturesOnScreen.Add(ID);
+                }
+                else
+                {
+                    throw new ArgumentNullException("Отсутствуе информация о текстуре.");
+                }
+            }
+
+            /// <summary>
+            /// Рисует фрагмент текстуры
+            /// </summary>
+            /// <param name="ID">ID фрагмента</param>
+            public void DrawTextureSection(int ID)
+            {
+                Bitmap img = Textures[ID].image;
+                TextureInfo inf = TextureSections[ID].Info;
+                if (inf != null)
+                {
+                    img = ScaleImage(img, inf.Scale / 100);
+                    img.RotateFlip(inf.Rotation);
+                    g.DrawImageUnscaled(img, new Point((int)inf.x, (int)inf.y));
+                    TexturesOnScreen.Add(-ID);
+                }
+                else
+                {
+                    throw new ArgumentNullException("Отсутствуе информация о текстуре.");
+                }
+            }
+
+            /// <summary>
+            /// Перерисовывает все текстуры, находящиеся на экране
+            /// </summary>
+            public void ReloadTextures()
+            {
+                if (TexturesOnScreen.Count==0)
+                {
+                    this.g.Clear(Color.Black);
+                }
+                List<int> Temp = new List<int>();
+                Temp.AddRange(TexturesOnScreen);
+                TexturesOnScreen.Clear();
+                foreach (int i in Temp)
+                {
+                    if (i > 0)
+                    {
+                        DrawTexture(i);
+                    }
+                    else if (i < 0)
+                    {
+                        DrawTextureSection(-i);
+                    }
+                }
+            }
+            #endregion
+
+            #region Remove
+            /// <summary>
+            /// Удаляет текстуру(Вместе со всеми её фрагментами)
             /// </summary>
             /// <param name="ID">ID текстуры</param>
             public void RemoveTexture(int ID)
@@ -113,98 +225,52 @@ namespace StrawberryGameEngine
             public void RemoveTextureSection(int ID)
             {
                 TextureSections.Remove(ID);
-                TexturesOnScreen.Remove(ID);
+                TexturesOnScreen.Remove(-ID);
             }
 
             /// <summary>
-            /// Рисует текстуру на заданной форме
+            /// Удаляет все текстуры(Вместе с соответствующими фрагментами)
             /// </summary>
-            /// <param name="ID">ID текстуры</param>
-            /// <param name="window">Ссылка на форму</param>
-            public void DrawTexture(int ID)
-            {
-                Graphics g = this.window.CreateGraphics();
-                Bitmap img = Textures[ID].image;
-                TextureInfo inf = Textures[ID].Info;
-                if (inf!=null)
-                {
-                    img = ScaleImage(img, inf.Scale/100);
-                    img.RotateFlip(inf.Rotation);
-                    g.DrawImageUnscaled(img, new Point((int)inf.x, (int)inf.y));
-                    TexturesOnScreen.Add(ID);
-                }
-                else
-                {
-                    throw new ArgumentNullException("Отсутствуе информация о текстуре.");
-                }
-            }
-
-            public void DrawTextureSection(int ID)
-            {
-                Graphics g = this.window.CreateGraphics();
-                Bitmap img = Textures[ID].image;
-                TextureInfo inf = TextureSections[ID].Info;
-                if (inf != null)
-                {
-                    img = ScaleImage(img, inf.Scale / 100);
-                    img.RotateFlip(inf.Rotation);
-                    g.DrawImageUnscaled(img, new Point((int)inf.x, (int)inf.y));
-                    TexturesOnScreen.Add(-ID);
-                }
-                else
-                {
-                    throw new ArgumentNullException("Отсутствуе информация о текстуре.");
-                }
-            }
-
-            private Bitmap ScaleImage(Bitmap image, float scale)
-            {
-                float temp1 = scale * image.Width;
-                float temp2 = scale * image.Height;
-                int newWidth = (int)temp1;
-                int newHeight = (int)temp2;
-                Size newSize = new Size(newWidth,newHeight);
-                return new Bitmap(image, newSize);
-            }
-
-            public void ReloadTextures(Form window)
-            {
-                foreach (int i in TexturesOnScreen)
-                {
-                    if (i>0)
-                    {
-                        DrawTexture(i);
-                    }
-                    else if (i<0)
-                    {
-                        DrawTextureSection(-i);
-                    }
-                }
-            }
-
-            public float GetTextureWidth(int ID)
-            {
-                return (Textures[ID] as Texture).Width;
-            }
-
-            public float GetTextureHeight(int ID)
-            {
-                return (Textures[ID] as Texture).Height;
-            }
-
             public void RemoveAllTextures()
             {
                 Textures.Clear();
-                TexturesOnScreen.RemoveAll(x => x > 0);
-                TextureID = 0;
+                TextureSections.Clear();
+                TexturesOnScreen.Clear();
+                TextureID = TextureSectionID = 0;
             }
 
+            /// <summary>
+            /// Удаляет все фрагменты
+            /// </summary>
             public void RemoveAllTextureSections()
             {
                 TextureSections.Clear();
                 TexturesOnScreen.RemoveAll(x => x < 0);
                 TextureSectionID = 0;
             }
+            #endregion
+
+            #region Measure
+            /// <summary>
+            /// Возвращает ширину текстуры
+            /// </summary>
+            /// <param name="ID">ID текстуры</param>
+            /// <returns></returns>
+            public float GetTextureWidth(int ID)
+            {
+                return (Textures[ID] as Texture).Width;
+            }
+
+            /// <summary>
+            /// Возвращает высоту текстуры
+            /// </summary>
+            /// <param name="ID">ID текстуры</param>
+            /// <returns></returns>
+            public float GetTextureHeight(int ID)
+            {
+                return (Textures[ID] as Texture).Height;
+            }
+            #endregion
         }
 
         /// <summary>
@@ -220,12 +286,32 @@ namespace StrawberryGameEngine
             /// <summary>
             /// Ширина текстуры
             /// </summary>
-            public float Width;
+            public float Width
+            {
+                get
+                {
+                    return this.image.Width;
+                }
+                set
+                {
+                    image = new Bitmap(image, new Size((int)value,this.image.Height));
+                }
+            }
 
             /// <summary>
             /// Высота текстуры
             /// </summary>
-            public float Height;
+            public float Height
+            {
+                get
+                {
+                    return this.image.Height;
+                }
+                set
+                {
+                    this.image = new Bitmap(image, new Size(this.image.Width, (int)value));
+                }
+            }
 
             /// <summary>
             /// Текстура
@@ -254,6 +340,12 @@ namespace StrawberryGameEngine
             public Texture(Bitmap img, TextureInfo info) : this(img)
             {
                 this.Info = info;
+            }
+
+            public void ChangeSize(Size newSize)
+            {
+                this.Width = newSize.Width;
+                this.Height = newSize.Height;
             }
         }
 
@@ -309,7 +401,7 @@ namespace StrawberryGameEngine
         /// <summary>
         /// Координаты для создания фрагмента изображения
         /// </summary>
-        public struct Section
+        public class Section
         {
             /// <summary>
             /// Минимальная координата x(слева направо)
@@ -330,6 +422,21 @@ namespace StrawberryGameEngine
             /// Максимальная координата y(сверху вниз)
             /// </summary>
             public float vMax;
+
+            /// <summary>
+            /// Создаёт экземпляр с данными о размере фрагмента
+            /// </summary>
+            /// <param name="newUmin">Новая минимальная координата x(слева направо)</param>
+            /// <param name="newUmax">Новая максимальная координата x(слева направо)</param>
+            /// <param name="newVmin">Новая минимальная координата y(сверху вниз)</param>
+            /// <param name="newVmax">Новая минимальная координата y(сверху вниз)</param>
+            public Section(float newUmin, float newUmax, float newVmin, float newVmax)
+            {
+                this.uMin = newUmin;
+                this.uMax = newUmax;
+                this.vMin = newUmin;
+                this.vMax = newVmax;
+            }
         }
 
         /// <summary>
