@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Drawing;
 using System.Windows.Forms;
-using System.Drawing.Drawing2D;
 
 namespace StrawberryGameEngine
 {
@@ -21,9 +17,9 @@ namespace StrawberryGameEngine
             static int TextureID = 0;
             static int TextureSectionID = 0;
 
-            Form window = new Form();
+            internal Form window = new Form();
 
-            Graphics g;
+            internal Graphics g;
 
             /// <summary>
             /// Создаёт новый менеджер текстур для указанной формы Windows
@@ -41,8 +37,8 @@ namespace StrawberryGameEngine
                     g = this.window.CreateGraphics();
                     int t = this.LoadTextureFromMemory(Resources.Strawberry);
                     this.ChangeTextureInfo(t, new TextureInfo(0, 0));
-                    Textures[t].Height = SystemInformation.PrimaryMonitorSize.Height;
-                    Textures[t].Width = SystemInformation.PrimaryMonitorSize.Width;
+                    Textures[t].Height = window.Height;
+                    Textures[t].Width = window.Width;
                     this.DrawTexture(t);
                 }
                 catch
@@ -54,23 +50,35 @@ namespace StrawberryGameEngine
             /// <summary>
             /// Словарь текстур
             /// </summary>
-            protected Dictionary<int, Texture> Textures = new Dictionary<int, Texture>();
+            internal Dictionary<int, Texture> Textures = new Dictionary<int, Texture>();
 
             /// <summary>
             /// Словарь усечённых текстур
             /// </summary>
-            protected Dictionary<int, TextureSection> TextureSections = new Dictionary<int, TextureSection>();
+            internal Dictionary<int, TextureSection> TextureSections = new Dictionary<int, TextureSection>();
 
             /// <summary>
             /// Список идентификаторов текстур, отрисованных на экране(Отрицательные для фрагментов)
             /// </summary>
-            protected List<int> TexturesOnScreen = new List<int>();
+            internal List<int> TexturesOnScreen = new List<int>();
             #endregion
 
             #region Service
             bool TextureExist(int ID)
             {
                 if (this.Textures.ContainsKey(ID))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            bool TextureSectionExist(int ID)
+            {
+                if (this.TextureSections.ContainsKey(ID))
                 {
                     return true;
                 }
@@ -275,7 +283,7 @@ namespace StrawberryGameEngine
             {
                 try
                 {
-                    if (!TextureExist(ID))
+                    if (!TextureSectionExist(ID))
                     {
                         throw new KeyNotFoundException();
                     }
