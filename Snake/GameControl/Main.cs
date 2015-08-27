@@ -2,11 +2,6 @@
 {
     public class Game
     {
-        internal Map map = new Map();
-
-        public Game()
-        {
-        }
-
+        internal Map Map = new Map();
     }
 }

@@ -17,12 +17,12 @@ namespace StrawberryGameEngine
             /// <summary>
             /// Вершина стека состояний
             /// </summary>
-            private State CurrentState;
+            private State _currentState;
 
             /// <summary>
             /// Размер стека
             /// </summary>
-            private int size;
+            private int _size;
 
             /// <summary>
             /// Создаёт новый менеджер состояний
@@ -37,49 +37,30 @@ namespace StrawberryGameEngine
             /// </summary>
             private void Clear()
             {
-                this.CurrentState = null;
-                this.size = 0;
+                _currentState = null;
+                _size = 0;
             }
 
             /// <summary>
             /// Проверяет пустой ли список
             /// </summary>
-            public bool IsEmpty
-            {
-                get
-                {
-                    return this.size == 0;
-                }
-            }
+            public bool IsEmpty => _size == 0;
 
             // размер стека
-            public virtual int Count
-            {
-                get
-                {
-                    return this.size;
-                }
-            }
+            public virtual int Count => _size;
 
             // Установка текущего состояния
-            public bool Push(Function CallerFunction)
+            public bool Push(Function callerFunction)
             {
-                try
+                if (IsEmpty)
                 {
-                    if (this.IsEmpty)
-                    {
-                        CurrentState = new State(CallerFunction);
-                        this.size++;
-                        return true;
-                    }
-                    CurrentState.Prev = CurrentState;
-                    CurrentState.function = CallerFunction;
+                    _currentState = new State(callerFunction);
+                    _size++;
                     return true;
                 }
-                catch
-                {
-                    throw;
-                }
+                _currentState.Prev = _currentState;
+                _currentState.Function = callerFunction;
+                return true;
             }
 
             // Возвращение к предыдущему состоянию
@@ -87,23 +68,12 @@ namespace StrawberryGameEngine
             {
                 try
                 {
-                    if (this.IsEmpty)
-                    {
-                        return null;
-                    }
-                    else
-                    {
-                    return this.CurrentState.function;
-                    }
-                }
-                catch
-                {
-                    throw;
+                    return IsEmpty ? null : _currentState.Function;
                 }
                 finally
                 {
-                    this.CurrentState = this.CurrentState.Prev;
-                    this.size--;
+                    _currentState = _currentState.Prev;
+                    _size--;
                 }
             }
 
@@ -111,21 +81,17 @@ namespace StrawberryGameEngine
             {
                 try
                 {
-                    if (this.size == 0)
+                    if (_size == 0)
                     {
                         throw new InvalidOperationException();
                     }
-                    state = this.CurrentState;
+                    state = _currentState;
 
-                }
-                catch
-                {
-                    throw;
                 }
                 finally
                 {
-                    this.CurrentState = this.CurrentState.Prev;
-                    this.size--;
+                    _currentState = _currentState.Prev;
+                    _size--;
                 }
             }
 
@@ -134,24 +100,20 @@ namespace StrawberryGameEngine
             {
                 try
                 {
-                    if (this.IsEmpty)
+                    if (IsEmpty)
                     {
                         return null;
                     }
-                    Function[] ReturnArray = new Function[this.size];
-                    for (int i = 0; i < this.size; i++)
+                    var returnArray = new Function[_size];
+                    for (var i = 0; i < _size; i++)
                     {
-                        ReturnArray[i] = this.Pop();
+                        returnArray[i] = Pop();
                     }
-                    return ReturnArray;
+                    return returnArray;
                 }
-                catch
+                finally
                 {
-
-                    throw;
-                } finally
-                {
-                    this.Clear();
+                    Clear();
                 }
             }
 
@@ -159,43 +121,38 @@ namespace StrawberryGameEngine
             {
                 try
                 {
-                    if (this.IsEmpty)
+                    if (IsEmpty)
                     {
                         states = null;
                         return;
                     }
-                    State[] ReturnArray = new State[this.size];
-                    for (int i = 0; i < this.size; i++)
+                    var returnArray = new State[_size];
+                    for (var i = 0; i < _size; i++)
                     {
-                        this.Pop(ref ReturnArray[i]);
+                        Pop(ref returnArray[i]);
                     }
-                    return;
-                }
-                catch
-                {
-                    throw;
                 }
                 finally
                 {
-                    this.Clear();
+                    Clear();
                 }
             }
 
             // Вызов функции текущего состояния
             public void Process()
             {
-                Function CurrentProcess = this.Pop();
-                CurrentProcess.func();
+                var currentProcess = Pop();
+                currentProcess.Func();
             }
         }
 
         // Назначение для функции
         public enum Purpose
         {
-            STOP = 0,
-            INIT,
-            FRAME,
-            NO
+            Stop = 0,
+            Init,
+            Frame,
+            No
         }
         
         // Текущее программное состояние
@@ -204,17 +161,17 @@ namespace StrawberryGameEngine
             // ссылка на предыдущее состояние
             public State Prev;
             // указатель на функцию
-            public Function function;
+            public Function Function;
 
             public State()
             {
-                function = null;
+                Function = null;
                 Prev = null;
             }
 
             public State(Function func)
             {
-                this.function = func;
+                Function = func;
                 Prev = null;
             }
         }
@@ -222,19 +179,19 @@ namespace StrawberryGameEngine
         // Инофрмация о функции и сама функция
         public class Function
         {
-            public Func func;
-            public Purpose purpose;
+            public Func Func;
+            public Purpose Purpose;
 
             public Function(Func func)
             {
-                this.func = func;
-                purpose = Purpose.NO;
+                Func = func;
+                Purpose = Purpose.No;
             }
 
             public Function(Func func, Purpose purpose)
             {
-                this.func = func;
-                this.purpose = purpose;
+                Func = func;
+                Purpose = purpose;
             }
         }
     }

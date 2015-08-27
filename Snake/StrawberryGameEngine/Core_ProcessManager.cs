@@ -61,18 +61,15 @@ namespace StrawberryGameEngine
                 {
                     try
                     {
-                        if (this.First == null)
+                        if (First == null)
                         {
-                            if (!(this.Last == null))
+                            if (!(Last == null))
                             {
                                 throw new Exception("Непредвиденная ошибка в работе менеджера процессов.");
                             }
                             return true;
                         }
-                        else
-                        {
-                            return false;
-                        }
+                        return false;
                     }
                     catch 
                     {
@@ -85,16 +82,16 @@ namespace StrawberryGameEngine
             /// <summary>
             /// Проверяет, существует ли процесс с указанным ID в списке
             /// </summary>
-            /// <param name="ID">Искомый ID процесса</param>
+            /// <param name="id">Искомый ID процесса</param>
             /// <returns>Существует указанный ID или нет</returns>
-            public bool IDExist(int ID)
+            public bool IdExist(int id)
             {
                 try
                 {
-                    Process Current = this.First;
-                    while (Current != null)
+                    var current = First;
+                    while (current != null)
                     {
-                        if (Current.ProcessID == ID)
+                        if (current.ProcessId == id)
                         {
                             return true;
                         }
@@ -111,35 +108,32 @@ namespace StrawberryGameEngine
             /// <summary>
             /// Добавление процесса в конец списка
             /// </summary>
-            /// <param name="CallerFunction">Вызываемая вынкция</param>
+            /// <param name="callerFunction">Вызываемая вынкция</param>
             /// <returns></returns>
-            public bool Push(Function CallerFunction)
+            public bool Push(Function callerFunction)
             {
                 try
                 {
-                    if (CallerFunction==null)
+                    if (callerFunction==null)
                     {
                         throw new ArgumentNullException();
                     }
-                    if (this.IsEmpty)
+                    if (IsEmpty)
                     {
-                        First = new Process(CallerFunction, 1);
+                        First = new Process(callerFunction, 1);
                         First = new Process(First, null, Last);
                         return true;
                     }
-                    else
+                    if (Last == null)
                     {
-                        if (Last == null)
-                        {
-                            Last = new Process(CallerFunction, 2);
-                            Last = new Process(Last, First);
-                            return true;
-                        }
-                        Last.Prev = Last;
-                        Last.function = CallerFunction;
-                        Last.ProcessID++;
+                        Last = new Process(callerFunction, 2);
+                        Last = new Process(Last, First);
                         return true;
                     }
+                    Last.Prev = Last;
+                    Last.Function = callerFunction;
+                    Last.ProcessId++;
+                    return true;
                 }
                 catch 
                 {
@@ -157,26 +151,26 @@ namespace StrawberryGameEngine
             {
                 try
                 {
-                    if (this.IsEmpty||!this.IDExist(id))
+                    if (IsEmpty||!IdExist(id))
                     {
                         return null;
                     }
-                    Process CurrentProcess = this.First;
-                    while (CurrentProcess != null)
+                    var currentProcess = First;
+                    while (currentProcess != null)
                     {
                         if (id==1)
                         {
-                            return CurrentProcess;
+                            return currentProcess;
                         }
-                        if (CurrentProcess.ProcessID == id)
+                        if (currentProcess.ProcessId == id)
                         {
-                            CurrentProcess.Prev.Next = CurrentProcess.Next;
-                            CurrentProcess.Next.Prev = CurrentProcess.Prev;
-                            return CurrentProcess;
+                            currentProcess.Prev.Next = currentProcess.Next;
+                            currentProcess.Next.Prev = currentProcess.Prev;
+                            return currentProcess;
                         }
                         else
                         {
-                            CurrentProcess = CurrentProcess.Next;
+                            currentProcess = currentProcess.Next;
                         }
                     }
                     return null;
@@ -188,20 +182,20 @@ namespace StrawberryGameEngine
                 }
                 finally
                 {
-                    Process CurrentProcess = First.Next;
-                    if (CurrentProcess == null)
+                    var currentProcess = First.Next;
+                    if (currentProcess == null)
                     {
                         Clear();
                     }
                     else
                     {
-                        int ID = 1;
-                        CurrentProcess.Prev.ProcessID = ID;
-                        CurrentProcess = First;
-                        while (CurrentProcess!=null)
+                        var ID = 1;
+                        currentProcess.Prev.ProcessId = ID;
+                        currentProcess = First;
+                        while (currentProcess!=null)
                         {
-                            CurrentProcess.Next.ProcessID = ++ID;
-                            CurrentProcess = CurrentProcess.Next;
+                            currentProcess.Next.ProcessId = ++ID;
+                            currentProcess = currentProcess.Next;
                         }
                     }
                 }
@@ -215,22 +209,22 @@ namespace StrawberryGameEngine
             {
                 try
                 {
-                    if (this.IsEmpty)
+                    if (IsEmpty)
                     {
                         return null;
                     }
-                    if (this.Last==null)
+                    if (Last==null)
                     {
                         Process[] returnArray = { First };
                         return returnArray;
                     }
-                    Process[] ReturnArray = new Process[this.Last.ProcessID];
-                    Process CurrentID;
-                    for (int i = 0; i < this.Last.ProcessID; i++)
+                    var ReturnArray = new Process[Last.ProcessId];
+                    Process currentId;
+                    for (var i = 0; i < Last.ProcessId; i++)
                     {
-                        CurrentID = First;
-                        ReturnArray[i] = CurrentID;
-                        CurrentID = CurrentID.Next;
+                        currentId = First;
+                        ReturnArray[i] = currentId;
+                        currentId = currentId.Next;
                     }
                     return ReturnArray;
                 }
@@ -251,11 +245,11 @@ namespace StrawberryGameEngine
             {
                 try
                 {
-                    Process CurrentProcess = First;
-                    while (CurrentProcess != null)
+                    var currentProcess = First;
+                    while (currentProcess != null)
                     {
-                        CurrentProcess.function.func();
-                        CurrentProcess = CurrentProcess.Next;
+                        currentProcess.Function.Func();
+                        currentProcess = currentProcess.Next;
                     }
                 }
                 catch 
@@ -274,32 +268,32 @@ namespace StrawberryGameEngine
             /// <summary>
             /// Следующий процесс в списке
             /// </summary>
-            public Process Next = null;
+            public Process Next;
 
             /// <summary>
             /// Предыдущий процесс в списке
             /// </summary>
-            public Process Prev = null;
+            public Process Prev;
 
             /// <summary>
             /// ID Процесса
             /// </summary>
-            public int ProcessID;
+            public int ProcessId;
 
             /// <summary>
             /// Указатель на функцию
             /// </summary>
-            public Function function;
+            public Function Function;
 
             /// <summary>
             /// Создаёт новый процесс
             /// </summary>
             /// <param name="func">Исполняемая функция</param>
-            /// <param name="ID">ID функции</param>
-            public Process(Function func, int ID)
+            /// <param name="id">ID функции</param>
+            public Process(Function func, int id)
             {
-                this.function = func;
-                this.ProcessID = ID;
+                Function = func;
+                ProcessId = id;
             }
 
             /// <summary>
@@ -310,10 +304,10 @@ namespace StrawberryGameEngine
             /// <param name="next">Следующий процесс в списке</param>
             public Process(Process old, Process prev = null, Process next = null)
             {
-                this.function = old.function;
-                this.ProcessID = old.ProcessID;
-                this.Prev = prev;
-                this.Next = next;
+                Function = old.Function;
+                ProcessId = old.ProcessId;
+                Prev = prev;
+                Next = next;
             }
         }
     }

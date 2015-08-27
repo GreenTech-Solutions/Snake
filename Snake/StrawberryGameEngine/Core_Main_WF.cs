@@ -1,39 +1,33 @@
 ﻿using System;
-using System.Windows.Forms;
 using System.Drawing;
+using System.Windows.Forms;
 
 namespace StrawberryGameEngine
 {
     namespace Core
     {
-        public class Main_WF : App
+        public class MainWf : IApp
         {
             // Главное окно
-            Form Screen = new Form();
+            Form _screen = new Form();
             
             // Отвечает за состояние окна
-            bool _fullScreen = false;
+            bool _fullScreen;
 
             // Активирован ли полноэкранный режим
-            public bool ISFullScreen
-            {
-                get
-                {
-                    return this._fullScreen;
-                }
-            }
-            
+            public bool IsFullScreen => _fullScreen;
+
             // Высота окна
             public int Height
             {
                 get
                 {
-                    return Screen.Height;
+                    return _screen.Height;
                 }
 
                 set
                 {
-                    Screen.Height = value;
+                    _screen.Height = value;
                 }
             }
             
@@ -42,12 +36,12 @@ namespace StrawberryGameEngine
             {
                 get
                 {
-                    return Screen.Width;
+                    return _screen.Width;
                 }
 
                 set
                 {
-                    Screen.Width = value;
+                    _screen.Width = value;
                 }
             }
 
@@ -56,12 +50,12 @@ namespace StrawberryGameEngine
             {
                 get
                 {
-                    return Screen.Text;
+                    return _screen.Text;
                 }
 
                 set
                 {
-                    Screen.Text = value;
+                    _screen.Text = value;
                 }
             }
 
@@ -72,20 +66,20 @@ namespace StrawberryGameEngine
 
             public void Init(WindowCreationInfo info)
             {
-                this.ResizeWindow(info.size);
-                this.WindowName = info.WindowName;
-                this._fullScreen = info.FullScreen;
+                ResizeWindow(info.Size);
+                WindowName = info.WindowName;
+                _fullScreen = info.FullScreen;
             }
 
             // Изменение размеров экрана
-            public void ResizeWindow(int width, int Height)
+            public void ResizeWindow(int width, int height)
             {
-                if (width==0 || Height==0)
+                if (width==0 || height==0)
                 {
                     throw new ArgumentNullException();
                 }
-                this.Width = width;
-                this.Height = Height;
+                Width = width;
+                Height = height;
             }
 
             public void ResizeWindow(Size newSize)
@@ -94,35 +88,35 @@ namespace StrawberryGameEngine
                 {
                     throw new ArgumentException();
                 }
-                this.Width = newSize.Width;
-                this.Height = newSize.Height;
+                Width = newSize.Width;
+                Height = newSize.Height;
             }
 
             // Запуск игрового цикла
             public void Run()
             {
-                Screen.Show();
+                _screen.Show();
             }
 
             // Выключение
             public void ShutDown()
             {
-                Screen.Close();
+                _screen.Close();
             }
 
             // Переключение в полноэкранный режим и обратно
             public void ToggleFullscreen()                   // --- Beta
             {
-                if (ISFullScreen)
+                if (IsFullScreen)
                 {
-                    Screen.FormBorderStyle = FormBorderStyle.FixedSingle;
-                    Screen.WindowState = FormWindowState.Normal;
+                    _screen.FormBorderStyle = FormBorderStyle.FixedSingle;
+                    _screen.WindowState = FormWindowState.Normal;
                     _fullScreen = false;
                 }
                 else
                 {
-                    Screen.FormBorderStyle = FormBorderStyle.None;
-                    Screen.WindowState = FormWindowState.Maximized;
+                    _screen.FormBorderStyle = FormBorderStyle.None;
+                    _screen.WindowState = FormWindowState.Maximized;
                     _fullScreen = true;
                 }
             }
@@ -132,7 +126,7 @@ namespace StrawberryGameEngine
         public class WindowCreationInfo
         {
             // Ширина, высота
-            public Size size;
+            public Size Size;
 
             // Название окна
             public string WindowName;
@@ -141,15 +135,15 @@ namespace StrawberryGameEngine
             public int BitForPx;
 
             // Возможность изменения размеров, использование OpenGL, режим полного экрана, использование аппаратного ускорения
-            public bool CanResize, UseOpenGL, FullScreen, HardwareSurface;
+            public bool CanResize, UseOpenGl, FullScreen, HardwareSurface;
 
-            public WindowCreationInfo(Size size, string windowName, int bitForPX, bool CanResize, bool FullScreen)
+            public WindowCreationInfo(Size size, string windowName, int bitForPx, bool canResize, bool fullScreen)
             {
-                this.size = size;
-                this.WindowName = windowName;
-                this.BitForPx = bitForPX;
-                this.CanResize = CanResize;
-                this.FullScreen = FullScreen;
+                Size = size;
+                WindowName = windowName;
+                BitForPx = bitForPx;
+                CanResize = canResize;
+                FullScreen = fullScreen;
             }
 
         }

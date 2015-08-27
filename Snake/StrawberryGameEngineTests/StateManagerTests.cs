@@ -2,26 +2,26 @@
 
 namespace StrawberryGameEngine.Core.Tests
 {
-    [TestClass()]
+    [TestClass]
     public class StateManagerTests
     {
-        [TestMethod()]
+        [TestMethod]
         public void PushTest()
         {
             Func func = delegate
             {
-                int x = 0;
-                int a = x;
-                int b = a;
-                int c = b;
-                int d = c;
+                var x = 0;
+                var a = x;
+                var b = a;
+                var c = b;
+                var d = c;
                 x = c;
                 if (x!=0)
                 {
                     Assert.Fail();
                 }
             };
-            StateManager manager = new StateManager();
+            var manager = new StateManager();
             manager.Push(new Function(func));
             if (manager.Count!=1)
             {
@@ -29,19 +29,19 @@ namespace StrawberryGameEngine.Core.Tests
             }
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void PopTest()
         {
             Func func = delegate
             {
-                int x = 0;
-                int a = x;
-                int b = a;
-                int c = b;
-                int d = c;
+                var x = 0;
+                var a = x;
+                var b = a;
+                var c = b;
+                var d = c;
                 x = c;
             };
-            StateManager manager = new StateManager();
+            var manager = new StateManager();
             manager.Push(new Function(func));
             manager.Pop();
             if (!manager.IsEmpty)
@@ -50,19 +50,19 @@ namespace StrawberryGameEngine.Core.Tests
             } 
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void PopAllTest()
         {
             Func func = delegate
             {
-                int x = 0;
-                int a = x;
-                int b = a;
-                int c = b;
-                int d = c;
+                var x = 0;
+                var a = x;
+                var b = a;
+                var c = b;
+                var d = c;
                 x = c;
             };
-            StateManager manager = new StateManager();
+            var manager = new StateManager();
             manager.Push(new Function(func));
             manager.PopAll();
             if (!manager.IsEmpty)
@@ -71,23 +71,23 @@ namespace StrawberryGameEngine.Core.Tests
             }
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void ProcessTest()
         {
             Func func = delegate
             {
-                int x = 0;
-                int a = x;
-                int b = a;
-                int c = b;
-                int d = c;
+                var x = 0;
+                var a = x;
+                var b = a;
+                var c = b;
+                var d = c;
                 x = c;
                 if (x != 0)
                 {
                     Assert.Fail();
                 }
             };
-            StateManager manager = new StateManager();
+            var manager = new StateManager();
             manager.Push(new Function(func));
             manager.Process();
         }

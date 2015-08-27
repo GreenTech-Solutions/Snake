@@ -2,7 +2,7 @@
 {
     namespace Core
     {
-        public interface App
+        public interface IApp
         {
             /// <summary>
             /// Ширина  окна
@@ -22,7 +22,7 @@
             /// <summary>
             /// Сообщает, открыто ли главное окно на весь экран
             /// </summary>
-            bool ISFullScreen { get; }
+            bool IsFullScreen { get; }
 
             /// <summary>
             /// Инициализация всех подсистем движка
@@ -43,8 +43,8 @@
             /// Изменение размеров окна
             /// </summary>
             /// <param name="width">Новая ширина окна</param>
-            /// <param name="Height">Новая высота окна</param>
-            void ResizeWindow(int width, int Height);
+            /// <param name="height">Новая высота окна</param>
+            void ResizeWindow(int width, int height);
 
             /// <summary>
             /// Переключает окно между полноэкранным и нормальным режимами

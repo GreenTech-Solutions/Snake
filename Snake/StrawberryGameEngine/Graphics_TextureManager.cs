@@ -14,12 +14,12 @@ namespace StrawberryGameEngine
         {
             #region General
             // Переменные для назначения уникального ID в словарях
-            static int TextureID = 0;
-            static int TextureSectionID = 0;
+            static int _textureId;
+            static int _textureSectionId;
 
-            internal Form window = new Form();
+            internal Form Window = new Form();
 
-            internal Graphics g;
+            internal Graphics G;
 
             /// <summary>
             /// Создаёт новый менеджер текстур для указанной формы Windows
@@ -33,13 +33,13 @@ namespace StrawberryGameEngine
                     {
                         throw new ArgumentNullException();
                     }
-                    this.window = window;
-                    g = this.window.CreateGraphics();
-                    int t = this.LoadTextureFromMemory(Resources.Strawberry);
-                    this.ChangeTextureInfo(t, new TextureInfo(0, 0));
+                    Window = window;
+                    G = Window.CreateGraphics();
+                    var t = LoadTextureFromMemory(Resources.Strawberry);
+                    ChangeTextureInfo(t, new TextureInfo(0, 0));
                     Textures[t].Height = window.Height;
                     Textures[t].Width = window.Width;
-                    this.DrawTexture(t);
+                    DrawTexture(t);
                 }
                 catch
                 {
@@ -64,46 +64,37 @@ namespace StrawberryGameEngine
             #endregion
 
             #region Service
-            bool TextureExist(int ID)
+            bool TextureExist(int id)
             {
-                if (this.Textures.ContainsKey(ID))
+                if (Textures.ContainsKey(id))
                 {
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+                return false;
             }
 
-            bool TextureSectionExist(int ID)
+            bool TextureSectionExist(int id)
             {
-                if (this.TextureSections.ContainsKey(ID))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return TextureSections.ContainsKey(id);
             }
+
             #endregion
 
             #region Load & Create
             /// <summary>
             /// Загрузка изображения из файла
             /// </summary>
-            /// <param name="FilePath">Путь к файлу</param>
-            public int LoadTextureFromFile(string FilePath)
+            /// <param name="filePath">Путь к файлу</param>
+            public int LoadTextureFromFile(string filePath)
             {
                 try
                 {
-                    if (FilePath==null)
+                    if (filePath==null)
                     {
                         throw new ArgumentNullException();
                     }
-                    Textures.Add(++TextureID, new Texture(FilePath));
-                    return TextureID;
+                    Textures.Add(++_textureId, new Texture(filePath));
+                    return _textureId;
                 }
                 catch
                 {
@@ -124,8 +115,8 @@ namespace StrawberryGameEngine
                     {
                         throw new ArgumentNullException();
                     }
-                    Textures.Add(++TextureID, new Texture(img));
-                    return TextureID;
+                    Textures.Add(++_textureId, new Texture(img));
+                    return _textureId;
                 }
                 catch
                 {
@@ -137,22 +128,22 @@ namespace StrawberryGameEngine
             /// <summary>
             /// Создаёт фрагмент текстуры из указанной по заданным параметрам
             /// </summary>
-            /// <param name="ID">ID текстуры</param>
+            /// <param name="id">ID текстуры</param>
             /// <param name="section">Тип фрагмента</param>
-            public int CreateTextureSection(int ID, Section section)
+            public int CreateTextureSection(int id, Section section)
             {
                 try
                 {
-                    if (!Textures.ContainsKey(ID))
+                    if (!Textures.ContainsKey(id))
                     {
                         throw new KeyNotFoundException();
                     }
-                    if (ID==0 || section == null)
+                    if (id==0 || section == null)
                     {
                         throw new ArgumentNullException();
                     }
-                    TextureSections.Add(++TextureSectionID, new TextureSection(Textures[ID], section));
-                    return TextureSectionID;
+                    TextureSections.Add(++_textureSectionId, new TextureSection(Textures[id], section));
+                    return _textureSectionId;
                 }
                 catch
                 {
@@ -166,17 +157,17 @@ namespace StrawberryGameEngine
             /// <summary>
             /// Изменение информации о текстуре
             /// </summary>
-            /// <param name="ID">ID текстуры</param>
+            /// <param name="id">ID текстуры</param>
             /// <param name="info">Новая информация</param>
-            public void ChangeTextureInfo(int ID, TextureInfo info)
+            public void ChangeTextureInfo(int id, TextureInfo info)
             {
                 try
                 {
-                    if (!Textures.ContainsKey(ID))
+                    if (!Textures.ContainsKey(id))
                     {
                         throw new KeyNotFoundException();
                     }
-                    Textures[ID].Info = info;
+                    Textures[id].Info = info;
                 }
                 catch
                 {
@@ -199,11 +190,11 @@ namespace StrawberryGameEngine
                     {
                         throw new ArgumentNullException();
                     }
-                    float temp1 = scale * image.Width;
-                    float temp2 = scale * image.Height;
-                    int newWidth = (int)temp1;
-                    int newHeight = (int)temp2;
-                    Size newSize = new Size(newWidth, newHeight);
+                    var temp1 = scale * image.Width;
+                    var temp2 = scale * image.Height;
+                    var newWidth = (int)temp1;
+                    var newHeight = (int)temp2;
+                    var newSize = new Size(newWidth, newHeight);
                     return new Bitmap(image, newSize);
                 }
                 catch
@@ -216,13 +207,13 @@ namespace StrawberryGameEngine
             /// <summary>
             /// Изменяет размер указанной текстуры
             /// </summary>
-            /// <param name="ID">ID текстуры</param>
+            /// <param name="id">ID текстуры</param>
             /// <param name="newSize">Новый размер</param>
-            public void SetTextureSize(int ID, Size newSize)
+            public void SetTextureSize(int id, Size newSize)
             {
                 try
                 {
-                    if (!TextureExist(ID))
+                    if (!TextureExist(id))
                     {
                         throw new KeyNotFoundException();
                     }
@@ -230,7 +221,7 @@ namespace StrawberryGameEngine
                     {
                         throw new ArgumentNullException();
                     }
-                    Textures[ID].ChangeSize(newSize);
+                    Textures[id].ChangeSize(newSize);
                 }
                 catch
                 {
@@ -244,24 +235,24 @@ namespace StrawberryGameEngine
             /// <summary>
             /// Рисует текстуру
             /// </summary>
-            /// <param name="ID">ID текстуры</param>
+            /// <param name="id">ID текстуры</param>
             /// <param name="window">Ссылка на форму</param>
-            public void DrawTexture(int ID)
+            public void DrawTexture(int id)
             {
                 try
                 {
-                    if (!TextureExist(ID))
+                    if (!TextureExist(id))
                     {
                         throw new KeyNotFoundException();
                     }
-                    Bitmap img = Textures[ID].image;
-                    TextureInfo inf = Textures[ID].Info;
+                    var img = Textures[id].Image;
+                    var inf = Textures[id].Info;
                     if (inf != null)
                     {
                         img = ScaleImage(img, inf.Scale / 100);
                         img.RotateFlip(inf.Rotation);
-                        g.DrawImageUnscaled(img, new Point((int)inf.x, (int)inf.y));
-                        TexturesOnScreen.Add(ID);
+                        G.DrawImageUnscaled(img, new Point(inf.X, inf.Y));
+                        TexturesOnScreen.Add(id);
                     }
                     else
                     {
@@ -278,23 +269,23 @@ namespace StrawberryGameEngine
             /// <summary>
             /// Рисует фрагмент текстуры
             /// </summary>
-            /// <param name="ID">ID фрагмента</param>
-            public void DrawTextureSection(int ID)
+            /// <param name="id">ID фрагмента</param>
+            public void DrawTextureSection(int id)
             {
                 try
                 {
-                    if (!TextureSectionExist(ID))
+                    if (!TextureSectionExist(id))
                     {
                         throw new KeyNotFoundException();
                     }
-                    Bitmap img = TextureSections[ID].fragment.image;
-                    TextureInfo inf = TextureSections[ID].Info;
+                    var img = TextureSections[id].Fragment.Image;
+                    var inf = TextureSections[id].Info;
                     if (inf != null)
                     {
                         img = ScaleImage(img, inf.Scale / 100);
                         img.RotateFlip(inf.Rotation);
-                        g.DrawImageUnscaled(img, new Point((int)inf.x, (int)inf.y));
-                        TexturesOnScreen.Add(-ID);
+                        G.DrawImageUnscaled(img, new Point(inf.X, inf.Y));
+                        TexturesOnScreen.Add(-id);
                     }
                     else
                     {
@@ -317,12 +308,12 @@ namespace StrawberryGameEngine
                 {
                     if (TexturesOnScreen.Count == 0)
                     {
-                        this.g.Clear(Color.Black);
+                        G.Clear(Color.Black);
                     }
-                    List<int> Temp = new List<int>();
-                    Temp.AddRange(TexturesOnScreen);
+                    var temp = new List<int>();
+                    temp.AddRange(TexturesOnScreen);
                     TexturesOnScreen.Clear();
-                    foreach (int i in Temp)
+                    foreach (var i in temp)
                     {
                         if (i > 0)
                         {
@@ -346,19 +337,19 @@ namespace StrawberryGameEngine
             /// <summary>
             /// Удаляет текстуру(Вместе со всеми её фрагментами)
             /// </summary>
-            /// <param name="ID">ID текстуры</param>
-            public void RemoveTexture(int ID)
+            /// <param name="id">ID текстуры</param>
+            public void RemoveTexture(int id)
             {
                 try
                 {
-                    if (!TextureExist(ID))
+                    if (!TextureExist(id))
                     {
                         throw new KeyNotFoundException();
                     }
-                    List<int> indexes = new List<int>();
+                    var indexes = new List<int>();
                     foreach (var a in TextureSections)
                     {
-                        if (a.Value.ID == ID)
+                        if (a.Value.Id == id)
                         {
                             indexes.Add(a.Key);
                         }
@@ -370,8 +361,8 @@ namespace StrawberryGameEngine
                             TextureSections.Remove(a);
                         }
                     }
-                    Textures.Remove(ID);
-                    TexturesOnScreen.Remove(ID);
+                    Textures.Remove(id);
+                    TexturesOnScreen.Remove(id);
                 }
                 catch
                 {
@@ -383,13 +374,13 @@ namespace StrawberryGameEngine
             /// <summary>
             /// Удаляет фрагмент текстуры
             /// </summary>
-            /// <param name="ID">ID фрагмента</param>
-            public void RemoveTextureSection(int ID)
+            /// <param name="id">ID фрагмента</param>
+            public void RemoveTextureSection(int id)
             {
                 try
                 {
-                    TextureSections.Remove(ID);
-                    TexturesOnScreen.Remove(-ID);
+                    TextureSections.Remove(id);
+                    TexturesOnScreen.Remove(-id);
                 }
                 catch
                 {
@@ -408,7 +399,7 @@ namespace StrawberryGameEngine
                     Textures.Clear();
                     TextureSections.Clear();
                     TexturesOnScreen.Clear();
-                    TextureID = TextureSectionID = 0;
+                    _textureId = _textureSectionId = 0;
                 }
                 catch
                 {
@@ -426,7 +417,7 @@ namespace StrawberryGameEngine
                 {
                     TextureSections.Clear();
                     TexturesOnScreen.RemoveAll(x => x < 0);
-                    TextureSectionID = 0;
+                    _textureSectionId = 0;
                 }
                 catch
                 {
@@ -440,21 +431,21 @@ namespace StrawberryGameEngine
             /// <summary>
             /// Возвращает ширину текстуры
             /// </summary>
-            /// <param name="ID">ID текстуры</param>
+            /// <param name="id">ID текстуры</param>
             /// <returns></returns>
-            public float GetTextureWidth(int ID)
+            public float GetTextureWidth(int id)
             {
-                return (Textures[ID] as Texture).Width;
+                return Textures[id].Width;
             }
 
             /// <summary>
             /// Возвращает высоту текстуры
             /// </summary>
-            /// <param name="ID">ID текстуры</param>
+            /// <param name="id">ID текстуры</param>
             /// <returns></returns>
-            public float GetTextureHeight(int ID)
+            public float GetTextureHeight(int id)
             {
-                return (Textures[ID] as Texture).Height;
+                return Textures[id].Height;
             }
             #endregion
         }
@@ -476,11 +467,11 @@ namespace StrawberryGameEngine
             {
                 get
                 {
-                    return this.image.Width;
+                    return Image.Width;
                 }
                 set
                 {
-                    image = new Bitmap(image, new Size((int)value,this.image.Height));
+                    Image = new Bitmap(Image, new Size((int)value,Image.Height));
                 }
             }
 
@@ -491,30 +482,30 @@ namespace StrawberryGameEngine
             {
                 get
                 {
-                    return this.image.Height;
+                    return Image.Height;
                 }
                 set
                 {
-                    this.image = new Bitmap(image, new Size(this.image.Width, (int)value));
+                    Image = new Bitmap(Image, new Size(Image.Width, (int)value));
                 }
             }
 
             /// <summary>
             /// Текстура
             /// </summary>
-            public Bitmap image;
+            public Bitmap Image;
 
-            public Texture(string FileName)
+            public Texture(string fileName)
             {
                 try
                 {
-                    if (FileName == null)
+                    if (fileName == null)
                     {
                         throw new ArgumentNullException();
                     }
-                    this.image = new Bitmap(FileName);
-                    this.Width = image.Width;
-                    this.Height = image.Height;
+                    Image = new Bitmap(fileName);
+                    Width = Image.Width;
+                    Height = Image.Height;
                 }
                 catch
                 {
@@ -523,7 +514,7 @@ namespace StrawberryGameEngine
                 }
             }
 
-            public Texture(string FileName, TextureInfo info) : this(FileName)
+            public Texture(string fileName, TextureInfo info) : this(fileName)
             {
                 try
                 {
@@ -531,7 +522,7 @@ namespace StrawberryGameEngine
                     {
                         throw new ArgumentNullException();
                     }
-                    this.Info = info;
+                    Info = info;
                 }
                 catch
                 {
@@ -548,9 +539,9 @@ namespace StrawberryGameEngine
                     {
                         throw new ArgumentNullException();
                     }
-                    this.image = img;
-                    this.Width = img.Width;
-                    this.Height = img.Height;
+                    Image = img;
+                    Width = img.Width;
+                    Height = img.Height;
                 }
                 catch
                 {
@@ -567,7 +558,7 @@ namespace StrawberryGameEngine
                     {
                         throw new ArgumentNullException();
                     }
-                    this.Info = info;
+                    Info = info;
                 }
                 catch
                 {
@@ -580,8 +571,8 @@ namespace StrawberryGameEngine
             {
                 try
                 {
-                    this.Width = newSize.Width;
-                    this.Height = newSize.Height;
+                    Width = newSize.Width;
+                    Height = newSize.Height;
                 }
                 catch
                 {
@@ -599,7 +590,7 @@ namespace StrawberryGameEngine
             /// <summary>
             /// ID текстуры
             /// </summary>
-            public int ID;
+            public int Id;
 
             /// <summary>
             /// Информация о фрагменте
@@ -609,12 +600,12 @@ namespace StrawberryGameEngine
             /// <summary>
             /// Фрагмент текстуры
             /// </summary>
-            public Texture fragment;
+            public Texture Fragment;
 
             /// <summary>
             /// Используемая секция
             /// </summary>
-            public Section section;
+            public Section Section;
 
             /// <summary>
             /// Ширина секции
@@ -639,11 +630,11 @@ namespace StrawberryGameEngine
                     {
                         throw new ArgumentNullException();
                     }
-                    Rectangle cropRect = new Rectangle((int)section.uMin, (int)section.vMin, (int)(section.uMax - section.uMin), (int)(section.vMax - section.vMin));
-                    Bitmap src = texture.image;
-                    Bitmap target = new Bitmap(cropRect.Width, cropRect.Height);
+                    var cropRect = new Rectangle((int)section.UMin, (int)section.VMin, (int)(section.UMax - section.UMin), (int)(section.VMax - section.VMin));
+                    var src = texture.Image;
+                    var target = new Bitmap(cropRect.Width, cropRect.Height);
 
-                    using (Graphics g = Graphics.FromImage(target))
+                    using (var g = Graphics.FromImage(target))
                     {
                         g.DrawImage(src, new Rectangle(0, 0, target.Width, target.Height),
                                          cropRect,
@@ -651,8 +642,8 @@ namespace StrawberryGameEngine
                     }
 
 
-                    this.fragment = new Texture(target);
-                    this.section = section;
+                    Fragment = new Texture(target);
+                    Section = section;
                 }
                 catch
                 {
@@ -675,7 +666,7 @@ namespace StrawberryGameEngine
                     {
                         throw new ArgumentNullException();
                     }
-                    this.fragment.Info = info;
+                    Fragment.Info = info;
                 }
                 catch
                 {
@@ -693,22 +684,22 @@ namespace StrawberryGameEngine
             /// <summary>
             /// Координата x(Верхняя левая точка)
             /// </summary>
-            public float uMin;
+            public float UMin;
 
             /// <summary>
             /// Координата x(Нижняя правая точка)
             /// </summary>
-            public float uMax;
+            public float UMax;
 
             /// <summary>
             /// Координата y(Верхняя левая точка)
             /// </summary>
-            public float vMin;
+            public float VMin;
 
             /// <summary>
             /// Координата y(Нижняя правая точка)
             /// </summary>
-            public float vMax;
+            public float VMax;
 
             /// <summary>
             /// Создаёт экземпляр с данными о размере фрагмента
@@ -725,10 +716,10 @@ namespace StrawberryGameEngine
                     {
                         throw new ArgumentException("Минимальная координата {0} больше максимальной.", newUmin>newUmax?"x":"y");
                     } 
-                    this.uMin = newUmin;
-                    this.uMax = newUmax;
-                    this.vMin = newVmin;
-                    this.vMax = newVmax;
+                    UMin = newUmin;
+                    UMax = newUmax;
+                    VMin = newVmin;
+                    VMax = newVmax;
                 }
                 catch
                 {
@@ -746,12 +737,12 @@ namespace StrawberryGameEngine
             /// <summary>
             /// Расположение по Ox
             /// </summary>
-            public int x = 0;
+            public int X;
 
             /// <summary>
             /// Расположение по Oy
             /// </summary>
-            public int y = 0;
+            public int Y;
 
             /// <summary>
             /// Масштабирование
@@ -776,16 +767,16 @@ namespace StrawberryGameEngine
             /// </summary>
             /// <param name="x">Расположение по Ox</param>
             /// <param name="y">Расположение по Oy</param>
-            /// <param name="Scale">Масштабирование</param>
+            /// <param name="scale">Масштабирование</param>
             /// <param name="rotation">Угол вращения</param>
-            public TextureInfo(int x = 0, int y=0, float Scale = 100, RotateFlipType rotation = 0) : this()
+            public TextureInfo(int x = 0, int y=0, float scale = 100, RotateFlipType rotation = 0) : this()
             {
                 try
                 {
-                    this.x = x;
-                    this.y = y;
-                    this.Scale = Scale;
-                    this.Rotation = rotation;
+                    X = x;
+                    Y = y;
+                    Scale = scale;
+                    Rotation = rotation;
                 }
                 catch
                 {

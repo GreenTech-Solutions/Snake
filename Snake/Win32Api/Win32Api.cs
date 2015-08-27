@@ -2,9 +2,8 @@
 
 using System;
 using System.Drawing;
-using System.Text;
 using System.Runtime.InteropServices;
-
+using System.Text;
 
 namespace Win32API
 {
@@ -16,7 +15,7 @@ namespace Win32API
         public int y;
         public override string ToString()
         {
-            String s = String.Format("({0},{1})", x, y);
+            var s = String.Format("({0},{1})", x, y);
             return s;
         }
     }
@@ -29,13 +28,13 @@ namespace Win32API
         public int cy;
         public override string ToString()
         {
-            String s = String.Format("({0},{1})", cx, cy);
+            var s = String.Format("({0},{1})", cx, cy);
             return s;
         }
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct RECT
+    public struct Rect
     {
         public int left;
         public int top;
@@ -47,7 +46,7 @@ namespace Win32API
         public SIZE Size() { return new SIZE(Width(), Height()); }
         public override string ToString()
         {
-            String s = String.Format("{0}x{1}", TopLeft(), Size());
+            var s = String.Format("{0}x{1}", TopLeft(), Size());
             return s;
         }
     }
@@ -58,33 +57,33 @@ namespace Win32API
     {
 
 
-        const string dllPath = "user32.dll";
+        const string DllPath = "user32.dll";
         // Опpеделяет, сделано ли окно видимым функцией ShowWindow.
-        [DllImport(dllPath)]
+        [DllImport(DllPath)]
         public static extern bool IsWindowVisible(int hwnd);
 
         // Копиpует в Str заголовок окна или текст оpгана упpавления.
-        [DllImport(dllPath)]
+        [DllImport(DllPath)]
         public static extern int GetWindowText(int hwnd,
         StringBuilder buf, int nMaxCount);
 
         // Считывает имя класса окна.
-        [DllImport(dllPath)]
+        [DllImport(DllPath)]
         public static extern int GetClassName(int hwnd,
         [MarshalAs(UnmanagedType.LPStr)] StringBuilder buf,
         int nMaxCount);
 
         // Считывает в ARect pазмеpности огpаничивающего пpямоугольника окна (в кооpдинатах экpана).
-        [DllImport(dllPath)]
-        public static extern int GetWindowRect(int hwnd, ref RECT rc);
-        [DllImport(dllPath)]
+        [DllImport(DllPath)]
+        public static extern int GetWindowRect(int hwnd, ref Rect rc);
+        [DllImport(DllPath)]
         public static extern int GetWindowRect(int hwnd, ref Rectangle rc);
 
         [DllImport("user32.dll", EntryPoint = "FindWindow")]
-        public static extern IntPtr FindWindow(string _ClassName, string _WindowName);
+        public static extern IntPtr FindWindow(string className, string windowName);
 
         [DllImport("user32.dll", EntryPoint = "FindWindowEx")]
-        public static extern IntPtr FindWindowEx(IntPtr hwndPrnt, IntPtr hwndChildAfter, string _ClassName, string _WindowName);
+        public static extern IntPtr FindWindowEx(IntPtr hwndPrnt, IntPtr hwndChildAfter, string className, string windowName);
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         public static extern int PostMessage(IntPtr hwnd, int wMsg, IntPtr wParam, IntPtr lParam);

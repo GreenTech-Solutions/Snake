@@ -15,7 +15,7 @@ namespace Snake
 
         private void SandForm_Load(object sender, EventArgs e)
         {
-            WindowCreationInfo inf = new WindowCreationInfo(new Size(1366, 768), "Hello From c#", 32, true, false);
+            var inf = new WindowCreationInfo(new Size(1366, 768), "Hello From c#", 32, true, false);
             //Main_WF main = new Main_WF();
             //main.Init(inf);
             //main.Run();
@@ -32,22 +32,21 @@ namespace Snake
             
         }
 
-        TextureManager m;
+        TextureManager _m;
 
         private void DrawLine()
         {
-            m = new TextureManager(this);
-            int t = m.LoadTextureFromMemory(Resources.SnakeMain);
-            m.ChangeTextureInfo(t, new TextureInfo(0, 0, 100));
-            m.SetTextureSize(t, SystemInformation.PrimaryMonitorSize);
+            _m = new TextureManager(this);
+            var t = _m.LoadTextureFromMemory(Resources.SnakeMain);
+            _m.ChangeTextureInfo(t, new TextureInfo(0, 0, 100));
+            _m.SetTextureSize(t, SystemInformation.PrimaryMonitorSize);
             //m.DrawTexture(t);
-            Size textureSize = new Size((int)m.GetTextureWidth(t), (int)m.GetTextureHeight(t));
-            int f = m.CreateTextureSection(t, new Section(textureSize.Width/2,0,textureSize.Width,textureSize.Height/2));
-            m.DrawTextureSection(f);
-            m.RemoveAllTextureSections();
-            m.DrawTexture(t);
-            m.DrawTextureSection(f);
-            m.ReloadTextures();
+            var textureSize = new Size((int)_m.GetTextureWidth(t), (int)_m.GetTextureHeight(t));
+            var f = _m.CreateTextureSection(t, new Section(textureSize.Width/2,0,textureSize.Width,textureSize.Height/2));
+            _m.DrawTextureSection(f);
+            _m.RemoveAllTextureSections();
+            _m.DrawTexture(t);
+            _m.ReloadTextures();
         }
 
         private void button1_Click(object sender, EventArgs e)
