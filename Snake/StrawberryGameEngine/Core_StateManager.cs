@@ -1,37 +1,49 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace StrawberryGameEngine
 {
     namespace Core
     {
-        // Макет используемых приложением выполняемых функций
+        /// <summary>
+        /// Макет используемых приложением выполняемых функций
+        /// </summary>
         public delegate void Func();
 
-        // Менеджер состояний                        ---Исправить класс используя State как элемент цепи
+        /// <summary>
+        /// Менеджер состояний
+        /// </summary>                      
         public class StateManager
         {
-            // Вершина стека состояний
+            /// <summary>
+            /// Вершина стека состояний
+            /// </summary>
             private State CurrentState;
-            // Размер
+
+            /// <summary>
+            /// Размер стека
+            /// </summary>
             private int size;
 
+            /// <summary>
+            /// Создаёт новый менеджер состояний
+            /// </summary>
             public StateManager()
             {
                 Clear();
             }
 
-            // Обнуляет поля
+            /// <summary>
+            /// Обнуляет поля
+            /// </summary>
             private void Clear()
             {
                 this.CurrentState = null;
                 this.size = 0;
             }
 
-            // Проверка на пустоту
+            /// <summary>
+            /// Проверяет пустой ли список
+            /// </summary>
             public bool IsEmpty
             {
                 get
