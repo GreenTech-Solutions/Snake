@@ -1,82 +1,163 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace StrawberryGameEngine
 {
     namespace Core
     {
-        // Набор процессов
+        /// <summary>
+        /// Менеджер процессов
+        /// </summary>
         public class ProcessManager
         {
-            // Первый и последний процессы в списке
+            /// <summary>
+            /// Первый процесс в списке
+            /// </summary>
             public Process First;
+
+            /// <summary>
+            /// Последний процесс в списке
+            /// </summary>
             public Process Last;
 
+            /// <summary>
+            /// Создаёт новый менеджер процессов
+            /// </summary>
             public ProcessManager()
             {
-                Clear();
+                try
+                {
+                    Clear();
+                }
+                catch 
+                {
+
+                    throw;
+                }
             }
 
-            // Обнуляет поля
+            /// <summary>
+            /// Очищает список процессов
+            /// </summary>
             private void Clear()
             {
-                First = null;
-                Last = null;
+                try
+                {
+                    First = null;
+                    Last = null;
+                }
+                catch 
+                {
+
+                    throw;
+                }
             }
 
-            // Проверка на пустоту + Выбрасывает ошибку, если Список "частично пуст"
+            /// <summary>
+            /// Проверяет пустой ли список
+            /// </summary>
             public bool IsEmpty
             {
                 get
                 {
-                    if (this.First == null)
+                    try
                     {
-                        if (!(this.Last == null))
+                        if (this.First == null)
                         {
-                            throw new Exception("Непредвиденная ошибка в работе менеджера процессов.");
+                            if (!(this.Last == null))
+                            {
+                                throw new Exception("Непредвиденная ошибка в работе менеджера процессов.");
+                            }
+                            return true;
                         }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                    catch 
+                    {
+
+                        throw;
+                    }
+                }
+            }
+
+            /// <summary>
+            /// Проверяет, существует ли процесс с указанным ID в списке
+            /// </summary>
+            /// <param name="ID">Искомый ID процесса</param>
+            /// <returns>Существует указанный ID или нет</returns>
+            public bool IDExist(int ID)
+            {
+                try
+                {
+                    Process Current = this.First;
+                    while (Current != null)
+                    {
+                        if (Current.ProcessID == ID)
+                        {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+                catch 
+                {
+
+                    throw;
+                }
+            }
+
+            /// <summary>
+            /// Добавление процесса в конец списка
+            /// </summary>
+            /// <param name="CallerFunction">Вызываемая вынкция</param>
+            /// <returns></returns>
+            public bool Push(Function CallerFunction)
+            {
+                try
+                {
+                    if (CallerFunction==null)
+                    {
+                        throw new ArgumentNullException();
+                    }
+                    if (this.IsEmpty)
+                    {
+                        First = new Process(CallerFunction, 1);
+                        First = new Process(First, null, Last);
                         return true;
                     }
                     else
                     {
-                        return false;
-                    }
-                }
-            }
-
-            // Добавление процесса в конец списка
-            public bool Push(Function CallerFunction)
-            {
-                if (this.IsEmpty)
-                {
-                    First = new Process(CallerFunction, 1);
-                    First = new Process(First, null, Last);
-                    return true;
-                }
-                else
-                {
-                    if (Last == null)
-                    {
-                        Last = new Process(CallerFunction, 2);
-                        Last = new Process(Last, First);
+                        if (Last == null)
+                        {
+                            Last = new Process(CallerFunction, 2);
+                            Last = new Process(Last, First);
+                            return true;
+                        }
+                        Last.Prev = Last;
+                        Last.function = CallerFunction;
+                        Last.ProcessID++;
                         return true;
                     }
-                    Last.Prev = Last;
-                    Last.function = CallerFunction;
-                    Last.ProcessID++;
-                    return true;
+                }
+                catch 
+                {
+
+                    throw;
                 }
             }
 
-            // Удаление процесса из конца списка + возвращает последний процесс в списке
+            /// <summary>
+            /// Удаляет указанный процесс в списке
+            /// </summary>
+            /// <param name="id">ID процесса</param>
+            /// <returns>возвращает указанный процесс в списке</returns>
             public Process Pop(int id)
             {
                 try
                 {
-                    if (this.IsEmpty)
+                    if (this.IsEmpty||!this.IDExist(id))
                     {
                         return null;
                     }
@@ -126,7 +207,10 @@ namespace StrawberryGameEngine
                 }
             }
 
-            // Удаление всех процессов + возвращает все процессы в списке в виде массива
+            /// <summary>
+            /// Удаление всех процессов
+            /// </summary>
+            /// <returns>все процессы в списке в виде массива</returns>
             public Process[] PopAll()
             {
                 try
@@ -160,41 +244,74 @@ namespace StrawberryGameEngine
                 }
             }
 
-            // Запускает все функции в списке по порядку, начиная с первой
-            public void Process()
+            /// <summary>
+            ///  Запускает все функции в списке по порядку, начиная с первой
+            /// </summary>
+            public void Run()
             {
-                Process CurrentProcess = First;
-                while (CurrentProcess != null)
+                try
                 {
-                    CurrentProcess.function.func();
-                    CurrentProcess = CurrentProcess.Next;
+                    Process CurrentProcess = First;
+                    while (CurrentProcess != null)
+                    {
+                        CurrentProcess.function.func();
+                        CurrentProcess = CurrentProcess.Next;
+                    }
+                }
+                catch 
+                {
+
+                    throw;
                 }
             }
         }
 
+        /// <summary>
+        /// Процесс и его описание
+        /// </summary>
         public class Process
         {
-            // Следующий и предыдущий процесс в списке
+            /// <summary>
+            /// Следующий процесс в списке
+            /// </summary>
             public Process Next = null;
+
+            /// <summary>
+            /// Предыдущий процесс в списке
+            /// </summary>
             public Process Prev = null;
 
-            // ID процесса
+            /// <summary>
+            /// ID Процесса
+            /// </summary>
             public int ProcessID;
 
-            // Указатель на функцию
+            /// <summary>
+            /// Указатель на функцию
+            /// </summary>
             public Function function;
 
+            /// <summary>
+            /// Создаёт новый процесс
+            /// </summary>
+            /// <param name="func">Исполняемая функция</param>
+            /// <param name="ID">ID функции</param>
             public Process(Function func, int ID)
             {
                 this.function = func;
                 this.ProcessID = ID;
             }
 
-            // Присваивает function и ProcessID как у current, а Prev и Next как у prev и next соответственно
-            public Process(Process current, Process prev = null, Process next = null)
+            /// <summary>
+            /// Присваивает function и ProcessID как у current, а Prev и Next как у prev и next соответственно
+            /// </summary>
+            /// <param name="old">Процесс, на основе которого необходимо создать новый процесс</param>
+            /// <param name="prev">Предыдущий процесс в списке</param>
+            /// <param name="next">Следующий процесс в списке</param>
+            public Process(Process old, Process prev = null, Process next = null)
             {
-                this.function = current.function;
-                this.ProcessID = current.ProcessID;
+                this.function = old.function;
+                this.ProcessID = old.ProcessID;
                 this.Prev = prev;
                 this.Next = next;
             }
