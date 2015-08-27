@@ -415,8 +415,8 @@ namespace StrawberryGameEngine
             {
                 try
                 {
-                    TextureSections.Clear();
                     TexturesOnScreen.RemoveAll(x => x < 0);
+                    TextureSections.Clear();
                     _textureSectionId = 0;
                 }
                 catch

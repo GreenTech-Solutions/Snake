@@ -6,18 +6,24 @@ namespace StrawberryGameEngine
 {
     namespace Core
     {
+        /// <summary>
+        /// Ядро управления графического движка
+        /// </summary>
         public class MainWf : IApp
         {
-            // Главное окно
+            /// <summary>
+            /// Главное окно
+            /// </summary>
             Form _screen = new Form();
-            
-            // Отвечает за состояние окна
-            bool _fullScreen;
 
-            // Активирован ли полноэкранный режим
-            public bool IsFullScreen => _fullScreen;
+            /// <summary>
+            /// Активирован ли полноэкранный режим
+            /// </summary>
+            public bool IsFullScreen { get; private set; }
 
-            // Высота окна
+            /// <summary>
+            /// Высота окна
+            /// </summary>
             public int Height
             {
                 get
@@ -30,8 +36,10 @@ namespace StrawberryGameEngine
                     _screen.Height = value;
                 }
             }
-            
-            // Ширина окна
+
+            /// <summary>
+            /// Ширина окна
+            /// </summary>
             public int Width
             {
                 get
@@ -45,7 +53,9 @@ namespace StrawberryGameEngine
                 }
             }
 
-            // Заголовок окна
+            /// <summary>
+            /// Заголовок окна
+            /// </summary>
             public string WindowName
             {
                 get
@@ -59,29 +69,43 @@ namespace StrawberryGameEngine
                 }
             }
 
-            // Инициализация всех менеджеров
+            /// <summary>
+            /// Инициализация всех менеджеров
+            /// </summary>
             public void Init()
             {
             }
 
+            /// <summary>
+            /// Инициализация всех менеджеров
+            /// </summary>
+            /// <param name="info">Информация о создаваемом окне</param>
             public void Init(WindowCreationInfo info)
             {
                 ResizeWindow(info.Size);
                 WindowName = info.WindowName;
-                _fullScreen = info.FullScreen;
+                IsFullScreen = info.FullScreen;
             }
 
-            // Изменение размеров экрана
-            public void ResizeWindow(int width, int height)
+            /// <summary>
+            /// Изменение размеров экрана
+            /// </summary>
+            /// <param name="newWidth">Новая ширина окна</param>
+            /// <param name="newHeight">Новая высота окна</param>
+            public void ResizeWindow(int newWidth, int newHeight)
             {
-                if (width==0 || height==0)
+                if (newWidth==0 || newHeight==0)
                 {
                     throw new ArgumentNullException();
                 }
-                Width = width;
-                Height = height;
+                Width = newWidth;
+                Height = newHeight;
             }
 
+            /// <summary>
+            /// Изменение размеров экрана
+            /// </summary>
+            /// <param name="newSize">Новый размер экрана</param>
             public void ResizeWindow(Size newSize)
             {
                 if (newSize.IsEmpty)
@@ -92,51 +116,90 @@ namespace StrawberryGameEngine
                 Height = newSize.Height;
             }
 
-            // Запуск игрового цикла
+            /// <summary>
+            /// Запуск игрового цикла
+            /// </summary>
             public void Run()
             {
                 _screen.Show();
             }
 
-            // Выключение
+            /// <summary>
+            /// Выключение
+            /// </summary>
             public void ShutDown()
             {
                 _screen.Close();
             }
 
-            // Переключение в полноэкранный режим и обратно
-            public void ToggleFullscreen()                   // --- Beta
+            /// <summary>
+            /// Переключение в полноэкранный режим и обратно
+            /// </summary>
+            public void ToggleFullscreen()                   // !++ Beta 
             {
                 if (IsFullScreen)
                 {
                     _screen.FormBorderStyle = FormBorderStyle.FixedSingle;
                     _screen.WindowState = FormWindowState.Normal;
-                    _fullScreen = false;
+                    IsFullScreen = false;
                 }
                 else
                 {
                     _screen.FormBorderStyle = FormBorderStyle.None;
                     _screen.WindowState = FormWindowState.Maximized;
-                    _fullScreen = true;
+                    IsFullScreen = true;
                 }
             }
         }
 
-        // Информация о создании окна
+        /// <summary>
+        /// Информация о создании окна
+        /// </summary>
         public class WindowCreationInfo
         {
-            // Ширина, высота
+            /// <summary>
+            /// Размер окна
+            /// </summary>
             public Size Size;
 
-            // Название окна
+            /// <summary>
+            /// Заголовок окна
+            /// </summary>
             public string WindowName;
 
-            // Глубина цвета
-            public int BitForPx;
+            /// <summary>
+            /// Глубина цвета
+            /// </summary>
+            public int BitForPx;        // !++ Реализовать
 
-            // Возможность изменения размеров, использование OpenGL, режим полного экрана, использование аппаратного ускорения
-            public bool CanResize, UseOpenGl, FullScreen, HardwareSurface;
+            /// <summary>
+            /// Возможность изменения размеров
+            /// </summary>
+            public bool CanResize;      // !++ Реализовать
 
+            /// <summary>
+            /// Использование OpenGL
+            /// </summary>
+            public bool UseOpenGl;      // !++ Реализовать
+
+            /// <summary>
+            /// Режим полного экрана
+            /// </summary>
+            public bool FullScreen;
+
+            /// <summary>
+            /// Использование аппаратного ускорения
+            /// </summary>
+            public bool HardwareSurface;        // !++ Реализовать
+
+            /// <summary>
+            /// Создаёт новую информацию о создании окна
+            /// </summary>
+            /// <param name="size">Размер окна</param>
+            /// <param name="windowName">Заголовок окна</param>
+            /// <param name="bitForPx">Глубина цвета</param>
+            /// <param name="canResize">Возможность изменения размеров</param>
+            /// <param name="fullScreen">Полноэкранный режим</param>
             public WindowCreationInfo(Size size, string windowName, int bitForPx, bool canResize, bool fullScreen)
             {
                 Size = size;
