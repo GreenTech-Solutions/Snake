@@ -46,8 +46,11 @@
     <Compile Include="Core_Main_WF.cs" />
     <Compile Include="Core_ProcessManager.cs" />
     <Compile Include="Core_StateManager.cs" />
+    <Compile Include="Graphics_Animation.cs" />
     <Compile Include="Graphics_AnimationManager.cs" />
+    <Compile Include="Graphics_GraphicsManager.cs" />
     <Compile Include="Graphics_TextureManager.cs" />
+    <Compile Include="Input_Core.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
