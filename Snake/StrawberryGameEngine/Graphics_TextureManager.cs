@@ -78,6 +78,20 @@ namespace StrawberryGameEngine
                 return TextureSections.ContainsKey(id);
             }
 
+            /// <summary>
+            /// Количество всех текстур в мененджере
+            /// </summary>
+            public int Count => Textures.Count + TextureSections.Count;
+
+            /// <summary>
+            /// Количество всех целых текстур в менеджере
+            /// </summary>
+            public int TexturesCount => Textures.Count;
+
+            /// <summary>
+            /// Количество всех фрагментов текстур в менеджере
+            /// </summary>
+            public int TextureSectionsCount => TextureSections.Count;
             #endregion
 
             #region Load & Create

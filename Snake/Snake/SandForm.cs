@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Linq;
 using System.Windows.Forms;
 using StrawberryGameEngine.Core;
 using StrawberryGameEngine.Video;
@@ -36,17 +38,42 @@ namespace Snake
 
         private void DrawLine()
         {
-            _m = new TextureManager(this);
-            var t = _m.LoadTextureFromMemory(Resources.SnakeMain);
-            _m.ChangeTextureInfo(t, new TextureInfo(0, 0, 100));
-            _m.SetTextureSize(t, SystemInformation.PrimaryMonitorSize);
-            //m.DrawTexture(t);
-            var textureSize = new Size((int)_m.GetTextureWidth(t), (int)_m.GetTextureHeight(t));
-            var f = _m.CreateTextureSection(t, new Section(textureSize.Width/2,0,textureSize.Width,textureSize.Height/2));
-            _m.DrawTextureSection(f);
-            _m.RemoveAllTextureSections();
-            _m.DrawTexture(t);
-            _m.ReloadTextures();
+            //Animation a = new Animation(this);
+            //string Path;
+            //for (int i = 0; i < 4;i++)
+            //{
+            //    Path = "D:\\Media\\Photo\\Work\\Sprites\\" + (i + 2) + ".png";
+            //    a.textures.LoadTextureFromFile(Path);
+            //}
+            //a.Delay = new int[5];
+            //for (int i = 0; i < 5; i++)
+            //{
+            //    a.Delay[i] = 0;
+            //}
+            ////TextureManager manager = new TextureManager(this);
+            //a.Play();
+
+            //for (int i = 0; i < 4;i++)
+            //{
+            //    Path = "D:\\Media\\Photo\\Work\\Sprites\\" + (i + 2) + ".png";
+            //    a.textures.LoadTextureFromFile(Path);
+            //}
+
+            Image image1 = Image.FromFile("D:\\Media\\Photo\\Work\\Sprites\\2.png");
+            Image image2 = Image.FromFile("D:\\Media\\Photo\\Work\\Sprites\\3.png");
+            Image image3 = Image.FromFile("D:\\Media\\Photo\\Work\\Sprites\\4.png");
+            Image image4 = Image.FromFile("D:\\Media\\Photo\\Work\\Sprites\\5.png");
+            Image image5 = Image.FromFile("D:\\Media\\Photo\\Work\\Sprites\\6.png");
+
+            Graphics g = this.CreateGraphics();
+            g.Clear(Color.Blue);
+            Point p = new Point(0,0);
+            g.DrawImageUnscaled(image1, p);
+            GraphicsState state = g.Save();
+            g.DrawImageUnscaled(image2,p);
+            g.Clear(Color.Blue);
+            g.Restore(state);
+
         }
 
         private void button1_Click(object sender, EventArgs e)

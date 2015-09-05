@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace StrawberryGameEngine
 {
@@ -18,7 +19,7 @@ namespace StrawberryGameEngine
             /// </summary>
             private Texture[] AllTextures;
 
-            private TextureManager textures;
+            public TextureManager textures;
 
             /// <summary>
             /// Задержка для каждого кадра (миллисекунды)
@@ -66,14 +67,21 @@ namespace StrawberryGameEngine
 
             #region Methods
 
-            public Animation()
+            public Animation(Form window)
             {
+                textures = new TextureManager(window);
+                Delay = new int[textures.Count];
+                for (int i = 0; i < textures.Count; i++)
+                {
+                    Delay[i] = 0;
+                }
+                Loops = -1;
             }
 
             /// <summary>
             /// Количество кадров
             /// </summary>
-            public int FrameCount => this.AllTextures.Count();
+            public int FrameCount => this.textures.Count;
 
             /// <summary>
             /// Обновить
@@ -87,7 +95,7 @@ namespace StrawberryGameEngine
             /// </summary>
             public void Pause()
             {
-
+                Paused = true;
             }
 
             /// <summary>
@@ -95,7 +103,7 @@ namespace StrawberryGameEngine
             /// </summary>
             public void Resume()
             {
-
+                Paused = false;
             }
 
             /// <summary>
@@ -122,7 +130,7 @@ namespace StrawberryGameEngine
             {
                 if (loops == -1)
                 {
-                    while (true)
+                    while (Paused == false)
                     {
                         PlayOnce();
                     }
@@ -131,6 +139,10 @@ namespace StrawberryGameEngine
                 {
                     for (int i = 0; i < loops; i++)
                     {
+                        if (Paused == true)
+                        {
+                            return;
+                        }
                         PlayOnce();
                     }
                 }
@@ -139,13 +151,19 @@ namespace StrawberryGameEngine
             /// <summary>
             /// Прорисовывает анимацию один раз
             /// </summary>
-            private void PlayOnce()
+            /// <returns>True  в случае успешного проигрыша анимации и false в случае неудачного</returns>
+            private bool PlayOnce()
             {
                 foreach (var id in textures.Textures.Keys)
                 {
+                    if (Paused == true)
+                    {
+                        return false;
+                    }
                     textures.DrawTexture(id);
-                    System.Threading.Thread.Sleep(Delay[id]);
+                    System.Threading.Thread.Sleep(Delay[id-1]);
                 }
+                return true;
             }
 
             /// <summary>
