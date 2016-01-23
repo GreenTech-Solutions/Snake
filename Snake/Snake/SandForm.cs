@@ -38,41 +38,44 @@ namespace Snake
 
         private void DrawLine()
         {
-            //Animation a = new Animation(this);
-            //string Path;
-            //for (int i = 0; i < 4;i++)
-            //{
-            //    Path = "D:\\Media\\Photo\\Work\\Sprites\\" + (i + 2) + ".png";
-            //    a.textures.LoadTextureFromFile(Path);
-            //}
-            //a.Delay = new int[5];
-            //for (int i = 0; i < 5; i++)
-            //{
-            //    a.Delay[i] = 0;
-            //}
-            ////TextureManager manager = new TextureManager(this);
-            //a.Play();
+            Animation a = new Animation(this);
+            string Path;
+            for (int i = 0; i < 4; i++)
+            {
+                Path = "D:\\Media\\Photo\\Work\\Sprites\\" + (i + 2) + ".png";
+                a.textures.LoadTextureFromFile(Path);
+            }
+            a.Delay = new int[5];
+            for (int i = 0; i < 5; i++)
+            {
+                a.Delay[i] = 0;
+            }
+            //TextureManager manager = new TextureManager(this);
+            a.Play();
 
-            //for (int i = 0; i < 4;i++)
-            //{
-            //    Path = "D:\\Media\\Photo\\Work\\Sprites\\" + (i + 2) + ".png";
-            //    a.textures.LoadTextureFromFile(Path);
-            //}
+            for (int i = 0; i < 4; i++)
+            {
+                Path = "D:\\Media\\Photo\\Work\\Sprites\\" + (i + 2) + ".png";
+                a.textures.LoadTextureFromFile(Path);
+            }
 
-            Image image1 = Image.FromFile("D:\\Media\\Photo\\Work\\Sprites\\2.png");
-            Image image2 = Image.FromFile("D:\\Media\\Photo\\Work\\Sprites\\3.png");
-            Image image3 = Image.FromFile("D:\\Media\\Photo\\Work\\Sprites\\4.png");
-            Image image4 = Image.FromFile("D:\\Media\\Photo\\Work\\Sprites\\5.png");
-            Image image5 = Image.FromFile("D:\\Media\\Photo\\Work\\Sprites\\6.png");
+            //Image image1 = Image.FromFile("D:\\Media\\Photo\\Work\\Sprites\\2.png");
+            //Image image2 = Image.FromFile("D:\\Media\\Photo\\Work\\Sprites\\3.png");
+            //Image image3 = Image.FromFile("D:\\Media\\Photo\\Work\\Sprites\\4.png");
+            //Image image4 = Image.FromFile("D:\\Media\\Photo\\Work\\Sprites\\5.png");
+            //Image image5 = Image.FromFile("D:\\Media\\Photo\\Work\\Sprites\\6.png");
 
-            Graphics g = this.CreateGraphics();
-            g.Clear(Color.Blue);
-            Point p = new Point(0,0);
-            g.DrawImageUnscaled(image1, p);
-            GraphicsState state = g.Save();
-            g.DrawImageUnscaled(image2,p);
-            g.Clear(Color.Blue);
-            g.Restore(state);
+            //Graphics g = this.CreateGraphics();
+            //g.Clear(Color.Blue);
+            //Point p = new Point(0,0);
+            //g.DrawImageUnscaled(image1, p);
+            //GraphicsState state = g.Save();
+            //g.DrawImageUnscaled(image2, p);
+            //g.Restore(state);
+            //g.Clear(Color.Blue);
+            //state = g.Save();
+            //g.Clear(Color.Red);
+            //g.Restore(state);
 
         }
 

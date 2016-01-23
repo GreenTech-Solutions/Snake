@@ -13,7 +13,7 @@ namespace Snake
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new SandForm());
+            Application.Run(new MainMenu());
         }
     }
 }
