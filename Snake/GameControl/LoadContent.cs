@@ -1,7 +1,0 @@
-﻿namespace GameControl
-{
-    class LoadContent
-    {
-
-    }
-}

@@ -1,6 +1,0 @@
-﻿namespace GameControl
-{
-    class Init
-    {
-    }
-}
