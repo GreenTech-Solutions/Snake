@@ -6,13 +6,10 @@ using System.Threading.Tasks;
 
 namespace Snake
 {
-    class SnakeCell
+    class Data
     {
-        SnakeCell Next;
-        SnakeCell Prev;
+        public int Score;
 
-        Direction direction;
-
-        Coord xy;
+        public int HighScore;
     }
 }

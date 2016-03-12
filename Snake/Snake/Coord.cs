@@ -11,7 +11,7 @@ namespace Snake
         int x;
         int y;
 
-        Coord(int X, int Y)
+        public Coord(int X, int Y)
         {
             x = X;
             y = Y;
