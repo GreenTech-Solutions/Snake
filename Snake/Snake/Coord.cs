@@ -8,8 +8,8 @@ namespace Snake
 {
     class Coord
     {
-        int x;
-        int y;
+        public int x;
+        public int y;
 
         public Coord(int X, int Y)
         {
