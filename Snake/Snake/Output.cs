@@ -38,9 +38,14 @@ namespace Snake
             }
         }
 
-        static public void RedrawMapcell()
+        static public void RedrawMapcell(Coord cell)
         {
-            
+            if (cell == null)
+            {
+                return;
+            }
+            Console.SetCursorPosition(cell.x,cell.y);
+            Console.Write('-');
         }
     }
 }

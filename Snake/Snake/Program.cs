@@ -10,11 +10,6 @@ namespace Snake
 {
     class Program
     {
-        static int Size = 3;
-        private static int[,] map;
-        private static Coord[] snake;
-        static Coord MapSize = new Coord(10,10);
-
         static void Main(string[] args)
         {
             Core core = new Core();

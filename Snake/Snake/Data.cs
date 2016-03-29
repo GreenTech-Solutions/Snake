@@ -30,6 +30,8 @@ namespace Snake
 
         public static Direction direction;
 
+        public static Coord Tail;
+
         public int Score;
 
         public int HighScore;

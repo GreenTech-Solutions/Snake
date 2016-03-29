@@ -48,6 +48,7 @@
     <Compile Include="Data.cs" />
     <Compile Include="Enumerables.cs" />
     <Compile Include="Functions.cs" />
+    <Compile Include="Input.cs" />
     <Compile Include="Output.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

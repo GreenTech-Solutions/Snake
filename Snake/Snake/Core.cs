@@ -25,6 +25,7 @@ namespace Snake
             int X = Data.snake[Data.Size - 1].x;
             int Y = Data.snake[Data.Size - 1].y;
             Coord temp;
+            Data.Tail = Data.snake[0];
             switch (Data.direction)
             {
                 case Direction.Right:
@@ -93,9 +94,11 @@ namespace Snake
 
             #region Игровой цикл
 
+            Output.DrawMap();
             while (true)
             {
-                Output.DrawMap();
+                //Output.DrawMap();
+                Output.RedrawMapcell(Data.Tail);
                 Output.DrawPlayer();
 
                 // Ожидание нажатия клавиши
@@ -103,44 +106,12 @@ namespace Snake
                 kInfo = Console.ReadKey();
                 Functions.Clear();
 
-                KeyHandler(kInfo);
+                Input.KeyHandler(kInfo);
                 Do();
             }
 
             #endregion
 
-        }
-
-        /// <summary>
-        /// Обработка нажатия клавиш
-        /// </summary>
-        public void KeyHandler(ConsoleKeyInfo kInfo)
-        {
-            if (kInfo.KeyChar == 'd')
-            {
-                Data.direction = Direction.Right;
-            }
-            if (kInfo.KeyChar == 'a')
-            {
-                Data.direction = Direction.Left;
-
-            }
-            if (kInfo.KeyChar == 's')
-            {
-                Data.direction = Direction.Down;
-
-            }
-            if (kInfo.KeyChar == 'w')
-            {
-                Data.direction = Direction.Up;
-
-            }
-
-
-            if (kInfo.KeyChar == 'q')
-            {
-                Environment.Exit(0);
-            }
         }
     }
 }
