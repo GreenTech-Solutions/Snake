@@ -22,7 +22,48 @@ namespace Snake
         /// </summary>
         public void Do()
         {
-            
+            int X = Data.snake[Data.Size - 1].x;
+            int Y = Data.snake[Data.Size - 1].y;
+            Coord temp;
+            switch (Data.direction)
+            {
+                case Direction.Right:
+                    X++;
+                    if (X > 9)
+                    {
+                        X = 0;
+                    }
+                    temp = new Coord(X, Y);
+                    Functions.Move(temp);
+                    break;
+                case Direction.Left:
+                    X--;
+                    if (X < 0)
+                    {
+                        X = 9;
+                    }
+                    temp = new Coord(X, Y);
+                    Functions.Move(temp);
+                    break;
+                case Direction.Down:
+                    Y++;
+                    if (Y > 9)
+                    {
+                        Y = 0;
+                    }
+                    temp = new Coord(X, Y);
+                    Functions.Move(temp);
+                    break;
+                case Direction.Up:
+                    Y--;
+                    if (Y < 0)
+                    {
+                        Y = 9;
+                    }
+                    temp = new Coord(X, Y);
+                    Functions.Move(temp);
+                    break;
+            }
         }
 
         /// <summary>
@@ -54,28 +95,8 @@ namespace Snake
 
             while (true)
             {
-                // Рисование игрового поля
-                for (int i = 0; i < Data.MapSize.y; i++)
-                {
-                    for (int j = 0; j < Data.MapSize.x; j++)
-                    {
-                        Console.SetCursorPosition(j, i);
-                        Console.Write('-');
-                    }
-                }
-                // Рисование змеи
-                for (int i = 0; i < Data.Size; i++)
-                {
-                    Console.SetCursorPosition(Data.snake[i].x, Data.snake[i].y);
-                    if (i == Data.Size - 1)
-                    {
-                        Console.Write('©');
-                    }
-                    else
-                    {
-                        Console.Write('*');
-                    }
-                }
+                Output.DrawMap();
+                Output.DrawPlayer();
 
                 // Ожидание нажатия клавиши
                 Console.SetCursorPosition(10, 10);
@@ -83,6 +104,7 @@ namespace Snake
                 Functions.Clear();
 
                 KeyHandler(kInfo);
+                Do();
             }
 
             #endregion
@@ -94,48 +116,24 @@ namespace Snake
         /// </summary>
         public void KeyHandler(ConsoleKeyInfo kInfo)
         {
-            // Обработка нажатия клавиши
-            int X = Data.snake[Data.Size - 1].x;
-            int Y = Data.snake[Data.Size - 1].y;
             if (kInfo.KeyChar == 'd')
             {
-                X++;
-                if (X > 9)
-                {
-                    X = 0;
-                }
-                Coord temp = new Coord(X, Y);
-                Functions.Move(temp);
+                Data.direction = Direction.Right;
             }
             if (kInfo.KeyChar == 'a')
             {
-                X--;
-                if (X < 0)
-                {
-                    X = 9;
-                }
-                Coord temp = new Coord(X, Y);
-                Functions.Move(temp);
+                Data.direction = Direction.Left;
+
             }
             if (kInfo.KeyChar == 's')
             {
-                Y++;
-                if (Y > 9)
-                {
-                    Y = 0;
-                }
-                Coord temp = new Coord(X, Y);
-                Functions.Move(temp);
+                Data.direction = Direction.Down;
+
             }
             if (kInfo.KeyChar == 'w')
             {
-                Y--;
-                if (Y < 0)
-                {
-                    Y = 9;
-                }
-                Coord temp = new Coord(X, Y);
-                Functions.Move(temp);
+                Data.direction = Direction.Up;
+
             }
 
 

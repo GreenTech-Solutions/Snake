@@ -28,18 +28,7 @@ namespace Snake
         /// </summary>
         public static Coord MapSize = new Coord(10,10);
 
-        /// <summary>
-        /// Стороны перемещения
-        /// </summary>
-        public enum KeyValue
-        {
-            right, down, left, up
-        }
-
-        /// <summary>
-        /// Нажатая клавиша
-        /// </summary>
-        public static KeyValue key;
+        public static Direction direction;
 
         public int Score;
 
