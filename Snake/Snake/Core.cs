@@ -14,6 +14,10 @@ namespace Snake
         /// <returns></returns>
         public bool Check()
         {
+            if (Functions.CollidedWthFood())
+            {
+                
+            }
             return false;
         }
 
@@ -22,10 +26,10 @@ namespace Snake
         /// </summary>
         public void Do()
         {
-            int X = Data.snake[Data.Size - 1].x;
-            int Y = Data.snake[Data.Size - 1].y;
+            int X = Data.snake.Head.Value.x;
+            int Y = Data.snake.Head.Value.y;
             Coord temp;
-            Data.Tail = Data.snake[0];
+            Data.Tail = Data.snake.Tail.Value;
             switch (Data.direction)
             {
                 case Direction.Right:
@@ -76,11 +80,11 @@ namespace Snake
 
             ConsoleKeyInfo kInfo;
             Data.map = new int[Data.MapSize.x, Data.MapSize.y];
-            Data.snake = new Coord[Data.Size];
+            Data.snake = new SnakeList();
 
             for (int i = 0; i < Data.Size; i++)
             {
-                Data.snake[i] = new Coord(i + 3, 0);
+                Data.snake.AddToBegin(new Coord(i + 3, 0));
             }
             for (int i = 0; i < Data.MapSize.y; i++)
             {
@@ -89,6 +93,8 @@ namespace Snake
                     Data.map[i, j] = 0;
                 }
             }
+
+            Functions.GenerateFood();
 
             #endregion
 
@@ -100,6 +106,7 @@ namespace Snake
                 //Output.DrawMap();
                 Output.RedrawMapcell(Data.Tail);
                 Output.DrawPlayer();
+                Output.DrawFood();
 
                 // Ожидание нажатия клавиши
                 Console.SetCursorPosition(10, 10);

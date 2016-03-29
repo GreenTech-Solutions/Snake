@@ -21,7 +21,7 @@ namespace Snake
         /// <summary>
         /// Координаты ячеек змеи
         /// </summary>
-        public static Coord[] snake;
+        public static SnakeList snake;
 
         /// <summary>
         /// Размер карты
@@ -31,6 +31,8 @@ namespace Snake
         public static Direction direction;
 
         public static Coord Tail;
+
+        public static Coord Food;
 
         public int Score;
 
