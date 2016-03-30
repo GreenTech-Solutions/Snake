@@ -21,7 +21,7 @@ namespace Snake
         /// <summary>
         /// Координаты ячеек змеи
         /// </summary>
-        public static SnakeList snake;
+        public static LinkedList<Coord> snake;
 
         /// <summary>
         /// Размер карты

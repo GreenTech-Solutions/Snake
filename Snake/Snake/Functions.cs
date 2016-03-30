@@ -16,13 +16,8 @@ namespace Snake
 
         public static void Move(Coord temp)
         {
-            LinkedList<Coord> snake_ = new LinkedList<Coord>();
-
-            snake_.AddFirst(temp);
-            SnakeCell cell = Data.snake.Tail;
-            Data.snake.Tail.Next = Data.snake.Tail;
-            Data.snake.Tail.Value = temp;
-            Data.snake.Head = Data.snake.Head.Prev;
+            Data.snake.AddFirst(temp);
+            Data.snake.RemoveLast();
         }
 
         public static void GenerateFood()
@@ -34,24 +29,28 @@ namespace Snake
             y = r.Next(0, y - 1);
             Data.Food = new Coord(x,y);
 
-            SnakeCell cell = new SnakeCell(Data.snake.Tail.Value,null,Data.snake.Tail.Next);
+            LinkedListNode<Coord> cell = Data.snake.Last;
             while (cell!=null)
             {
                 if (cell.Value == Data.Food)
                 {
                     GenerateFood();
                 }
-                cell = cell.Next;
+                cell = cell.Previous;
             }
         }
 
         public static bool CollidedWthFood()
         {
-            if (Data.snake.Head.Value == Data.Food)
+            if (Data.snake.First.Value == Data.Food)
             {
                 return true;
             }
             return false;
+        }
+
+        public static void OnCollidedWthFood()
+        {
         }
     }
 }

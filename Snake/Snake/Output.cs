@@ -24,10 +24,11 @@ namespace Snake
         static public void DrawPlayer()
         {
             // Рисование змеи
-            SnakeCell cell = new SnakeCell(Data.snake.Tail);
+            LinkedListNode<Coord> cell = Data.snake.Last;
             while (cell!=null)
             {
-                if (cell == Data.snake.Head)
+                Console.SetCursorPosition(cell.Value.x, cell.Value.y);
+                if (cell == Data.snake.First)
                 {
                     Console.Write('©');
                 }
@@ -35,7 +36,7 @@ namespace Snake
                 {
                     Console.Write('*');
                 }
-                cell = cell.Next;
+                cell = cell.Previous;
             }
         }
 

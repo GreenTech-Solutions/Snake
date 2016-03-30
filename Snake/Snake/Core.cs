@@ -26,10 +26,10 @@ namespace Snake
         /// </summary>
         public void Do()
         {
-            int X = Data.snake.Head.Value.x;
-            int Y = Data.snake.Head.Value.y;
+            int X = Data.snake.First.Value.x;
+            int Y = Data.snake.First.Value.y;
             Coord temp;
-            Data.Tail = Data.snake.Tail.Value;
+            Data.Tail = Data.snake.Last.Value;
             switch (Data.direction)
             {
                 case Direction.Right:
@@ -80,11 +80,11 @@ namespace Snake
 
             ConsoleKeyInfo kInfo;
             Data.map = new int[Data.MapSize.x, Data.MapSize.y];
-            Data.snake = new SnakeList();
+            Data.snake = new LinkedList<Coord>();
 
             for (int i = 0; i < Data.Size; i++)
             {
-                Data.snake.AddToBegin(new Coord(i + 3, 0));
+                Data.snake.AddFirst(new Coord(i + 3, 0));
             }
             for (int i = 0; i < Data.MapSize.y; i++)
             {
