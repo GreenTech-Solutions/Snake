@@ -34,6 +34,10 @@ namespace Snake
 
         public static Coord Food;
 
+        public static bool CollidedWthFood;
+
+        public static bool FoodEaten;
+
         public int Score;
 
         public int HighScore;

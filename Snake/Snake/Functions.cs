@@ -35,14 +35,16 @@ namespace Snake
                 if (cell.Value == Data.Food)
                 {
                     GenerateFood();
+                    return;
                 }
                 cell = cell.Previous;
             }
+            Data.FoodEaten = false;
         }
 
         public static bool CollidedWthFood()
         {
-            if (Data.snake.First.Value == Data.Food)
+            if (Equals(Data.snake.First.Value, Data.Food))
             {
                 return true;
             }
@@ -51,6 +53,42 @@ namespace Snake
 
         public static void OnCollidedWthFood()
         {
+            bool CanGrow = false;
+            Coord tail = Data.snake.Last.Value;
+            Coord food = Data.Food;
+            Coord temp;
+            temp = new Coord(tail.x-1,tail.y);
+            if (Equals(temp, food))
+            {
+                CanGrow = true;
+            }
+            temp = new Coord(tail.x+1,tail.y);
+            if (Equals(temp, food))
+            {
+                CanGrow = true;
+            }
+            temp = new Coord(tail.x, tail.y+1);
+            if (Equals(temp, food))
+            {
+                CanGrow = true;
+            }
+            temp = new Coord(tail.x, tail.y-1);
+            if (Equals(temp, food))
+            {
+                CanGrow = true;
+            }
+
+            if (CanGrow)
+            {
+                Grow(tail);
+            }
+        }
+
+        public static void Grow(Coord temp)
+        {
+            Data.snake.AddLast(temp);
+            Data.CollidedWthFood = false;
+            Data.FoodEaten = true;
         }
     }
 }

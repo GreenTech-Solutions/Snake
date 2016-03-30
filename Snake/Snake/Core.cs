@@ -12,13 +12,20 @@ namespace Snake
         /// Проверка возможности поворота змеи, проверка проигрыша и съедания еды
         /// </summary>
         /// <returns></returns>
-        public bool Check()
+        public void Check()
         {
             if (Functions.CollidedWthFood())
             {
-                
+                Data.CollidedWthFood = true;
             }
-            return false;
+            if (Data.CollidedWthFood)
+            {
+                Functions.OnCollidedWthFood();
+            }
+            if (Data.FoodEaten == true)
+            {
+                Functions.GenerateFood();
+            }
         }
 
         /// <summary>
@@ -115,6 +122,7 @@ namespace Snake
 
                 Input.KeyHandler(kInfo);
                 Do();
+                Check();
             }
 
             #endregion
