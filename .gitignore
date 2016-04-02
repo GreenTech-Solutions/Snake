@@ -253,3 +253,5 @@ sysinfo.txt
 *.apk
 *.unitypackage
 Snake/Library/AnnotationManager
+Snake/Library
+Snake/Temp
