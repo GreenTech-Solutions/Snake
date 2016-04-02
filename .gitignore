@@ -252,3 +252,4 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
+Snake/Library/AnnotationManager
