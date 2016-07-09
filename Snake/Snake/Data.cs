@@ -30,6 +30,9 @@ namespace Snake
 
         public static Direction direction;
 
+        /// <summary>
+        /// Координаты хвоста змеи
+        /// </summary>
         public static Coord Tail;
 
         public static Coord Food;

@@ -31,10 +31,13 @@ namespace Snake
         /// <summary>
         /// Установка координат пикселя, изменение скорости, движение
         /// </summary>
+        /// TODO движение работает отлично, но необходимо убрать привязку к 0, 9, и т.п.
         public void Do()
         {
-            int X = Data.snake.First.Value.x;
-            int Y = Data.snake.First.Value.y;
+            // Координаты головы
+            int X = Data.snake.First.Value.X;
+            int Y = Data.snake.First.Value.Y;
+
             Coord temp;
             Data.Tail = Data.snake.Last.Value;
             switch (Data.direction)
@@ -85,17 +88,19 @@ namespace Snake
         {
             #region Инициализация
 
-            ConsoleKeyInfo kInfo;
-            Data.map = new int[Data.MapSize.x, Data.MapSize.y];
+            // Выделеие памяти для карты и змеи
+            Data.map = new int[Data.MapSize.X, Data.MapSize.Y];
             Data.snake = new LinkedList<Coord>();
 
+            // Создание змеи
             for (int i = 0; i < Data.Size; i++)
             {
-                Data.snake.AddFirst(new Coord(i + 3, 0));
+                Data.snake.AddFirst(new Coord(/* TODO Значение выставляется не здесь */i + 3, 0));
             }
-            for (int i = 0; i < Data.MapSize.y; i++)
+            // Заполнени карты
+            for (int i = 0; i < Data.MapSize.Y; i++)
             {
-                for (int j = 0; j < Data.MapSize.x; j++)
+                for (int j = 0; j < Data.MapSize.X; j++)
                 {
                     Data.map[i, j] = 0;
                 }
@@ -108,6 +113,7 @@ namespace Snake
             #region Игровой цикл
 
             Output.DrawMap();
+
             while (true)
             {
                 //Output.DrawMap();
@@ -116,8 +122,11 @@ namespace Snake
                 Output.DrawFood();
 
                 // Ожидание нажатия клавиши
+
+                // TODO Поменять значения 10,10 на автоматически выщитываемые относительно размера карты
                 Console.SetCursorPosition(10, 10);
-                kInfo = Console.ReadKey();
+
+                var kInfo = Console.ReadKey();
                 Functions.Clear();
 
                 Input.KeyHandler(kInfo);

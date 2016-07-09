@@ -6,6 +6,13 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
+// TODO Вывод результатов
+// TODO Добавить коллизии с телом змеи
+// TODO Добавить Меню и возможность изменять размер карты в настройках
+// TODO Возможность изменения стилей змеи (знака генерации тела и змеи)
+// TODO Реализовать независимость Data, View, Core
+// TODO 
+
 namespace Snake
 {
     class Program

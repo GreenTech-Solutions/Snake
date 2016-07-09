@@ -9,8 +9,10 @@ namespace Snake
     class Input
     {
         /// <summary>
-        /// Обработка нажатия клавиш
+        /// Определяет Direction в Data относительно переданной информации о клавише
         /// </summary>
+        /// <param name="kInfo">Информация о клавише</param>
+        /// TODO из-за такой хромой реализации можно нажимать любые кнопки, сделать контроль ввода
         public static void KeyHandler(ConsoleKeyInfo kInfo)
         {
             if (kInfo.KeyChar == 'd')

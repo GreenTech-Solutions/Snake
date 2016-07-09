@@ -1,20 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Snake
 {
-    class Coord : IEquatable<Coord>
+    // TODO проверить реализацию Comparison
+    public class Coord : IEquatable<Coord>
     {
-        public int x;
-        public int y;
+        
+        public int X { get; }
 
-        public Coord(int X, int Y)
+        public int Y { get; }
+
+        public Coord(int x, int y)
         {
-            x = X;
-            y = Y;
+            X = x;
+            Y = y;
         }
 
         public override bool Equals(object obj)
@@ -26,46 +30,61 @@ namespace Snake
             if (obj.GetType() != this.GetType())
                 return false;
             // Вызываем специфический метод сравнения
-            return Equals((Coord)obj);
+            return (((Coord) obj).X == X) & (((Coord) obj).Y == Y);
         }
 
         // Реализация интерфейса IEquatable<T>
         public bool Equals(Coord other)
         {
             // Сравниваем поля по-одному
-            return this.x == other.x
-                && this.y == other.y;
+            return X == other.X & Y == other.Y;
         }
 
         public override int GetHashCode()
         {
-            return (((int)x ^ (int)y) << 16) |
-                (((int)x ^ (int)y) & 0x0000FFFF);
+            string s = string.Concat(X.ToString(), Y.ToString());
+            return s.GetHashCode();
         }
-        //public static bool operator ==(Coord obj1, Coord obj2)
-        //{
-        //    if (obj1 == null && obj2 == null)
-        //    {
-        //        return true;
-        //    }
-        //    if (obj1.x == obj2.x && obj1.y == obj2.y)
-        //    {
-        //        return true;
-        //    }
-        //    return false;
-        //}
 
-        //public static bool operator !=(Coord obj1, Coord obj2)
-        //{
-        //    if (obj1 == null && obj2 == null)
-        //    {
-        //        return false;
-        //    }
-        //    if (obj1.x == obj2.x && obj1.y == obj2.y)
-        //    {
-        //        return false;
-        //    }
-        //    return true;
-        //}
+        public static bool operator ==(Coord obj1, Coord obj2)
+        {
+            if (obj1.Equals(null) && obj2.Equals(null))
+            {
+                return true;
+            }
+            if (obj1.X.Equals(obj2.X) && obj1.Y.Equals(obj2.Y))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public static bool operator !=(Coord obj1, Coord obj2)
+        {
+            return !(obj1 == obj2);
+        }
+
+        public override string ToString()
+        {
+            return $"({X};{Y})";
+        }
+
+        public static bool operator true(Coord obj)
+        {
+            if (obj.Equals(null) || obj.X.Equals(null) || obj.Y.Equals(null))
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public static bool operator false(Coord obj)
+        {
+            if (obj)
+            {
+                return false;
+            }
+            return true;
+        }
     }
 }
