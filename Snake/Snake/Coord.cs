@@ -10,7 +10,6 @@ namespace Snake
     // TODO проверить реализацию Comparison
     public class Coord : IEquatable<Coord>
     {
-        
         public int X { get; }
 
         public int Y { get; }
@@ -36,6 +35,7 @@ namespace Snake
         // Реализация интерфейса IEquatable<T>
         public bool Equals(Coord other)
         {
+            if (other == null) return false;
             // Сравниваем поля по-одному
             return X == other.X & Y == other.Y;
         }
@@ -48,9 +48,13 @@ namespace Snake
 
         public static bool operator ==(Coord obj1, Coord obj2)
         {
-            if (obj1.Equals(null) && obj2.Equals(null))
+            if (Equals(obj1,null) && Equals(obj2,null))
             {
                 return true;
+            }
+            if (Equals(obj1, null) || Equals(obj2, null))
+            {
+                return false;
             }
             if (obj1.X.Equals(obj2.X) && obj1.Y.Equals(obj2.Y))
             {
@@ -61,6 +65,8 @@ namespace Snake
 
         public static bool operator !=(Coord obj1, Coord obj2)
         {
+            if (obj1 == null) throw new ArgumentNullException(nameof(obj1));
+            if (obj2 == null) throw new ArgumentNullException(nameof(obj2));
             return !(obj1 == obj2);
         }
 
@@ -71,7 +77,8 @@ namespace Snake
 
         public static bool operator true(Coord obj)
         {
-            if (obj.Equals(null) || obj.X.Equals(null) || obj.Y.Equals(null))
+            if (obj == null) throw new ArgumentNullException(nameof(obj));
+            if (obj.X.Equals(null) || obj.Y.Equals(null))
             {
                 return false;
             }
