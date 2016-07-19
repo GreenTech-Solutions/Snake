@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Input;
 
 namespace Snake
 {
@@ -26,6 +29,7 @@ namespace Snake
                 }
             }
         }
+
 
         /// <summary>
         /// Установка координат пикселя, изменение скорости, движение
@@ -120,6 +124,7 @@ namespace Snake
 
             Output.DrawMap(Data.MapSize);
 
+            
 
             while (true)
             {
@@ -139,6 +144,8 @@ namespace Snake
 
                 ActionType action = Input.AskForInput();
 
+                //ActionType action = ActionType.Right;
+
                 switch (action)
                 {
                         case ActionType.Up:
@@ -156,12 +163,13 @@ namespace Snake
                     case ActionType.Exit:
                         Environment.Exit(0);
                         break;
-                        case ActionType.None:
-                        continue;
+                    case ActionType.None:
+                        break;
                 }
 
                 Do();
                 Check();
+                Thread.Sleep(100);
             }
 
             #endregion

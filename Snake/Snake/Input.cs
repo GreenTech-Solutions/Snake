@@ -37,8 +37,16 @@ namespace Snake
         /// <returns></returns>
         public static ActionType AskForInput()
         {
-            ConsoleKeyInfo kInfo = Console.ReadKey(true);
-            return KeyHandler(kInfo);
+            ConsoleKeyInfo kInfo;
+            if (Console.KeyAvailable == true)
+            {
+                kInfo = Console.ReadKey(true);
+                return KeyHandler(kInfo);
+            }
+            else
+            {
+                return ActionType.None;
+            }
         }
     }
 }
