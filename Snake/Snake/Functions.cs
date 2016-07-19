@@ -9,112 +9,49 @@ namespace Snake
     class Functions
     {
         /// <summary>
-        /// Стирает введённый символ на координатах 10,10
-        /// </summary>
-        /// TODO Избавиться вовсе или перенести в Output для автоматического выполнения
-        public static void Clear()
-        {
-            Console.SetCursorPosition(10, 10);
-            Console.Write(' ');
-        }
-
-        /// <summary>
         /// Добавляет точку в начало списка и удаляет с конца
         /// </summary>
-        /// <param name="coord"></param>
-        /// TODO Сделать проверку на неверные координаты
-        public static void Move(Coord coord)
+        /// <param name="coord">Координаты</param>
+        public static void AddNewHead(Coord coord, LinkedList<Coord> playerCoords)
         {
-            Data.snake.AddFirst(coord);
-            Data.snake.RemoveLast();
+            if (coord == null) throw new ArgumentNullException(nameof(coord));
+            if (playerCoords == null) throw new ArgumentNullException(nameof(playerCoords));
+            playerCoords.AddFirst(coord);
+            playerCoords.RemoveLast();
         }
 
         /// <summary>
-        /// Генерирует новую клетку с едой и помещает её на карту
+        /// Возвращает случайные координаты клетки с едой или null, если свободное место найти не удалось
         /// </summary>
-        /// TODO Проверить реализацию
-        public static void GenerateFood()
+        public static Coord GenerateFood(LinkedList<Coord> playerCoords, Coord MapSize)
         {
-            int x = Data.MapSize.X;
-            int y = Data.MapSize.Y;
             Random r = new Random(DateTime.Now.Millisecond);
-            x = r.Next(0, x - 1);
-            y = r.Next(0, y - 1);
-            Data.Food = new Coord(x,y);
 
-            LinkedListNode<Coord> cell = Data.snake.Last;
-            while (cell!=null)
+            int randomNumber = r.Next(1, (MapSize.X*MapSize.Y) - playerCoords.Count);
+
+            int h = 0;
+            for (int i = 0; i < MapSize.Y; i++)
             {
-                if (cell.Value == Data.Food)
+                for (int j = 0; j < MapSize.X; j++)
                 {
-                    GenerateFood();
-                    return;
+                    if (!playerCoords.Contains(new Coord(j, i)))
+                    {
+                        h++;
+                    }
+
+                    if (h == randomNumber)
+                    {
+                        return new Coord(j,i);
+                    }
                 }
-                cell = cell.Previous;
             }
-            Data.FoodEaten = false;
+            return null;
         }
 
-        /// <summary>
-        /// ПРоверка на столкновение с едой
-        /// </summary>
-        /// <returns></returns>
-        /// TODO Проверить правильно ли сравниваются координаты
-        public static bool CollidedWthFood()
-        {
-            if (Equals(Data.snake.First.Value, Data.Food))
-            {
-                return true;
-            }
-            return false;
-        }
 
-        /// <summary>
-        /// Обработчик для события CollidedWthFood
-        /// </summary>
-        /// TODO Переделать алгоритм роста, потому как этот работает неадекватно, взращивая змею как ему вздумается
-        public static void OnCollidedWthFood()
+        public static void Grow(ref LinkedList<Coord> playerCoords, Coord foodCoords)
         {
-            bool CanGrow = false;
-            Coord tail = Data.snake.Last.Value;
-            Coord food = Data.Food;
-            Coord temp;
-            temp = new Coord(tail.X-1,tail.Y);
-            if (Equals(temp, food))
-            {
-                CanGrow = true;
-            }
-            temp = new Coord(tail.X+1,tail.Y);
-            if (Equals(temp, food))
-            {
-                CanGrow = true;
-            }
-            temp = new Coord(tail.X, tail.Y+1);
-            if (Equals(temp, food))
-            {
-                CanGrow = true;
-            }
-            temp = new Coord(tail.X, tail.Y-1);
-            if (Equals(temp, food))
-            {
-                CanGrow = true;
-            }
-
-            if (CanGrow)
-            {
-                Grow(tail);
-            }
-        }
-
-        /// <summary>
-        /// Добавляет указанную точку в хвост змеи
-        /// </summary>
-        /// <param name="point"></param>
-        public static void Grow(Coord point)
-        {
-            Data.snake.AddLast(point);
-            Data.CollidedWthFood = false;
-            Data.FoodEaten = true;
+            playerCoords.AddLast(foodCoords);
         }
     }
 }

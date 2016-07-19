@@ -14,29 +14,32 @@ namespace Snake
         /// <returns></returns>
         public void Check()
         {
-            if (Functions.CollidedWthFood())
+            if (Data.snake.First.Value == Data.Food)
             {
                 Data.CollidedWthFood = true;
             }
             if (Data.CollidedWthFood)
             {
-                Functions.OnCollidedWthFood();
-            }
-            if (Data.FoodEaten == true)
-            {
-                Functions.GenerateFood();
+                if (Data.Tail == Data.Food)
+                {
+                    Data.FoodEaten = false;
+                }
             }
         }
 
         /// <summary>
         /// Установка координат пикселя, изменение скорости, движение
         /// </summary>
-        /// TODO движение работает отлично, но необходимо убрать привязку к 0, 9, и т.п.
         public void Do()
         {
             // Координаты головы
             int X = Data.snake.First.Value.X;
             int Y = Data.snake.First.Value.Y;
+
+            int maxX, maxY, minX, minY;
+
+            maxX = Data.MapSize.X-1;
+            maxY = Data.MapSize.Y-1;
 
             Coord temp;
             Data.Tail = Data.snake.Last.Value;
@@ -44,39 +47,39 @@ namespace Snake
             {
                 case Direction.Right:
                     X++;
-                    if (X > 9)
+                    if (X > maxX)
                     {
                         X = 0;
                     }
                     temp = new Coord(X, Y);
-                    Functions.Move(temp);
+                    Functions.AddNewHead(temp, Data.snake);
                     break;
                 case Direction.Left:
                     X--;
                     if (X < 0)
                     {
-                        X = 9;
+                        X = maxX;
                     }
                     temp = new Coord(X, Y);
-                    Functions.Move(temp);
+                    Functions.AddNewHead(temp, Data.snake);
                     break;
                 case Direction.Down:
                     Y++;
-                    if (Y > 9)
+                    if (Y > maxY)
                     {
                         Y = 0;
                     }
                     temp = new Coord(X, Y);
-                    Functions.Move(temp);
+                    Functions.AddNewHead(temp,Data.snake);
                     break;
                 case Direction.Up:
                     Y--;
                     if (Y < 0)
                     {
-                        Y = 9;
+                        Y = maxY;
                     }
                     temp = new Coord(X, Y);
-                    Functions.Move(temp);
+                    Functions.AddNewHead(temp,Data.snake);
                     break;
             }
         }
@@ -97,6 +100,9 @@ namespace Snake
             {
                 Data.snake.AddFirst(new Coord(/* TODO Значение выставляется не здесь */i + 3, 0));
             }
+
+            Data.Tail = Data.snake.Last.Value;
+
             // Заполнени карты
             for (int i = 0; i < Data.MapSize.Y; i++)
             {
@@ -106,30 +112,54 @@ namespace Snake
                 }
             }
 
-            Functions.GenerateFood();
+            Data.Food = Functions.GenerateFood(Data.snake,Data.MapSize);
 
             #endregion
 
             #region Игровой цикл
 
-            Output.DrawMap();
+            Output.DrawMap(Data.MapSize);
+
 
             while (true)
             {
-                //Output.DrawMap();
-                Output.RedrawMapcell(Data.Tail);
-                Output.DrawPlayer();
-                Output.DrawFood();
+                if (Data.FoodEaten)
+                    Output.RedrawMapcell(Data.Tail);
+                else
+                {
+                    Data.FoodEaten = true;
+                    Data.CollidedWthFood = false;
+                    Functions.Grow(ref Data.snake,Data.Food);
+                    Data.Food = Functions.GenerateFood(Data.snake,Data.MapSize);
+                }
 
-                // Ожидание нажатия клавиши
 
-                // TODO Поменять значения 10,10 на автоматически выщитываемые относительно размера карты
-                Console.SetCursorPosition(10, 10);
+                Output.DrawPlayer(Data.snake);
+                Output.DrawFood(Data.Food);
 
-                var kInfo = Console.ReadKey();
-                Functions.Clear();
+                ActionType action = Input.AskForInput();
 
-                Input.KeyHandler(kInfo);
+                switch (action)
+                {
+                        case ActionType.Up:
+                        Data.direction = Direction.Up;
+                        break;
+                    case ActionType.Down:
+                        Data.direction = Direction.Down;
+                        break;
+                    case ActionType.Left:
+                        Data.direction = Direction.Left;
+                        break;
+                        case ActionType.Right:
+                        Data.direction = Direction.Right;
+                        break;
+                    case ActionType.Exit:
+                        Environment.Exit(0);
+                        break;
+                        case ActionType.None:
+                        continue;
+                }
+
                 Do();
                 Check();
             }

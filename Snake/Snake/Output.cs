@@ -11,19 +11,17 @@ namespace Snake
     /// </summary>
     class Output
     {
-        // TODO передавать в класс экземпляр Data для локального использования, во время приёма проверять его на валидность
-        // Тогда не придётся отдельно проверять все поля
-
         /// <summary>
-        /// Отрисовывает карту, находящуюся в хранилище
+        /// Отрисовывает карту указанного размера
         /// </summary>
-        /// TODO проверить ввод
-        static public void DrawMap()
+        static public void DrawMap(Coord size)
         {
+            if (size == null) throw new ArgumentNullException(nameof(size));
+
             // Рисование игрового поля
-            for (int i = 0; i < Data.MapSize.Y; i++)
+            for (int i = 0; i < size.Y; i++)
             {
-                for (int j = 0; j < Data.MapSize.X; j++)
+                for (int j = 0; j < size.Y; j++)
                 {
                     Console.SetCursorPosition(j, i);
                     Console.Write('-');
@@ -32,17 +30,18 @@ namespace Snake
         }
 
         /// <summary>
-        /// Отрисовывает игрока, с помощью координат в Data.Snake
+        /// Отрисовывает игрока, с помощью указанных координат
         /// </summary>
-        /// TODO Проверка ввода
-        static public void DrawPlayer()
+        static public void DrawPlayer(LinkedList<Coord> playerCoords)
         {
+            if (playerCoords == null) throw new ArgumentNullException(nameof(playerCoords));
+
             // Рисование змеи
-            LinkedListNode<Coord> cell = Data.snake.Last;
+            var cell = playerCoords.Last;
             while (cell!=null)
             {
                 Console.SetCursorPosition(cell.Value.X, cell.Value.Y);
-                Console.Write(cell == Data.snake.First ? '©' : '*');
+                Console.Write(cell == playerCoords.First ? '©' : '*');
                 cell = cell.Previous;
             }
         }
@@ -51,7 +50,6 @@ namespace Snake
         /// Отображает на указанных координатах знак -
         /// </summary>
         /// <param name="cell">Координаты</param>
-        /// TODO Проверка ввода
         static public void RedrawMapcell(Coord cell)
         {
             if (cell == null)
@@ -65,10 +63,10 @@ namespace Snake
         /// <summary>
         /// Отрисовывает еду на координатах, хранящихся в Data.Food
         /// </summary>
-        /// TODO Проверка ввода
-        static public void DrawFood()
+        static public void DrawFood(Coord coords)
         {
-            Console.SetCursorPosition(Data.Food.X,Data.Food.Y);
+            if (coords == null) throw new ArgumentNullException(nameof(coords));
+            Console.SetCursorPosition(coords.X,coords.Y);
             Console.Write('+');
         }
     }

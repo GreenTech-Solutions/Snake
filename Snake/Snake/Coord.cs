@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace Snake
 {
-    // TODO проверить реализацию Comparison
     public class Coord : IEquatable<Coord>
     {
         public int X { get; }
@@ -78,7 +77,7 @@ namespace Snake
         public static bool operator true(Coord obj)
         {
             if (obj == null) throw new ArgumentNullException(nameof(obj));
-            if (obj.X.Equals(null) || obj.Y.Equals(null))
+            if (Equals(obj.X,null) || Equals(obj.Y,null))
             {
                 return false;
             }

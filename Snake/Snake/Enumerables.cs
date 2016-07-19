@@ -7,4 +7,14 @@
         Right,
         Down
     }
+
+    enum ActionType
+    {
+        Up,
+        Right,
+        Down,
+        Left,
+        Exit,
+        None
+    }
 }

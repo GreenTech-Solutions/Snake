@@ -9,37 +9,36 @@ namespace Snake
     class Input
     {
         /// <summary>
-        /// Определяет Direction в Data относительно переданной информации о клавише
+        /// Интерпретирует нажатую клавишу и возвращает информациию о действии
         /// </summary>
         /// <param name="kInfo">Информация о клавише</param>
-        /// TODO из-за такой хромой реализации можно нажимать любые кнопки, сделать контроль ввода
-        public static void KeyHandler(ConsoleKeyInfo kInfo)
+        public static ActionType KeyHandler(ConsoleKeyInfo kInfo)
         {
-            if (kInfo.KeyChar == 'd')
+            switch (kInfo.KeyChar.ToString().ToLower())
             {
-                Data.direction = Direction.Right;
+                case "d":
+                    return ActionType.Right;
+                case "a":
+                    return ActionType.Left;
+                case "w":
+                    return ActionType.Up;
+                case "s":
+                    return ActionType.Down;
+                case "q":
+                    return ActionType.Exit;
+                default:
+                    return ActionType.None;
             }
-            if (kInfo.KeyChar == 'a')
-            {
-                Data.direction = Direction.Left;
+        }
 
-            }
-            if (kInfo.KeyChar == 's')
-            {
-                Data.direction = Direction.Down;
-
-            }
-            if (kInfo.KeyChar == 'w')
-            {
-                Data.direction = Direction.Up;
-
-            }
-
-
-            if (kInfo.KeyChar == 'q')
-            {
-                Environment.Exit(0);
-            }
+        /// <summary>
+        /// Ожидает нажатия клавиши и возвращает ассоциативный тип действия
+        /// </summary>
+        /// <returns></returns>
+        public static ActionType AskForInput()
+        {
+            ConsoleKeyInfo kInfo = Console.ReadKey(true);
+            return KeyHandler(kInfo);
         }
     }
 }

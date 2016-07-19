@@ -29,12 +29,16 @@ namespace Snake.Tests
             Coord obj1 = new Coord(0,0);
             Coord obj2 = new Coord(0,0);
 
-            if (!obj1.Equals(obj2))
+            if (!obj1.Equals(obj2) | obj1 != obj2)
             {
                 Assert.Fail();
             }
-            Assert.AreEqual(obj1,obj2);
 
+            obj2 = new Coord(1,1);
+            if (obj1.Equals(obj2) | obj1 == obj2)
+            {
+                Assert.Fail();
+            }
         }
 
         [TestMethod()]
@@ -51,7 +55,7 @@ namespace Snake.Tests
 
             obj1 = new Coord(0, 0);
 
-            if (obj1.Equals(obj2))
+            if (Equals(obj1,obj2))
             {
                 Assert.Fail();
             }

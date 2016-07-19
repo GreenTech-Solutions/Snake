@@ -10,8 +10,6 @@ using System.Threading.Tasks;
 // TODO Добавить коллизии с телом змеи
 // TODO Добавить Меню и возможность изменять размер карты в настройках
 // TODO Возможность изменения стилей змеи (знака генерации тела и змеи)
-// TODO Реализовать независимость Data, View, Core
-// TODO 
 
 namespace Snake
 {
@@ -19,6 +17,7 @@ namespace Snake
     {
         static void Main(string[] args)
         {
+            Console.CursorVisible = false;
             Core core = new Core();
             core.Main();
         }

@@ -39,7 +39,7 @@ namespace Snake
 
         public static bool CollidedWthFood;
 
-        public static bool FoodEaten;
+        public static bool FoodEaten = true;
 
         public int Score;
 
