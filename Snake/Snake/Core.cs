@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -88,12 +89,33 @@ namespace Snake
             }
         }
 
+        public List<string> GetSettings()
+        {
+            FileInfo file = new FileInfo("settings.txt");
+
+            List<string> lines = new List<string>();
+            StreamReader sr = file.OpenText();
+            while (!sr.EndOfStream)
+            {
+                lines.Add(sr.ReadLine());
+            }
+            sr.Close();
+
+            return lines;
+        }
+
         /// <summary>
         /// Инициализация, начало, конец, перезагрузка, подключение стилей
         /// </summary>
-        public void Main()
+        public void Start()
         {
             #region Инициализация
+
+            List<string> settings = GetSettings();
+
+            Coord sizeOfMap = new Coord(Convert.ToInt32(settings[0].Split(' ')[0]),
+                Convert.ToInt32(settings[0].Split(' ')[1]));
+            Data.MapSize = sizeOfMap;
 
             // Выделеие памяти для карты и змеи
             Data.map = new int[Data.MapSize.X, Data.MapSize.Y];
@@ -121,7 +143,7 @@ namespace Snake
             #endregion
 
             #region Игровой цикл
-
+            Output.Clear();
             Output.DrawMap(Data.MapSize);
 
             
@@ -161,7 +183,7 @@ namespace Snake
                         Data.direction = Direction.Right;
                         break;
                     case ActionType.Exit:
-                        Environment.Exit(0);
+                        return;
                         break;
                     case ActionType.None:
                         break;

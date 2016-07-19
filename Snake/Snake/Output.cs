@@ -11,6 +11,11 @@ namespace Snake
     /// </summary>
     class Output
     {
+        static public void Clear()
+        {
+            Console.Clear();
+        }
+
         /// <summary>
         /// Отрисовывает карту указанного размера
         /// </summary>
