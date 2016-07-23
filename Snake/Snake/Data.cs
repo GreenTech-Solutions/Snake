@@ -28,7 +28,7 @@ namespace Snake
         /// <summary>
         /// Размер карты
         /// </summary>
-        public Coord MapSize = new Coord(10,10);
+        public Coord MapSize;
 
         public Direction direction;
 

@@ -26,7 +26,7 @@ namespace Snake
             // Рисование игрового поля
             for (int i = 0; i < size.Y; i++)
             {
-                for (int j = 0; j < size.Y; j++)
+                for (int j = 0; j < size.X; j++)
                 {
                     Console.SetCursorPosition(j, i);
                     Console.Write('-');

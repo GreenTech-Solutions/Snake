@@ -3,10 +3,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
-// TODO Добавить коллизии с телом змеи
+// TODO Не показывать еду после HeadCollide
+// TODO Генерация еды сразу после HeadCollide
 // TODO Возможность изменения стилей змеи (знака генерации тела и змеи)
-// TODO Перенести игровые настройки в другой код
 // TODO Создать менеджер состояний
 
 namespace Snake
@@ -16,81 +17,38 @@ namespace Snake
         static void Main(string[] args)
         {
             Console.CursorVisible = false;
-#if TEST
-            Console.WriteLine("Test\n");
-
-            Data.ScoreChanged += () => { Console.WriteLine($"Score = {Data.Score}\n"); };
-
-            Data.Score = 50;
-
-            Data.Score = 100;
-
-            Console.ReadKey();
-#else
-            int line = 1;
-            string menu = "Snake by Alex_Green ©\n" +
-                          "--> New Game\n" +
-                          "    Settings\n" +
-                          "    Exit\n";
-            Console.Write(menu);
-
-            while (true)
+            Menu MainMenu = new Menu("Snake by Alex_Green ©");
+            MainMenu.Add(new MenuItem("New Game", delegate
             {
-                var kInfo = Console.ReadKey(true);
-                switch (kInfo.Key)
-                {
-                    case ConsoleKey.DownArrow:
-                        if (line<3)
-                        Draw(line, ++line);
-                        break;
-                    case ConsoleKey.UpArrow:
-                        if (line>1)
-                        Draw(line,--line);
-                        break;
-                    case ConsoleKey.Enter:
-                        if (line == 1)
-                        {
-                            new Core().Start();
-                            Console.Clear();
-                            Console.Write(menu);
-                            Draw(1, 1);
-                        }
-                        else if (line == 2)
-                        {
-                            Settings();
-                            Console.Clear();
-                            Console.Write(menu);
-                            Draw(1,2);
-                        }
-                        else if (line == 3)
-                        {
-                            Environment.Exit(0);
-                        }
-                        break;
-                    default:
-                        break;
-                } 
-            }
-#endif
+                var core = new Core();
+                core.Start();
+            }));
+            MainMenu.Add(new MenuItem("Settings", Settings));
+            MainMenu.Add(new MenuItem("Exit",true));
+            
+            MainMenu.Engage();
         }
 
         static void Settings()
         {
-            Console.Clear();
-
-            string settingsForFile = "10 10";
-
+            // Запись начальных настроек в файл
+            // TODO Заполнять файл только в случае его отсутствия
+            // TODO Проверить файл настроек на повреждения
+            string[] settingsForFile = { "10", "10"};
             FileInfo file = new FileInfo("settings.txt");
             if (file.Exists == false)
             {
                 file.Create().Close();
+
+                StreamWriter sw = file.CreateText();
+                foreach (var s in settingsForFile)
+                {
+                    sw.WriteLineAsync(s);
+                }
+                sw.Close();
             }
-            StreamWriter sw = file.CreateText();
-            sw.WriteLineAsync(settingsForFile);
-            sw.Close();
 
-            Console.Write("Settings\n");
-
+            // Чтение настроек из файла
             StreamReader sr = file.OpenText();
             List<string> settingsLines = new List<string>();
 
@@ -100,93 +58,34 @@ namespace Snake
             }
             sr.Close();
 
-            bool first = true;
-            foreach (var settingsLine in settingsLines)
+            int[] values = new int[settingsLines.Count];
+            for (int i = 0; i < values.Count(); i++)
             {
-                if (first)
-                {
-                    Console.Write("-->Map Size:" + settingsLine.Split(' ')[0] + "x" + settingsLine.Split(' ')[1] + "\n");
-                    first = false;
-                }
-                else
-                {
-                    Console.Write("   " + settingsLine);
-                }
+                values[i] = Convert.ToInt32(settingsLines[i]);
             }
 
-            Console.Write("   Back");
+            Menu Settings = new Menu("Settings");
+            Settings.Add(new MenuItem("Map Width",values[0]));
+            Settings.Add(new MenuItem("Map Height",values[1]));
+            Settings.Add(new MenuItem("Back",true));
 
-            int line = 1;
-
-            while (true)
+            Settings.Get(0).ValueChanged += (value) =>
             {
-                var kInfo = Console.ReadKey(true);
+                StreamWriter sw = file.CreateText();
+                sw.WriteLine(value);
+                sw.WriteLine(settingsLines[1]);
+                sw.Close();
+            };
 
-                switch (kInfo.Key)
-                {
-                    case ConsoleKey.DownArrow:
-                        if (line < 2)
-                            Draw(line, ++line);
-                        break;
-                    case ConsoleKey.UpArrow:
-                        if (line > 1)
-                            Draw(line, --line);
-                        break;
-                    case ConsoleKey.Enter:
-                        if (line == 1)
-                        {
-                            Console.CursorVisible = true;
+            Settings.Get(1).ValueChanged += (value) =>
+            {
+                StreamWriter sw = file.CreateText();
+                sw.WriteLine(settingsLines[0]);
+                sw.WriteLine(value);
+                sw.Close();
+            };
 
-                            Console.SetCursorPosition(12,line);
-                            string input = Console.ReadLine();
-
-                            string[] values = input.Split(' ');
-
-
-                            //int[] choice = new int[4];
-                            //string key;
-                            //int X = 12;
-
-                            //// TODO Проверка ввода на неправильный размер карты
-                            //for (int i = 0; i < 4; i++)
-                            //{
-                            //    INPUT:
-                            //    key = Console.ReadKey().KeyChar.ToString();
-                            //    if (!int.TryParse(key, out choice[i]))
-                            //    {
-                            //        goto INPUT;
-                            //    }
-
-                            //    if (X == 14)
-                            //    {
-                            //        X++;
-                            //    }
-
-                            //    Console.SetCursorPosition(X++, line);
-                            //}
-
-                            sw = file.CreateText();
-                            sw.Write(input);
-                            sw.Close();
-                            Console.CursorVisible = false;
-                        }
-                        else if (line == 2)
-                        {
-                            return;
-                        }
-                        break;
-                    default:
-                        break;
-                } 
-            }
-        }
-
-        static void Draw(int oldLine, int newLine)
-        {
-            Console.SetCursorPosition(0,oldLine);
-            Console.Write("   ");
-            Console.SetCursorPosition(0,newLine);
-            Console.Write("-->");
+            Settings.Engage();
         }
     }
 }

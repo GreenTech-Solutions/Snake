@@ -134,11 +134,11 @@ namespace Snake
 
             List<string> settings = GetSettings();
 
-            Coord sizeOfMap = new Coord(Convert.ToInt32(settings[0].Split(' ')[0]),
-                Convert.ToInt32(settings[0].Split(' ')[1]));
+            Coord sizeOfMap = new Coord(Convert.ToInt32(settings[0]),
+                Convert.ToInt32(settings[1]));
             data.MapSize = sizeOfMap;
 
-            // Выделеие памяти для карты и змеи
+            // Выделение памяти для карты и змеи
             data.map = new int[data.MapSize.X, data.MapSize.Y];
             data.snake = new LinkedList<Coord>();
 
@@ -150,12 +150,12 @@ namespace Snake
 
             data.Tail = data.snake.Last.Value;
 
-            // Заполнени карты
+            // Заполнение карты
             for (int i = 0; i < data.MapSize.Y; i++)
             {
                 for (int j = 0; j < data.MapSize.X; j++)
                 {
-                    data.map[i, j] = 0;
+                    data.map[j,i] = 0;
                 }
             }
 
@@ -169,7 +169,7 @@ namespace Snake
             };
             CollidedWithBody += delegate {
                 Output.DrawGameover();
-                                             CanExit = true;
+                CanExit = true;
             };
 
             #endregion
