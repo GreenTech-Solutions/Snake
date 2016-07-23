@@ -12,6 +12,9 @@ namespace Snake
 {
     class Core
     {
+        delegate void dHeadCollidedWithFood(params dynamic []args);
+
+        private event dHeadCollidedWithFood HeadCollidedWithFood;
         /// <summary>
         /// Проверка возможности поворота змеи, проверка проигрыша и съедания еды
         /// </summary>
@@ -20,7 +23,7 @@ namespace Snake
         {
             if (Data.snake.First.Value == Data.Food)
             {
-                Data.CollidedWthFood = true;
+                HeadCollidedWithFood();
             }
             if (Data.CollidedWthFood)
             {
@@ -104,6 +107,16 @@ namespace Snake
             return lines;
         }
 
+        public int GetScore()
+        {
+            return Data.Score;
+        }
+
+        public void SetScore()
+        {
+            Data.Score = (Data.snake.Count-2) * 10;
+        }
+
         /// <summary>
         /// Инициализация, начало, конец, перезагрузка, подключение стилей
         /// </summary>
@@ -140,18 +153,26 @@ namespace Snake
 
             Data.Food = Functions.GenerateFood(Data.snake,Data.MapSize);
 
+            Data.ScoreChanged += () => { Output.DrawScores(Data.Score, Data.MapSize); };
+            HeadCollidedWithFood += delegate
+            {
+                Data.CollidedWthFood = true;
+                SetScore();
+            };
+
             #endregion
 
             #region Игровой цикл
             Output.Clear();
             Output.DrawMap(Data.MapSize);
-
-            
+            Output.DrawScores(Data.Score,Data.MapSize);            
 
             while (true)
             {
                 if (Data.FoodEaten)
+                {
                     Output.RedrawMapcell(Data.Tail);
+                }
                 else
                 {
                     Data.FoodEaten = true;

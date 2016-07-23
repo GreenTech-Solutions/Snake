@@ -74,5 +74,13 @@ namespace Snake
             Console.SetCursorPosition(coords.X,coords.Y);
             Console.Write('+');
         }
+
+        static public void DrawScores(int score, Coord mapSize)
+        {
+            int x = mapSize.X;
+            int y = mapSize.Y;
+            Console.SetCursorPosition(x + 1, 0);
+            Console.Write($"{score}pts");
+        }
     }
 }

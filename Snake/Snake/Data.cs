@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -41,7 +43,20 @@ namespace Snake
 
         public static bool FoodEaten = true;
 
-        public int Score;
+
+        private static int score = 0;
+        public static int Score
+        {
+            get { return score; }
+            set
+            {
+                score = value;
+                ScoreChanged?.Invoke();
+            }
+        }
+
+        public delegate void ValueChanged();
+        public static event ValueChanged ScoreChanged;
 
         public int HighScore;
     }
