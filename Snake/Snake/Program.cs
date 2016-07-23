@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-// TODO Вывод результатов
 // TODO Добавить коллизии с телом змеи
 // TODO Возможность изменения стилей змеи (знака генерации тела и змеи)
 // TODO Перенести игровые настройки в другой код

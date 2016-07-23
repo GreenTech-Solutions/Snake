@@ -13,39 +13,39 @@ namespace Snake
         /// <summary>
         /// Размер змеи
         /// </summary>
-        public static int Size = 3;
+        public int Size = 3;
 
         /// <summary>
         /// Игровое поле
         /// </summary>
-        public static int[,] map;
+        public int[,] map;
 
         /// <summary>
         /// Координаты ячеек змеи
         /// </summary>
-        public static LinkedList<Coord> snake;
+        public LinkedList<Coord> snake;
 
         /// <summary>
         /// Размер карты
         /// </summary>
-        public static Coord MapSize = new Coord(10,10);
+        public Coord MapSize = new Coord(10,10);
 
-        public static Direction direction;
+        public Direction direction;
 
         /// <summary>
         /// Координаты хвоста змеи
         /// </summary>
-        public static Coord Tail;
+        public Coord Tail;
 
-        public static Coord Food;
+        public Coord Food;
 
-        public static bool CollidedWthFood;
+        public bool CollidedWthFood;
 
-        public static bool FoodEaten = true;
+        public bool FoodEaten = true;
 
 
-        private static int score = 0;
-        public static int Score
+        private int score = 0;
+        public int Score
         {
             get { return score; }
             set
@@ -56,7 +56,7 @@ namespace Snake
         }
 
         public delegate void ValueChanged();
-        public static event ValueChanged ScoreChanged;
+        public event ValueChanged ScoreChanged;
 
         public int HighScore;
     }

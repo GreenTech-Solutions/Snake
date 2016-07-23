@@ -12,24 +12,32 @@ namespace Snake
 {
     class Core
     {
-        delegate void dHeadCollidedWithFood(params dynamic []args);
+        private Data data = new Data();
+        private bool CanExit = false;
+        delegate void Collided(params dynamic []args);
 
-        private event dHeadCollidedWithFood HeadCollidedWithFood;
+        private event Collided CollidedWithFood;
+        private event Collided CollidedWithBody;
         /// <summary>
         /// Проверка возможности поворота змеи, проверка проигрыша и съедания еды
         /// </summary>
         /// <returns></returns>
         public void Check()
         {
-            if (Data.snake.First.Value == Data.Food)
+            if (data.snake.SkipWhile(value => value==data.snake.First.Value).Any(coord => coord == data.snake.First.Value))
             {
-                HeadCollidedWithFood();
+                CollidedWithBody?.Invoke();
             }
-            if (Data.CollidedWthFood)
+
+            if (data.snake.First.Value == data.Food)
             {
-                if (Data.Tail == Data.Food)
+                CollidedWithFood?.Invoke();
+            }
+            if (data.CollidedWthFood)
+            {
+                if (data.Tail == data.Food)
                 {
-                    Data.FoodEaten = false;
+                    data.FoodEaten = false;
                 }
             }
         }
@@ -41,17 +49,17 @@ namespace Snake
         public void Do()
         {
             // Координаты головы
-            int X = Data.snake.First.Value.X;
-            int Y = Data.snake.First.Value.Y;
+            int X = data.snake.First.Value.X;
+            int Y = data.snake.First.Value.Y;
 
             int maxX, maxY, minX, minY;
 
-            maxX = Data.MapSize.X-1;
-            maxY = Data.MapSize.Y-1;
+            maxX = data.MapSize.X-1;
+            maxY = data.MapSize.Y-1;
 
             Coord temp;
-            Data.Tail = Data.snake.Last.Value;
-            switch (Data.direction)
+            data.Tail = data.snake.Last.Value;
+            switch (data.direction)
             {
                 case Direction.Right:
                     X++;
@@ -60,7 +68,7 @@ namespace Snake
                         X = 0;
                     }
                     temp = new Coord(X, Y);
-                    Functions.AddNewHead(temp, Data.snake);
+                    Functions.AddNewHead(temp, data.snake);
                     break;
                 case Direction.Left:
                     X--;
@@ -69,7 +77,7 @@ namespace Snake
                         X = maxX;
                     }
                     temp = new Coord(X, Y);
-                    Functions.AddNewHead(temp, Data.snake);
+                    Functions.AddNewHead(temp, data.snake);
                     break;
                 case Direction.Down:
                     Y++;
@@ -78,7 +86,7 @@ namespace Snake
                         Y = 0;
                     }
                     temp = new Coord(X, Y);
-                    Functions.AddNewHead(temp,Data.snake);
+                    Functions.AddNewHead(temp,data.snake);
                     break;
                 case Direction.Up:
                     Y--;
@@ -87,7 +95,7 @@ namespace Snake
                         Y = maxY;
                     }
                     temp = new Coord(X, Y);
-                    Functions.AddNewHead(temp,Data.snake);
+                    Functions.AddNewHead(temp,data.snake);
                     break;
             }
         }
@@ -109,12 +117,12 @@ namespace Snake
 
         public int GetScore()
         {
-            return Data.Score;
+            return data.Score;
         }
 
         public void SetScore()
         {
-            Data.Score = (Data.snake.Count-2) * 10;
+            data.Score = (data.snake.Count-2) * 10;
         }
 
         /// <summary>
@@ -128,62 +136,70 @@ namespace Snake
 
             Coord sizeOfMap = new Coord(Convert.ToInt32(settings[0].Split(' ')[0]),
                 Convert.ToInt32(settings[0].Split(' ')[1]));
-            Data.MapSize = sizeOfMap;
+            data.MapSize = sizeOfMap;
 
             // Выделеие памяти для карты и змеи
-            Data.map = new int[Data.MapSize.X, Data.MapSize.Y];
-            Data.snake = new LinkedList<Coord>();
+            data.map = new int[data.MapSize.X, data.MapSize.Y];
+            data.snake = new LinkedList<Coord>();
 
             // Создание змеи
-            for (int i = 0; i < Data.Size; i++)
+            for (int i = 0; i < data.Size; i++)
             {
-                Data.snake.AddFirst(new Coord(/* TODO Значение выставляется не здесь */i + 3, 0));
+                data.snake.AddFirst(new Coord(/* TODO Значение выставляется не здесь */i + 3, 0));
             }
 
-            Data.Tail = Data.snake.Last.Value;
+            data.Tail = data.snake.Last.Value;
 
             // Заполнени карты
-            for (int i = 0; i < Data.MapSize.Y; i++)
+            for (int i = 0; i < data.MapSize.Y; i++)
             {
-                for (int j = 0; j < Data.MapSize.X; j++)
+                for (int j = 0; j < data.MapSize.X; j++)
                 {
-                    Data.map[i, j] = 0;
+                    data.map[i, j] = 0;
                 }
             }
 
-            Data.Food = Functions.GenerateFood(Data.snake,Data.MapSize);
+            data.Food = Functions.GenerateFood(data.snake,data.MapSize);
 
-            Data.ScoreChanged += () => { Output.DrawScores(Data.Score, Data.MapSize); };
-            HeadCollidedWithFood += delegate
+            data.ScoreChanged += () => { Output.DrawScores(data.Score, data.MapSize); };
+            CollidedWithFood += delegate
             {
-                Data.CollidedWthFood = true;
+                data.CollidedWthFood = true;
                 SetScore();
+            };
+            CollidedWithBody += delegate {
+                Output.DrawGameover();
+                                             CanExit = true;
             };
 
             #endregion
 
             #region Игровой цикл
             Output.Clear();
-            Output.DrawMap(Data.MapSize);
-            Output.DrawScores(Data.Score,Data.MapSize);            
+            Output.DrawMap(data.MapSize);
+            Output.DrawScores(data.Score,data.MapSize);            
 
             while (true)
             {
-                if (Data.FoodEaten)
+                if (CanExit)
                 {
-                    Output.RedrawMapcell(Data.Tail);
+                    return;
+                }
+                if (data.FoodEaten)
+                {
+                    Output.RedrawMapcell(data.Tail);
                 }
                 else
                 {
-                    Data.FoodEaten = true;
-                    Data.CollidedWthFood = false;
-                    Functions.Grow(ref Data.snake,Data.Food);
-                    Data.Food = Functions.GenerateFood(Data.snake,Data.MapSize);
+                    data.FoodEaten = true;
+                    data.CollidedWthFood = false;
+                    Functions.Grow(ref data.snake,data.Food);
+                    data.Food = Functions.GenerateFood(data.snake,data.MapSize);
                 }
 
 
-                Output.DrawPlayer(Data.snake);
-                Output.DrawFood(Data.Food);
+                Output.DrawPlayer(data.snake);
+                Output.DrawFood(data.Food);
 
                 ActionType action = Input.AskForInput();
 
@@ -192,19 +208,19 @@ namespace Snake
                 switch (action)
                 {
                         case ActionType.Up:
-                        Data.direction = Direction.Up;
+                        data.direction = Direction.Up;
                         break;
                     case ActionType.Down:
-                        Data.direction = Direction.Down;
+                        data.direction = Direction.Down;
                         break;
                     case ActionType.Left:
-                        Data.direction = Direction.Left;
+                        data.direction = Direction.Left;
                         break;
                         case ActionType.Right:
-                        Data.direction = Direction.Right;
+                        data.direction = Direction.Right;
                         break;
                     case ActionType.Exit:
-                        return;
+                        CanExit = true;
                         break;
                     case ActionType.None:
                         break;

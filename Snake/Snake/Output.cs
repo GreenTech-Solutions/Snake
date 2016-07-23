@@ -82,5 +82,15 @@ namespace Snake
             Console.SetCursorPosition(x + 1, 0);
             Console.Write($"{score}pts");
         }
+
+        static public void DrawGameover()
+        {
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("Game over!\n");
+            Console.Write("Quit to main menu..");
+            Console.ResetColor();
+            Console.ReadKey();
+        }
     }
 }
