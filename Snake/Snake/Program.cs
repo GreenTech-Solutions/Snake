@@ -4,7 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 
+// TODO Не позволять змее ползти в обратную сторону
 // TODO Не показывать еду после HeadCollide
 // TODO Генерация еды сразу после HeadCollide
 // TODO Возможность изменения стилей змеи (знака генерации тела и змеи)
@@ -16,6 +18,7 @@ namespace Snake
     {
         static void Main(string[] args)
         {
+            Console.OutputEncoding = Encoding.UTF8;
             Console.CursorVisible = false;
             Menu MainMenu = new Menu("Snake by Alex_Green ©");
             MainMenu.Add(new MenuItem("New Game", delegate

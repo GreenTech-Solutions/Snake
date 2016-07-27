@@ -11,6 +11,16 @@ namespace Snake
     /// </summary>
     class Output
     {
+        private static char SnakeHead = (char)64;
+
+        private static char SnakeBody = (char)42;
+
+        private static char MapCell = (char)183;
+
+        private static char Food = (char)35;
+
+        private static ConsoleColor BackGround = ConsoleColor.DarkGreen;
+
         static public void Clear()
         {
             Console.Clear();
@@ -23,15 +33,21 @@ namespace Snake
         {
             if (size == null) throw new ArgumentNullException(nameof(size));
 
+
+            Console.BackgroundColor = BackGround;
+            Console.ForegroundColor = ConsoleColor.Black;
+
             // Рисование игрового поля
             for (int i = 0; i < size.Y; i++)
             {
                 for (int j = 0; j < size.X; j++)
                 {
                     Console.SetCursorPosition(j, i);
-                    Console.Write('-');
+                    Console.Write(MapCell);
                 }
             }
+
+            Console.ResetColor();
         }
 
         /// <summary>
@@ -41,14 +57,19 @@ namespace Snake
         {
             if (playerCoords == null) throw new ArgumentNullException(nameof(playerCoords));
 
+            Console.BackgroundColor = BackGround;
+            Console.ForegroundColor = ConsoleColor.Red;
+
             // Рисование змеи
             var cell = playerCoords.Last;
             while (cell!=null)
             {
                 Console.SetCursorPosition(cell.Value.X, cell.Value.Y);
-                Console.Write(cell == playerCoords.First ? '©' : '*');
+                Console.Write(cell == playerCoords.First ? SnakeHead : SnakeBody);
                 cell = cell.Previous;
             }
+
+            Console.ResetColor();
         }
 
         /// <summary>
@@ -61,8 +82,13 @@ namespace Snake
             {
                 throw new ArgumentNullException(nameof(cell));
             }
+
+            Console.BackgroundColor = BackGround;
+            Console.ForegroundColor = ConsoleColor.Black;
             Console.SetCursorPosition(cell.X,cell.Y);
-            Console.Write('-');
+            Console.Write(MapCell);
+
+            Console.ResetColor();
         }
 
         /// <summary>
@@ -71,8 +97,14 @@ namespace Snake
         static public void DrawFood(Coord coords)
         {
             if (coords == null) throw new ArgumentNullException(nameof(coords));
+
+            Console.BackgroundColor = BackGround;
+            Console.ForegroundColor = ConsoleColor.Yellow;
+
             Console.SetCursorPosition(coords.X,coords.Y);
-            Console.Write('+');
+            Console.Write(Food);
+
+            Console.ResetColor();
         }
 
         static public void DrawScores(int score, Coord mapSize)

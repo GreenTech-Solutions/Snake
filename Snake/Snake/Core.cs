@@ -59,6 +59,7 @@ namespace Snake
 
             Coord temp;
             data.Tail = data.snake.Last.Value;
+
             switch (data.direction)
             {
                 case Direction.Right:
@@ -126,6 +127,45 @@ namespace Snake
         }
 
         /// <summary>
+        /// Проверяет старое направление с новым и выдаёт правильное
+        /// </summary>
+        /// <param name="newDirection"></param>
+        /// <returns></returns>
+        private Direction EvaulateDirection(Direction newDirection)
+        {
+            Direction oldDirection = data.direction;
+            switch (newDirection)
+            {
+                case Direction.Up:
+                    if (oldDirection == Direction.Down)
+                    {
+                        return oldDirection;
+                    }
+                    break;
+                case Direction.Down:
+                    if (oldDirection == Direction.Up)
+                    {
+                        return oldDirection;
+                    }
+                    break;
+                case Direction.Left:
+                    if (oldDirection == Direction.Right)
+                    {
+                        return oldDirection;
+                    }
+                    break;
+                case Direction.Right:
+                    if (oldDirection == Direction.Left)
+                    {
+                        return oldDirection;
+                    }
+                    break;
+            }
+
+            return newDirection;
+        }
+
+        /// <summary>
         /// Инициализация, начало, конец, перезагрузка, подключение стилей
         /// </summary>
         public void Start()
@@ -167,6 +207,7 @@ namespace Snake
                 data.CollidedWthFood = true;
                 SetScore();
             };
+
             CollidedWithBody += delegate {
                 Output.DrawGameover();
                 CanExit = true;
@@ -185,6 +226,7 @@ namespace Snake
                 {
                     return;
                 }
+
                 if (data.FoodEaten)
                 {
                     Output.RedrawMapcell(data.Tail);
@@ -194,7 +236,7 @@ namespace Snake
                     data.FoodEaten = true;
                     data.CollidedWthFood = false;
                     Functions.Grow(ref data.snake,data.Food);
-                    data.Food = Functions.GenerateFood(data.snake,data.MapSize);
+                    data.Food = Functions.GenerateFood(data.snake, data.MapSize);
                 }
 
 
@@ -203,21 +245,19 @@ namespace Snake
 
                 ActionType action = Input.AskForInput();
 
-                //ActionType action = ActionType.Right;
-
                 switch (action)
                 {
                         case ActionType.Up:
-                        data.direction = Direction.Up;
+                        data.direction = EvaulateDirection(Direction.Up);
                         break;
                     case ActionType.Down:
-                        data.direction = Direction.Down;
+                        data.direction = EvaulateDirection(Direction.Down);
                         break;
                     case ActionType.Left:
-                        data.direction = Direction.Left;
+                        data.direction = EvaulateDirection(Direction.Left);
                         break;
                         case ActionType.Right:
-                        data.direction = Direction.Right;
+                        data.direction = EvaulateDirection(Direction.Right);
                         break;
                     case ActionType.Exit:
                         CanExit = true;
