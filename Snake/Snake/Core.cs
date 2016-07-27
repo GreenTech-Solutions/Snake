@@ -33,9 +33,10 @@ namespace Snake
             {
                 CollidedWithFood?.Invoke();
             }
+
             if (data.CollidedWthFood)
             {
-                if (data.Tail == data.Food)
+                if (data.Tail == data.FoodForEating)
                 {
                     data.FoodEaten = false;
                 }
@@ -206,6 +207,9 @@ namespace Snake
             {
                 data.CollidedWthFood = true;
                 SetScore();
+                data.FoodForEating = data.Food;
+                data.Food = Functions.GenerateFood(data.snake, data.MapSize);
+
             };
 
             CollidedWithBody += delegate {
@@ -235,8 +239,7 @@ namespace Snake
                 {
                     data.FoodEaten = true;
                     data.CollidedWthFood = false;
-                    Functions.Grow(ref data.snake,data.Food);
-                    data.Food = Functions.GenerateFood(data.snake, data.MapSize);
+                    Functions.Grow(ref data.snake,data.FoodForEating);
                 }
 
 

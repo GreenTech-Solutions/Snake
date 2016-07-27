@@ -30,6 +30,9 @@ namespace Snake
         /// </summary>
         public Coord MapSize;
 
+        /// <summary>
+        /// Направление движения
+        /// </summary>
         public Direction direction;
 
         /// <summary>
@@ -38,6 +41,11 @@ namespace Snake
         public Coord Tail;
 
         public Coord Food;
+
+        /// <summary>
+        /// Еда, которую змея начала поглощать
+        /// </summary>
+        public Coord FoodForEating;
 
         public bool CollidedWthFood;
 

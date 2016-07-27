@@ -6,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-// TODO Не позволять змее ползти в обратную сторону
 // TODO Не показывать еду после HeadCollide
 // TODO Генерация еды сразу после HeadCollide
 // TODO Возможность изменения стилей змеи (знака генерации тела и змеи)
