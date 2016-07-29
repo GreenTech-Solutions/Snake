@@ -53,7 +53,14 @@ namespace Snake
                 Console.Write($"   {menuItem} ");
                 if (menuItem.HasValue)
                 {
-                    Console.Write(menuItem.Value);
+                    if (Equals(menuItem.ConvertingFunction, null))
+                    {
+                        Console.Write(menuItem.Value);
+                    }
+                    else
+                    {
+                        Console.Write(menuItem.ConvertingFunction.Invoke(menuItem.Value));
+                    }
                 }
                 Console.Write("\n");
             }
@@ -70,33 +77,33 @@ namespace Snake
             while (true)
             {
                 var kInfo = Console.ReadKey(true);
-                switch (kInfo.Key)
+                if (kInfo.Key == Config.DownKey || kInfo.Key == ConsoleKey.DownArrow)
                 {
-                    case ConsoleKey.DownArrow:
-                        if (line < count)
-                            DrawCursor(++line);
-                        break;
-                    case ConsoleKey.UpArrow:
-                        if (line > 1)
-                            DrawCursor(--line);
-                        break;
-                    case ConsoleKey.Enter:
-                        if (MenuItems[line - 1].HasValue)
-                        {
-                            Edit(line - 1);
-                        }
-                        else if (MenuItems[line - 1].IsExitItem)
-                        {
-                            return;
-                        }
-                        else
-                        {
-                            MenuItems[line - 1].Function();
-                        }
-                        Console.Clear();
-                        Out();
-                        DrawCursor(line);
-                        break;
+                    if (line < count)
+                        DrawCursor(++line);
+                }
+                else if (kInfo.Key == Config.UpKey || kInfo.Key == ConsoleKey.UpArrow)
+                {
+                    if (line > 1)
+                        DrawCursor(--line);
+                }
+                else if (kInfo.Key == ConsoleKey.Enter)
+                {
+                    if (MenuItems[line - 1].HasValue)
+                    {
+                        Edit(line - 1);
+                    }
+                    else if (MenuItems[line - 1].IsExitItem)
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        MenuItems[line - 1].Function();
+                    }
+                    Console.Clear();
+                    Out();
+                    DrawCursor(line);
                 }
                 previousline = line;
             }
@@ -109,27 +116,34 @@ namespace Snake
             Console.SetCursorPosition(4 + item.Length, line);
             Console.CursorVisible = true;
 
-            List<int> value = new List<int>();
-
-            ConsoleKeyInfo key;
-            while ((key = Console.ReadKey(true)).Key != ConsoleKey.Enter)
+            if (MenuItems[number].EditingFunction == null)
             {
-                char kChar = key.KeyChar;
-                try
+                List<int> value = new List<int>();
+
+                ConsoleKeyInfo key;
+                while ((key = Console.ReadKey(true)).Key != ConsoleKey.Enter)
                 {
-                    value.Add((int)Convert.ToUInt32(kChar.ToString()));
-                    Console.Write(value.Last());
+                    char kChar = key.KeyChar;
+                    try
+                    {
+                        value.Add((int) Convert.ToUInt32(kChar.ToString()));
+                        Console.Write(value.Last());
+                    }
+                    catch (Exception)
+                    {
+                        continue;
+                    }
                 }
-                catch (Exception)
-                {
-                    continue;
-                }
+
+                MenuItems[number].Value = Convert.ToInt32(string.Concat(value));
+            }
+            else
+            {
+                MenuItems[number].Value = MenuItems[number].EditingFunction.Invoke();
             }
 
-            MenuItems[number].Value = Convert.ToInt32(string.Concat(value));
-
             Console.CursorVisible = false;
-        }
+        } 
 
         void DrawCursor(int line)
         {
@@ -144,6 +158,17 @@ namespace Snake
     {
         public string Caption;
         public Action Function = null;
+
+        /// <summary>
+        /// Метод, инкапсулирующий процесс редактирования значения элемента меню
+        /// <returns>Результат преобразования ввода пользователя</returns>
+        /// </summary>
+        public Func<int> EditingFunction = null;
+
+        /// <summary>
+        /// Метод, переводящий число в дружелюбный формат
+        /// </summary>
+        public Func<int,string> ConvertingFunction = null; 
 
         private int value;
 
@@ -167,11 +192,13 @@ namespace Snake
             Function = function;
         }
 
-        public MenuItem(string caption, int value)
+        public MenuItem(string caption, int value, Func<int> editingFunction = null, Func<int,string> convertingFunction = null)
             : this(caption, null)
         {
             Value = value;
             HasValue = true;
+            EditingFunction = editingFunction;
+            ConvertingFunction = convertingFunction;
         }
 
         public MenuItem(string caption, bool isExitItem)

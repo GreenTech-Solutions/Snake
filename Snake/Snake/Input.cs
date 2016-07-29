@@ -8,26 +8,60 @@ namespace Snake
 {
     class Input
     {
+        public ConsoleKey UpKey;
+
+        public ConsoleKey DownKey;
+
+        public ConsoleKey LeftKey;
+
+        public ConsoleKey RightKey;
+        
+        // TODO В дальнейшем создать отдельный класс с полями клавишами и передавать его в этот конструктор
+        public Input(ConsoleKey upKey, ConsoleKey downKey, ConsoleKey leftKey, ConsoleKey rightKey)
+        {
+            UpKey = upKey;
+            DownKey = downKey;
+            LeftKey = leftKey;
+            RightKey = rightKey;
+        }
+
+        public Input()
+        {
+            UpKey = Config.UpKey;
+            DownKey = Config.DownKey;
+            LeftKey = Config.LeftKey;
+            RightKey = Config.RightKey;
+        }
+
         /// <summary>
         /// Интерпретирует нажатую клавишу и возвращает информациию о действии
         /// </summary>
         /// <param name="kInfo">Информация о клавише</param>
-        public static ActionType KeyHandler(ConsoleKeyInfo kInfo)
+        public ActionType KeyHandler(ConsoleKeyInfo kInfo)
         {
-            switch (kInfo.KeyChar.ToString().ToLower())
+            if (kInfo.Key == RightKey)
             {
-                case "d":
-                    return ActionType.Right;
-                case "a":
-                    return ActionType.Left;
-                case "w":
-                    return ActionType.Up;
-                case "s":
-                    return ActionType.Down;
-                case "q":
-                    return ActionType.Exit;
-                default:
-                    return ActionType.None;
+                return ActionType.Right;
+            }
+            else if (kInfo.Key == LeftKey)
+            {
+                return ActionType.Left;
+            }
+            else if (kInfo.Key == UpKey)
+            {
+                return ActionType.Up;
+            }
+            else if (kInfo.Key == DownKey)
+            {
+                return ActionType.Down;
+            }
+            else if (kInfo.Key == ConsoleKey.Escape)
+            {
+                return ActionType.Exit;
+            }
+            else
+            {
+                return ActionType.None;
             }
         }
 
@@ -35,7 +69,7 @@ namespace Snake
         /// Ожидает нажатия клавиши и возвращает ассоциативный тип действия
         /// </summary>
         /// <returns></returns>
-        public static ActionType AskForInput()
+        public ActionType AskForInput()
         {
             ConsoleKeyInfo kInfo;
             if (Console.KeyAvailable == true)
@@ -48,5 +82,16 @@ namespace Snake
                 return ActionType.None;
             }
         }
+    }
+
+    static class Config
+    {
+        public static ConsoleKey UpKey;
+
+        public static ConsoleKey DownKey;
+
+        public static ConsoleKey LeftKey;
+
+        public static ConsoleKey RightKey;
     }
 }

@@ -209,6 +209,8 @@ namespace Snake
                 CanExit = true;
             };
 
+            Input input = new Input();
+
             #endregion
 
             #region Игровой цикл
@@ -238,7 +240,7 @@ namespace Snake
                 Output.DrawPlayer(data.snake);
                 Output.DrawFood(data.Food);
 
-                ActionType action = Input.AskForInput();
+                ActionType action = input.AskForInput();
 
                 switch (action)
                 {
