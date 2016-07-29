@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -102,19 +104,9 @@ namespace Snake
             }
         }
 
-        public List<string> GetSettings()
+        public NameValueCollection GetSettings()
         {
-            FileInfo file = new FileInfo("settings.txt");
-
-            List<string> lines = new List<string>();
-            StreamReader sr = file.OpenText();
-            while (!sr.EndOfStream)
-            {
-                lines.Add(sr.ReadLine());
-            }
-            sr.Close();
-
-            return lines;
+            return ConfigurationManager.AppSettings;
         }
 
         public int GetScore()
@@ -173,10 +165,10 @@ namespace Snake
         {
             #region Инициализация
 
-            List<string> settings = GetSettings();
+            var settings = GetSettings();
 
-            Coord sizeOfMap = new Coord(Convert.ToInt32(settings[0]),
-                Convert.ToInt32(settings[1]));
+            Coord sizeOfMap = new Coord(Convert.ToInt32(settings["MapWidth"]),
+                Convert.ToInt32(settings["MapHeight"]));
             data.MapSize = sizeOfMap;
 
             // Выделение памяти для карты и змеи

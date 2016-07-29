@@ -22,6 +22,10 @@ namespace Snake
 
         public void Add(MenuItem item)
         {
+            if (MenuItems.Exists(x => x.Caption == item.Caption))
+            {
+                throw new ArgumentException("Каждый элемент меню должне иметь уникальное имя.");
+            }
             MenuItems.Add(item);
         }
 
@@ -33,6 +37,11 @@ namespace Snake
         public MenuItem Get(int index)
         {
             return MenuItems[index];
+        }
+
+        public MenuItem Get(string caption)
+        {
+            return MenuItems.Find(x => x.Caption == caption);
         }
 
         public void Out()
