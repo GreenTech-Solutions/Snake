@@ -5,9 +5,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
-// TODO Не показывать еду после HeadCollide
-// TODO Генерация еды сразу после HeadCollide
+// TODO Проигрыш на фоне игры
+// TODO Настройка управления
+// TODO Добавить звуки
 // TODO Возможность изменения стилей змеи (знака генерации тела и змеи)
 // TODO Создать менеджер состояний
 

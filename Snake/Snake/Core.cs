@@ -213,7 +213,7 @@ namespace Snake
             };
 
             CollidedWithBody += delegate {
-                Output.DrawGameover();
+                Output.DrawGameover(data.MapSize);
                 CanExit = true;
             };
 

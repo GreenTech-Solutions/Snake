@@ -92,7 +92,7 @@ namespace Snake
         }
 
         /// <summary>
-        /// Отрисовывает еду на координатах, хранящихся в Data.Food
+        /// Отрисовывает еду на указанных координатах
         /// </summary>
         static public void DrawFood(Coord coords)
         {
@@ -107,6 +107,11 @@ namespace Snake
             Console.ResetColor();
         }
 
+        /// <summary>
+        /// Отрисовывает набранные очки
+        /// </summary>
+        /// <param name="score"></param>
+        /// <param name="mapSize"></param>
         static public void DrawScores(int score, Coord mapSize)
         {
             int x = mapSize.X;
@@ -115,11 +120,17 @@ namespace Snake
             Console.Write($"{score}pts");
         }
 
-        static public void DrawGameover()
+        /// <summary>
+        /// Отрисовывает экран конца игры
+        /// </summary>
+        static public void DrawGameover(Coord MapSize)
         {
-            Console.Clear();
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("Game over!\n");
+
+            Console.SetCursorPosition(MapSize.X + 2, 3);
+            Console.Write("Game over!");
+
+            Console.SetCursorPosition(MapSize.X + 2, 4);
             Console.Write("Quit to main menu..");
             Console.ResetColor();
             Console.ReadKey();
