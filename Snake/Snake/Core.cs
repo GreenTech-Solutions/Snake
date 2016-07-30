@@ -208,7 +208,10 @@ namespace Snake
 
             };
 
+            var lose = new Music(new Audio(Resources.lose));
             CollidedWithBody += delegate {
+
+                lose.PlayOnce();
                 Output.DrawGameover(data.MapSize);
                 CanExit = true;
             };

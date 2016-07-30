@@ -42,7 +42,7 @@ namespace Snake
             {
                 for (int j = 0; j < size.X; j++)
                 {
-                    Console.SetCursorPosition(j, i);
+                    Console.SetCursorPosition(j + Padding, i + PaddingTop);
                     Console.Write(MapCell);
                 }
             }
@@ -64,7 +64,7 @@ namespace Snake
             var cell = playerCoords.Last;
             while (cell!=null)
             {
-                Console.SetCursorPosition(cell.Value.X, cell.Value.Y);
+                Console.SetCursorPosition(cell.Value.X + Padding, cell.Value.Y + PaddingTop);
                 Console.Write(cell == playerCoords.First ? SnakeHead : SnakeBody);
                 cell = cell.Previous;
             }
@@ -85,7 +85,7 @@ namespace Snake
 
             Console.BackgroundColor = BackGround;
             Console.ForegroundColor = ConsoleColor.Black;
-            Console.SetCursorPosition(cell.X,cell.Y);
+            Console.SetCursorPosition(cell.X + Padding,cell.Y + PaddingTop);
             Console.Write(MapCell);
 
             Console.ResetColor();
@@ -101,7 +101,7 @@ namespace Snake
             Console.BackgroundColor = BackGround;
             Console.ForegroundColor = ConsoleColor.Yellow;
 
-            Console.SetCursorPosition(coords.X,coords.Y);
+            Console.SetCursorPosition(coords.X + Padding,coords.Y + PaddingTop);
             Console.Write(Food);
 
             Console.ResetColor();
@@ -116,7 +116,7 @@ namespace Snake
         {
             int x = mapSize.X;
             int y = mapSize.Y;
-            Console.SetCursorPosition(x + 1, 0);
+            Console.SetCursorPosition(x + 1 + Padding, 0 + PaddingTop);
             Console.Write($"{score}pts");
         }
 
@@ -127,13 +127,44 @@ namespace Snake
         {
             Console.ForegroundColor = ConsoleColor.Red;
 
-            Console.SetCursorPosition(MapSize.X + 2, 3);
+            Console.SetCursorPosition(MapSize.X + 2 + Padding, 3 + PaddingTop);
             Console.Write("Game over!");
 
-            Console.SetCursorPosition(MapSize.X + 2, 4);
+            Console.SetCursorPosition(MapSize.X + 2 + Padding, 4 + PaddingTop);
             Console.Write("Quit to main menu..");
             Console.ResetColor();
             Console.ReadKey();
+        }
+
+        static public void WriteLineCenter(string text)
+        {
+            var width = Console.WindowWidth;
+            var padding = width / 2 + text.Length / 2;
+            Console.SetCursorPosition(Padding,Console.CursorTop);
+            Console.WriteLine(text);
+        }
+
+        static public void WriteCenter(string text)
+        {
+            var width = Console.WindowWidth;
+            var padding = width / 2 + text.Length / 2;
+            Console.SetCursorPosition(Padding,Console.CursorTop);
+            Console.Write(text);
+        }
+
+        static public int Padding { get
+            {
+                var width = Console.WindowWidth;
+                return width *3/ 8;
+            } }
+
+        public static int PaddingTop
+        {
+            get
+            {
+                var height = Console.WindowHeight;
+                return height * 1/4;
+            }
         }
     }
 }

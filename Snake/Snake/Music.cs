@@ -15,10 +15,6 @@ namespace Snake
 {
     class Music
     {
-        private WaveStream mainOutputStream;
-
-        private IWavePlayer player;
-
         private NAudio.Wave.WaveFileReader wave = null;
 
         private WaveFileWriter writer = null;
