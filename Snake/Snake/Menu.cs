@@ -47,15 +47,16 @@ namespace Snake
         public void Out()
         {
             Console.Clear();
-            Console.WriteLine(Title);
+            Console.SetCursorPosition(Console.CursorLeft,Output.PaddingTop);
+            Output.WriteLineCenter(Title);
             foreach (var menuItem in MenuItems)
             {
-                Console.Write($"   {menuItem} ");
+                Output.WriteCenter($"   {menuItem} ");
                 if (menuItem.HasValue)
                 {
                     if (Equals(menuItem.ConvertingFunction, null))
                     {
-                        Console.Write(menuItem.Value);
+                        Console.Write(menuItem.Value.ToString());
                     }
                     else
                     {
@@ -118,7 +119,7 @@ namespace Snake
         {
             int line = number+1;
             string item = MenuItems[number].Caption;
-            Console.SetCursorPosition(4 + item.Length, line);
+            Console.SetCursorPosition(4 + item.Length + Output.Padding, line + Output.PaddingTop);
             Console.CursorVisible = true;
 
             if (MenuItems[number].EditingFunction == null)
@@ -152,9 +153,9 @@ namespace Snake
 
         void DrawCursor(int line)
         {
-            Console.SetCursorPosition(0,previousline);
+            Console.SetCursorPosition(Output.Padding,previousline + Output.PaddingTop);
             Console.Write("   ");
-            Console.SetCursorPosition(0, line);
+            Console.SetCursorPosition(Output.Padding, line + Output.PaddingTop);
             Console.Write("-->");
         }
     }
