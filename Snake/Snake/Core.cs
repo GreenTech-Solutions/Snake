@@ -197,6 +197,8 @@ namespace Snake
             data.ScoreChanged += () => { Output.DrawScores(data.Score, data.MapSize); };
             CollidedWithFood += delegate
             {
+
+                new Music(new Audio(Resources.apple)).PlayOnce();
                 data.CollidedWthFood = true;
                 SetScore();
                 data.FoodForEating = data.Food;

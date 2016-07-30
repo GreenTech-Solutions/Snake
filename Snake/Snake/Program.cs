@@ -2,6 +2,7 @@
 #undef TEST
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Configuration;
 using System.IO;
 using System.Linq;
@@ -9,7 +10,6 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 
-// TODO Настройка управления
 // TODO Добавить звуки
 // TODO Возможность изменения стилей змеи (знака генерации тела и змеи)
 // TODO Создать менеджер состояний
@@ -29,23 +29,40 @@ namespace Snake
 
         static void Main(string[] args)
         {
-            Console.Title = "Snake v" + SnakeSettings.Default.Version;
-            SnakeSettings.Default.open_sum++;
-            Console.OutputEncoding = Encoding.UTF8;
-            Console.CursorVisible = false;
-
-            Configurate();
-
-            Menu MainMenu = new Menu("Snake by Alex_Green ©");
-            MainMenu.Add(new MenuItem("New Game", delegate
+            try
             {
-                var core = new Core();
-                core.Start();
-            }));
-            MainMenu.Add(new MenuItem("Settings", Settings));
-            MainMenu.Add(new MenuItem("Exit",true));
-            
-            MainMenu.Engage();
+                Console.Title = "Snake v" + SnakeSettings.Default.Version;
+                SnakeSettings.Default.open_sum++;
+                Console.OutputEncoding = Encoding.UTF8;
+                Console.CursorVisible = false;
+
+                Configurate();
+
+                Music music = new Music(new Audio(Resources.MainMenu));
+
+                Menu MainMenu = new Menu("Snake by Alex_Green ©");
+                MainMenu.Add(new MenuItem("New Game", delegate
+                {
+                    var core = new Core();
+
+                    music.Stop();
+                    music.Load(new Audio(Resources.InGame));
+                    music.PlayLoop();
+                    core.Start();
+                    music.Stop();
+                    music.Load(new Audio(Resources.MainMenu));
+                    music.PlayLoop();
+                }));
+                MainMenu.Add(new MenuItem("Settings", Settings));
+                MainMenu.Add(new MenuItem("Exit", true));
+
+                music.PlayLoop();
+                MainMenu.Engage();
+            }
+            catch
+            {
+                throw;
+            }
         }
 
         static void Settings()
