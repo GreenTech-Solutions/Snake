@@ -74,13 +74,13 @@ namespace Snake
             Out();
             DrawCursor(line);
 
-
+            Music music = new Music(new Audio(Resources.click));
 
             while (true)
             {
                 var kInfo = Console.ReadKey(true);
 
-                new Music(new Audio(Resources.click)).PlayOnce();
+                music.PlayOnce();
 
                 if (kInfo.Key == Config.DownKey || kInfo.Key == ConsoleKey.DownArrow)
                 {

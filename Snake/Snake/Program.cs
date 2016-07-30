@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading;
 
 // TODO Добавить звуки
+// TODO Настройки громкости
 // TODO Возможность изменения стилей змеи (знака генерации тела и змеи)
 // TODO Создать менеджер состояний
 
@@ -46,11 +47,11 @@ namespace Snake
                     var core = new Core();
 
                     music.Stop();
-                    music.Load(new Audio(Resources.InGame));
+                    music = new Music(new Audio(Resources.InGame));
                     music.PlayLoop();
                     core.Start();
                     music.Stop();
-                    music.Load(new Audio(Resources.MainMenu));
+                    music = new Music(new Audio(Resources.MainMenu));
                     music.PlayLoop();
                 }));
                 MainMenu.Add(new MenuItem("Settings", Settings));
@@ -59,9 +60,13 @@ namespace Snake
                 music.PlayLoop();
                 MainMenu.Engage();
             }
-            catch
+                //catch
+                //{
+                //    throw;
+                //}
+            finally
             {
-                throw;
+                
             }
         }
 

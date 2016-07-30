@@ -195,10 +195,12 @@ namespace Snake
             data.Food = Functions.GenerateFood(data.snake,data.MapSize);
 
             data.ScoreChanged += () => { Output.DrawScores(data.Score, data.MapSize); };
+
+            var apple = new Music(new Audio(Resources.apple));
             CollidedWithFood += delegate
             {
 
-                new Music(new Audio(Resources.apple)).PlayOnce();
+                apple.PlayOnce();
                 data.CollidedWthFood = true;
                 SetScore();
                 data.FoodForEating = data.Food;

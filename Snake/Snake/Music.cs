@@ -19,6 +19,17 @@ namespace Snake
 
         private IWavePlayer player;
 
+        private NAudio.Wave.WaveFileReader wave = null;
+
+        private WaveFileWriter writer = null;
+
+        private NAudio.Wave.DirectSoundOut output = null;
+
+        private Stream file = null;
+
+        private Audio song;
+
+
         public Music(Audio audio)
         {
             Load(audio);
@@ -26,7 +37,7 @@ namespace Snake
 
         public void PlayLoop()
         {
-            player.PlaybackStopped += PlayerOnPlaybackStopped;
+            output.PlaybackStopped += PlayerOnPlaybackStopped;
             PlayOnce();
         }
 
@@ -37,34 +48,41 @@ namespace Snake
 
         public void PlayOnce()
         {
-            if (player.PlaybackState == PlaybackState.Playing || player.PlaybackState == PlaybackState.Stopped)
-            {
-                player.Stop();
-                player.Dispose();
-                player = new WaveOut();
-                player.Init(mainOutputStream);
-            }
-            player.Play();
+            //if (wave.CanWrite)
+            wave.Position = 0;
+            output.Play();
         }
 
         public void Stop()
         {
-            player.Stop();
+            output.PlaybackStopped -= PlayerOnPlaybackStopped;
+            output.Stop();
         }
 
         public void Load(Audio audio)
         {
-            mainOutputStream = new WaveFileReader(audio.File);            
+            file = audio.File;
+            song = audio;
+            wave = new NAudio.Wave.WaveFileReader(audio.File);
 
-            player = new WaveOut();
-            player.Init(mainOutputStream);
+            output = new NAudio.Wave.DirectSoundOut();
+            output.Init(new NAudio.Wave.WaveChannel32(wave));
         }
 
         ~Music()
         {
-            mainOutputStream.Close();
-            player.Dispose();
-            mainOutputStream.Dispose();
+            if (output != null)
+            {
+                if (output.PlaybackState == NAudio.Wave.PlaybackState.Playing) output.Stop();
+                output.Dispose();
+                output = null;
+            }
+            if (wave != null)
+            {
+                wave.Close();
+                wave.Dispose();
+                wave = null;
+            }
         }
     }
 
@@ -91,6 +109,11 @@ namespace Snake
             File.Close();
             File.Dispose();
 
+        }
+
+        public override string ToString()
+        {
+            return Name;
         }
     }
 }
