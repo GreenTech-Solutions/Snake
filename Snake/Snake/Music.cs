@@ -21,14 +21,38 @@ namespace Snake
 
         private NAudio.Wave.DirectSoundOut output = null;
 
+        private WaveChannel32 waveChannel32;
+
         private Stream file = null;
 
         private Audio song;
+
+        private bool canPlay;
+        public bool CanPlay { get {return canPlay;} set { canPlay = value;
+            CanPlayChanged(value);
+        } }
+
+        public delegate void valueChanged(dynamic value);
+
+        public event valueChanged CanPlayChanged;
 
 
         public Music(Audio audio)
         {
             Load(audio);
+            CanPlayChanged += value =>
+            {
+                if (canPlay)
+                {
+                    waveChannel32.Volume = 1;
+                }
+                else
+                {
+                    waveChannel32.Volume = 0;
+                }
+            };
+
+            CanPlay = true;
         }
 
         public void PlayLoop()
@@ -44,7 +68,6 @@ namespace Snake
 
         public void PlayOnce()
         {
-            //if (wave.CanWrite)
             wave.Position = 0;
             output.Play();
         }
@@ -62,7 +85,10 @@ namespace Snake
             wave = new NAudio.Wave.WaveFileReader(audio.File);
 
             output = new NAudio.Wave.DirectSoundOut();
-            output.Init(new NAudio.Wave.WaveChannel32(wave));
+            waveChannel32 = new WaveChannel32(wave);
+
+            waveChannel32.Volume = canPlay ? 1 : 0;
+            output.Init(waveChannel32);
         }
 
         ~Music()

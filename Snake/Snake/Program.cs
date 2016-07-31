@@ -5,6 +5,7 @@ using System.CodeDom;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -13,8 +14,9 @@ using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Forms;
-using System.Windows.Input;
 using Cursor = System.Windows.Forms.Cursor;
+using MouseEventArgs = System.Windows.Forms.MouseEventArgs;
+using MouseEventHandler = System.Windows.Forms.MouseEventHandler;
 
 // TODO Изменение скорости
 // TODO Добавить концепцию уровней
@@ -26,17 +28,6 @@ namespace Snake
 {
     class Program
     {
-
-
-        static void Configurate()
-        {
-            var settings = ConfigurationManager.AppSettings;
-            Config.UpKey = (ConsoleKey)Enum.Parse(typeof(ConsoleKey), settings["ControlsUp"]);
-            Config.DownKey = (ConsoleKey)Enum.Parse(typeof(ConsoleKey), settings["ControlsDown"]);
-            Config.LeftKey = (ConsoleKey)Enum.Parse(typeof(ConsoleKey), settings["Controlsleft"]);
-            Config.RightKey = (ConsoleKey) Enum.Parse(typeof (ConsoleKey), settings["ControlsRight"]);
-        }
-
         const int STD_OUTPUT_HANDLE = -11;
 
         [DllImport("kernel32.dll")]
@@ -81,9 +72,17 @@ namespace Snake
         ref CONSOLE_FONT_INFO_EX ConsoleCurrentFontEx
         );
 
+        static void Configurate()
+        {
+            var settings = ConfigurationManager.AppSettings;
+            Config.UpKey = (ConsoleKey)Enum.Parse(typeof(ConsoleKey), settings["ControlsUp"]);
+            Config.DownKey = (ConsoleKey)Enum.Parse(typeof(ConsoleKey), settings["ControlsDown"]);
+            Config.LeftKey = (ConsoleKey)Enum.Parse(typeof(ConsoleKey), settings["Controlsleft"]);
+            Config.RightKey = (ConsoleKey)Enum.Parse(typeof(ConsoleKey), settings["ControlsRight"]);
 
-        [DllImport("user32.dll")]
-        static extern int ShowCursor(bool bShow);
+        }
+
+        private static Music music;
 
         static void Main(string[] args)
         {
@@ -107,10 +106,9 @@ namespace Snake
                 Console.SetBufferSize(Console.WindowWidth, Console.WindowHeight);
 
                 Cursor.Clip = new System.Drawing.Rectangle(SystemInformation.PrimaryMonitorSize.Width,
-                    SystemInformation.PrimaryMonitorSize.Height,1,1);
+                    SystemInformation.PrimaryMonitorSize.Height, 1, 1);
                 Cursor.Hide();
 
-                
 
                 Console.Title = "Snake v" + SnakeSettings.Default.Version;
                 SnakeSettings.Default.open_sum++;
@@ -119,7 +117,7 @@ namespace Snake
 
                 Configurate();
 
-                Music music = new Music(new Audio(Resources.MainMenu));
+                music = new Music(new Audio(Resources.MainMenu));
 
                 Menu MainMenu = new Menu("Snake by Alex_Green ©");
                 MainMenu.Add(new MenuItem("New Game", delegate
@@ -127,11 +125,11 @@ namespace Snake
                     var core = new Core();
 
                     music.Stop();
-                    music = new Music(new Audio(Resources.InGame));
+                    music.Load(new Audio(Resources.InGame));
                     music.PlayLoop();
                     core.Start();
                     music.Stop();
-                    music = new Music(new Audio(Resources.MainMenu));
+                    music.Load(new Audio(Resources.MainMenu));
                     music.PlayLoop();
                 }));
                 MainMenu.Add(new MenuItem("Settings", Settings));
@@ -146,7 +144,6 @@ namespace Snake
                 //}
             finally
             {
-                
             }
         }
 
@@ -158,6 +155,7 @@ namespace Snake
             Settings.Add(new MenuItem("Map Width",Convert.ToInt32(settings["MapWidth"])));
             Settings.Add(new MenuItem("Map Height",Convert.ToInt32(settings["MapHeight"])));
             Settings.Add(new MenuItem("Controls",Controls));
+            Settings.Add(new MenuItem("Audio",Audio));
             Settings.Add(new MenuItem("Back",true));
 
             Settings.Get("Map Width").ValueChanged += (value) =>
@@ -191,6 +189,41 @@ namespace Snake
             Controls.Get("Right").ValueChanged += value => { settings["ControlsRight"] = value.ToString(); Configurate(); };
 
             Controls.Engage();
+        }
+
+        static void Audio()
+        {
+            var settings = ConfigurationManager.AppSettings;
+
+            Menu Audio = new Menu("Audio");
+            Audio.Add(new MenuItem("Music",Convert.ToInt32(settings["AudioMusic"]), () =>
+            {
+                int value = Convert.ToInt32(settings["AudioMusic"]);
+                bool bvalue = value > 0;
+
+                while (true)
+                {
+                    var key = Console.ReadKey(true);
+                    int top = Console.CursorTop;
+                    int left = Console.CursorLeft;
+
+                    if (key.Key == ConsoleKey.UpArrow || key.Key == ConsoleKey.DownArrow)
+                    {
+                        bvalue = !bvalue;
+                        Console.Write(bvalue?"On ":"Off");
+                        Console.SetCursorPosition(left,top);
+                    }
+                    if (key.Key == ConsoleKey.Enter)
+                    {
+                        music.CanPlay = bvalue;
+                        return bvalue?1:0;
+                    }
+                }
+            },i => i > 0 ? "On" : "Off"));
+            Audio.Add(new MenuItem("Back",true));
+
+            Audio.Get("Music").ValueChanged += value => settings["AudioMusic"] = value.ToString();
+            Audio.Engage();
         }
 
         static string ControlsConvertingFunction(int value)

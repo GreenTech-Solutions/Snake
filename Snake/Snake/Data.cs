@@ -40,6 +40,9 @@ namespace Snake
         /// </summary>
         public Coord Tail;
 
+        /// <summary>
+        /// Координаты пищи
+        /// </summary>
         public Coord Food;
 
         /// <summary>
@@ -62,6 +65,15 @@ namespace Snake
                 ScoreChanged?.Invoke();
             }
         }
+
+        private int speed;
+
+        public int Speed
+        {
+            get { return speed; }
+            set { speed = value*100; }
+        }
+
 
         public delegate void ValueChanged();
         public event ValueChanged ScoreChanged;
