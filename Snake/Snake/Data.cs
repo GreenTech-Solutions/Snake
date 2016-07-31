@@ -66,12 +66,16 @@ namespace Snake
             }
         }
 
-        private int speed;
+        private double speed;
 
-        public int Speed
+        public void SetSpeed(double speed)
         {
-            get { return speed; }
-            set { speed = value*100; }
+            this.speed = speed*100;
+        }
+
+        public int GetSpeed()
+        {
+            return (int) speed;
         }
 
 

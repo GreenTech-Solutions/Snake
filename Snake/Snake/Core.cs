@@ -219,7 +219,8 @@ namespace Snake
             Input input = new Input();
 
 
-            data.Speed = 1;
+            data.SetSpeed(1);
+
             #endregion
 
             #region Игровой цикл
@@ -274,7 +275,7 @@ namespace Snake
 
                 Do();
                 Check();
-                Thread.Sleep(data.Speed);
+                Thread.Sleep(data.GetSpeed());
             }
 
             #endregion
