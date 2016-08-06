@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Snake
 {
@@ -25,7 +20,7 @@ namespace Snake
             if (obj == null)
                 return false;
             // Если сравниваемые объекты имеют разный тип, равенство не верно
-            if (obj.GetType() != this.GetType())
+            if (obj.GetType() != GetType())
                 return false;
             // Вызываем специфический метод сравнения
             return (((Coord) obj).X == X) & (((Coord) obj).Y == Y);
@@ -77,20 +72,12 @@ namespace Snake
         public static bool operator true(Coord obj)
         {
             if (obj == null) throw new ArgumentNullException(nameof(obj));
-            if (Equals(obj.X,null) || Equals(obj.Y,null))
-            {
-                return false;
-            }
             return true;
         }
 
         public static bool operator false(Coord obj)
         {
-            if (obj)
-            {
-                return false;
-            }
-            return true;
+            return obj==null;
         }
     }
 }

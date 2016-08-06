@@ -1,22 +1,11 @@
 ﻿#define TEST
 #undef TEST
 using System;
-using System.CodeDom;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Configuration;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Runtime.CompilerServices;
+using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading;
-using System.Windows;
 using System.Windows.Forms;
-using Cursor = System.Windows.Forms.Cursor;
-using MouseEventArgs = System.Windows.Forms.MouseEventArgs;
-using MouseEventHandler = System.Windows.Forms.MouseEventHandler;
 
 // TODO Изменение скорости
 // TODO Добавить концепцию уровней
@@ -28,6 +17,7 @@ namespace Snake
 {
     class Program
     {
+        //Переменные и методы для настройки отображения в консоли
         const int STD_OUTPUT_HANDLE = -11;
 
         [DllImport("kernel32.dll")]
@@ -35,9 +25,6 @@ namespace Snake
 
         [DllImport("kernel32.dll", SetLastError = true)]
         static extern bool SetConsoleDisplayMode(IntPtr ConsoleHandle, uint Flags, IntPtr NewScreenBufferDimensions);
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        static extern int SetConsoleFont(IntPtr hOut, uint dwFontSize);
 
         [StructLayout(LayoutKind.Sequential)]
         public struct COORD
@@ -72,6 +59,9 @@ namespace Snake
         ref CONSOLE_FONT_INFO_EX ConsoleCurrentFontEx
         );
 
+        /// <summary>
+        /// Настройка основных переменных из файла конфигурации
+        /// </summary>
         static void Configurate()
         {
             var settings = ConfigurationManager.AppSettings;
@@ -82,71 +72,99 @@ namespace Snake
 
         }
 
-        private static Music music;
+        /// <summary>
+        /// Получение версии программы
+        /// </summary>
+        /// <returns>Версия программы</returns>
+        private static string GetVersion()
+        {
+            string version = "0.0.5.2";
+
+            version = SnakeSettings.Default.Version;
+
+            return version;
+        }
+
+        /// <summary>
+        /// Объект для работы с музыкой
+        /// </summary>
+        private static Music _music;
 
         static void Main(string[] args)
         {
             try
             {
+                // Получение дескриптора окна
                 var hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
-                CONSOLE_FONT_INFO_EX fontInfo = new CONSOLE_FONT_INFO_EX();
+                var fontInfo = new CONSOLE_FONT_INFO_EX
+                {
+                    FontSize =
+                    {
+                        X = 0,
+                        Y = 22
+                    },
+                    cbSize = Marshal.SizeOf(typeof (CONSOLE_FONT_INFO_EX)),
+                    FaceName = "Lucida Console",
+                    FontFamily = 54,
+                    FontIndex = 1
+                };
 
-                fontInfo.FontSize.X = 0;
                 // TODO Управление шрифтом, можно применять только стандартные значения
-                fontInfo.FontSize.Y = 22;
-                fontInfo.cbSize = Marshal.SizeOf(typeof(CONSOLE_FONT_INFO_EX));
-                fontInfo.FaceName = "Lucida Console";
-                fontInfo.FontFamily = 54;
-                fontInfo.FontIndex = 1;
 
+                //Установка шрифта
                 SetCurrentConsoleFontEx(hConsole, false, ref fontInfo);
 
+                // Включение полноэкранного режима
                 SetConsoleDisplayMode(hConsole, 1, IntPtr.Zero);
                 Console.SetBufferSize(Console.WindowWidth, Console.WindowHeight);
 
-                Cursor.Clip = new System.Drawing.Rectangle(SystemInformation.PrimaryMonitorSize.Width,
+                // Скрытие курсора мыши
+                Cursor.Clip = new Rectangle(SystemInformation.PrimaryMonitorSize.Width,
                     SystemInformation.PrimaryMonitorSize.Height, 1, 1);
                 Cursor.Hide();
 
-
-                Console.Title = "Snake v" + SnakeSettings.Default.Version;
+                // Основные настройки системы
+                Console.Title = "Snake v" + GetVersion();
                 SnakeSettings.Default.open_sum++;
                 Console.OutputEncoding = Encoding.UTF8;
                 Console.CursorVisible = false;
 
                 Configurate();
 
-                music = new Music(new Audio(Resources.MainMenu));
+                _music = new Music(new Audio(Resources.MainMenu));
 
                 Menu MainMenu = new Menu("Snake by Alex_Green ©");
                 MainMenu.Add(new MenuItem("New Game", delegate
                 {
                     var core = new Core();
 
-                    music.Stop();
-                    music.Load(new Audio(Resources.InGame));
-                    music.PlayLoop();
+                    _music.Stop();
+                    _music.Load(new Audio(Resources.InGame));
+                    _music.PlayLoop();
                     core.Start();
-                    music.Stop();
-                    music.Load(new Audio(Resources.MainMenu));
-                    music.PlayLoop();
+                    _music.Stop();
+                    _music.Load(new Audio(Resources.MainMenu));
+                    _music.PlayLoop();
                 }));
                 MainMenu.Add(new MenuItem("Settings", Settings));
                 MainMenu.Add(new MenuItem("Exit", true));
 
-                music.PlayLoop();
+                _music.PlayLoop();
                 MainMenu.Engage();
             }
-                //catch
-                //{
-                //    throw;
-                //}
+            catch
+            {
+                throw;
+            }
             finally
             {
             }
         }
 
+        /// <summary>
+        /// Меню настроек
+        /// </summary>
         static void Settings()
         {
             var settings = ConfigurationManager.AppSettings;
@@ -158,12 +176,12 @@ namespace Snake
             Settings.Add(new MenuItem("Audio",Audio));
             Settings.Add(new MenuItem("Back",true));
 
-            Settings.Get("Map Width").ValueChanged += (value) =>
+            Settings.Get("Map Width").ValueChanged += value =>
             {
                 settings["MapWidth"] = value.ToString();
             };
 
-            Settings.Get("Map Height").ValueChanged += (value) =>
+            Settings.Get("Map Height").ValueChanged += value =>
             {
                 settings["MapWidth"] = value.ToString();
             };
@@ -171,6 +189,9 @@ namespace Snake
             Settings.Engage();
         }
 
+        /// <summary>
+        /// Меню настроек управления
+        /// </summary>
         static void Controls()
         {
             var settings = ConfigurationManager.AppSettings;
@@ -191,35 +212,15 @@ namespace Snake
             Controls.Engage();
         }
 
+        /// <summary>
+        /// Меню настроек звука
+        /// </summary>
         static void Audio()
         {
             var settings = ConfigurationManager.AppSettings;
 
             Menu Audio = new Menu("Audio");
-            Audio.Add(new MenuItem("Music",Convert.ToInt32(settings["AudioMusic"]), () =>
-            {
-                int value = Convert.ToInt32(settings["AudioMusic"]);
-                bool bvalue = value > 0;
-
-                while (true)
-                {
-                    var key = Console.ReadKey(true);
-                    int top = Console.CursorTop;
-                    int left = Console.CursorLeft;
-
-                    if (key.Key == ConsoleKey.UpArrow || key.Key == ConsoleKey.DownArrow)
-                    {
-                        bvalue = !bvalue;
-                        Console.Write(bvalue?"On ":"Off");
-                        Console.SetCursorPosition(left,top);
-                    }
-                    if (key.Key == ConsoleKey.Enter)
-                    {
-                        music.CanPlay = bvalue;
-                        return bvalue?1:0;
-                    }
-                }
-            },i => i > 0 ? "On" : "Off"));
+            Audio.Add(new MenuItem("Music",Convert.ToInt32(settings["AudioMusic"]), AudioEditingFunction,i => i > 0 ? "On" : "Off"));
             Audio.Add(new MenuItem("Back",true));
 
             Audio.Get("Music").ValueChanged += value => settings["AudioMusic"] = value.ToString();
@@ -234,6 +235,32 @@ namespace Snake
         static int ControlsEditingFunction()
         {
             return Convert.ToInt32(Console.ReadKey().Key);
+        }
+
+        static int AudioEditingFunction()
+        {
+            var settings = ConfigurationManager.AppSettings;
+            var value = Convert.ToInt32(settings["AudioMusic"]);
+            var bvalue = value > 0;
+
+            while (true)
+            {
+                var key = Console.ReadKey(true);
+                var top = Console.CursorTop;
+                var left = Console.CursorLeft;
+
+                if (key.Key == ConsoleKey.UpArrow || key.Key == ConsoleKey.DownArrow)
+                {
+                    bvalue = !bvalue;
+                    Console.Write(bvalue ? "On " : "Off");
+                    Console.SetCursorPosition(left, top);
+                }
+                if (key.Key == ConsoleKey.Enter)
+                {
+                    _music.CanPlay = bvalue;
+                    return bvalue ? 1 : 0;
+                }
+            }
         }
     }
 }

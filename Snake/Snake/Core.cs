@@ -2,131 +2,155 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Configuration;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Input;
 
 namespace Snake
 {
+    /// <summary>
+    /// Главный модуль
+    /// </summary>
     class Core
     {
-        private Data data = new Data();
-        private bool CanExit = false;
+        /// <summary>
+        /// Экземпляр хранилища
+        /// </summary>
+        private readonly Data _data = new Data();
+
+        /// <summary>
+        /// Указывает может ли модуль завершить свою работу при возможности
+        /// </summary>
+        private bool _canExit;
+
         delegate void Collided(params dynamic []args);
 
+        /// <summary>
+        /// Происходит при Столкновении с пищей
+        /// </summary>
         private event Collided CollidedWithFood;
+
+        /// <summary>
+        /// Происходит при столкновении с собственным телом
+        /// </summary>
         private event Collided CollidedWithBody;
+
         /// <summary>
         /// Проверка возможности поворота змеи, проверка проигрыша и съедания еды
         /// </summary>
         /// <returns></returns>
         public void Check()
         {
-            if (data.snake.SkipWhile(value => value==data.snake.First.Value).Any(coord => coord == data.snake.First.Value))
+            if (_data.Snake.SkipWhile(value => value==_data.Snake.First.Value).Any(coord => coord == _data.Snake.First.Value))
             {
                 CollidedWithBody?.Invoke();
             }
 
-            if (data.snake.First.Value == data.Food)
+            if (_data.Snake.First.Value == _data.Food)
             {
                 CollidedWithFood?.Invoke();
             }
 
-            if (data.CollidedWthFood)
+            if (_data.CollidedWthFood)
             {
-                if (data.Tail == data.FoodForEating)
+                if (_data.Tail == _data.FoodForEating)
                 {
-                    data.FoodEaten = false;
+                    _data.FoodEaten = false;
                 }
             }
         }
 
-
         /// <summary>
-        /// Установка координат пикселя, изменение скорости, движение
+        /// Установка координат змеи, изменение скорости, движение
         /// </summary>
         public void Do()
         {
             // Координаты головы
-            int X = data.snake.First.Value.X;
-            int Y = data.snake.First.Value.Y;
+            var x = _data.Snake.First.Value.X;
+            var y = _data.Snake.First.Value.Y;
 
-            int maxX, maxY, minX, minY;
-
-            maxX = data.MapSize.X-1;
-            maxY = data.MapSize.Y-1;
+            var maxX = _data.MapSize.X-1;
+            var maxY = _data.MapSize.Y-1;
 
             Coord temp;
-            data.Tail = data.snake.Last.Value;
+            _data.Tail = _data.Snake.Last.Value;
 
-            switch (data.direction)
+            switch (_data.Direction)
             {
                 case Direction.Right:
-                    X++;
-                    if (X > maxX)
+                    x++;
+                    if (x > maxX)
                     {
-                        X = 0;
+                        x = 0;
                     }
-                    temp = new Coord(X, Y);
-                    Functions.AddNewHead(temp, data.snake);
+                    temp = new Coord(x, y);
+                    Functions.AddNewHead(temp, _data.Snake);
                     break;
                 case Direction.Left:
-                    X--;
-                    if (X < 0)
+                    x--;
+                    if (x < 0)
                     {
-                        X = maxX;
+                        x = maxX;
                     }
-                    temp = new Coord(X, Y);
-                    Functions.AddNewHead(temp, data.snake);
+                    temp = new Coord(x, y);
+                    Functions.AddNewHead(temp, _data.Snake);
                     break;
                 case Direction.Down:
-                    Y++;
-                    if (Y > maxY)
+                    y++;
+                    if (y > maxY)
                     {
-                        Y = 0;
+                        y = 0;
                     }
-                    temp = new Coord(X, Y);
-                    Functions.AddNewHead(temp,data.snake);
+                    temp = new Coord(x, y);
+                    Functions.AddNewHead(temp,_data.Snake);
                     break;
                 case Direction.Up:
-                    Y--;
-                    if (Y < 0)
+                    y--;
+                    if (y < 0)
                     {
-                        Y = maxY;
+                        y = maxY;
                     }
-                    temp = new Coord(X, Y);
-                    Functions.AddNewHead(temp,data.snake);
+                    temp = new Coord(x, y);
+                    Functions.AddNewHead(temp,_data.Snake);
                     break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
 
-        public NameValueCollection GetSettings()
+        /// <summary>
+        /// Возвращает настройки приложения
+        /// </summary>
+        /// <returns>Настроки приложения</returns>
+        public NameValueCollection GetAppSettings()
         {
             return ConfigurationManager.AppSettings;
         }
 
+        /// <summary>
+        /// Получает количество очков
+        /// </summary>
+        /// <returns>Количество очков</returns>
         public int GetScore()
         {
-            return data.Score;
-        }
-
-        public void SetScore()
-        {
-            data.Score = (data.snake.Count-2) * 10;
+            return _data.Score;
         }
 
         /// <summary>
-        /// Проверяет старое направление с новым и выдаёт правильное
+        /// Устанавливает количество очков, анализируя данные
         /// </summary>
-        /// <param name="newDirection"></param>
-        /// <returns></returns>
+        public void SetScore()
+        {
+            _data.Score = (_data.Snake.Count - 2)*10;
+        }
+
+        /// <summary>
+        /// Корректирует направление движения, предотвращая разворот на 180
+        /// </summary>
+        /// <param name="newDirection">Новое напрвление</param>
+        /// <returns>Скорректированное направление</returns>
         private Direction EvaulateDirection(Direction newDirection)
         {
-            Direction oldDirection = data.direction;
+            var oldDirection = _data.Direction;
             switch (newDirection)
             {
                 case Direction.Up:
@@ -153,6 +177,8 @@ namespace Snake
                         return oldDirection;
                     }
                     break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(newDirection), newDirection, null);
             }
 
             return newDirection;
@@ -165,121 +191,120 @@ namespace Snake
         {
             #region Инициализация
 
-            var settings = GetSettings();
+            var settings = GetAppSettings();
 
-            Coord sizeOfMap = new Coord(Convert.ToInt32(settings["MapWidth"]),
-                Convert.ToInt32(settings["MapHeight"]));
-            data.MapSize = sizeOfMap;
+            var sizeOfMap = new Coord(Convert.ToInt32(settings["MapWidth"]), Convert.ToInt32(settings["MapHeight"]));
+            _data.MapSize = sizeOfMap;
 
             // Выделение памяти для карты и змеи
-            data.map = new int[data.MapSize.X, data.MapSize.Y];
-            data.snake = new LinkedList<Coord>();
+            _data.Map = new int[_data.MapSize.X, _data.MapSize.Y];
+            _data.Snake = new LinkedList<Coord>();
 
             // Создание змеи
-            for (int i = 0; i < data.Size; i++)
+            for (var i = 0; i < _data.Size; i++)
             {
-                data.snake.AddFirst(new Coord(/* TODO Значение выставляется не здесь */i + 3, 0));
+                _data.Snake.AddFirst(new Coord( /* TODO Значение выставляется не здесь */i + 3, 0));
             }
 
-            data.Tail = data.snake.Last.Value;
+            _data.Tail = _data.Snake.Last.Value;
 
             // Заполнение карты
-            for (int i = 0; i < data.MapSize.Y; i++)
+            for (var i = 0; i < _data.MapSize.Y; i++)
             {
-                for (int j = 0; j < data.MapSize.X; j++)
+                for (var j = 0; j < _data.MapSize.X; j++)
                 {
-                    data.map[j,i] = 0;
+                    _data.Map[j, i] = 0;
                 }
             }
 
-            data.Food = Functions.GenerateFood(data.snake,data.MapSize);
+            _data.Food = Functions.GenerateFood(_data.Snake, _data.MapSize);
 
-            data.ScoreChanged += () => { Output.DrawScores(data.Score, data.MapSize); };
+            _data.ScoreChanged += () => { Output.DrawScores(_data.Score, _data.MapSize); };
 
             var apple = new Music(new Audio(Resources.apple));
             CollidedWithFood += delegate
             {
-
                 apple.PlayOnce();
-                data.CollidedWthFood = true;
+                _data.CollidedWthFood = true;
                 SetScore();
-                data.FoodForEating = data.Food;
-                data.Food = Functions.GenerateFood(data.snake, data.MapSize);
-
+                _data.FoodForEating = _data.Food;
+                _data.Food = Functions.GenerateFood(_data.Snake, _data.MapSize);
             };
 
             var lose = new Music(new Audio(Resources.lose));
-            CollidedWithBody += delegate {
-
+            CollidedWithBody += delegate
+            {
                 lose.PlayOnce();
-                Output.DrawGameover(data.MapSize);
-                CanExit = true;
+                Output.DrawGameover(_data.MapSize);
+                _canExit = true;
             };
 
-            Input input = new Input();
+            var input = new Input();
 
 
-            data.SetSpeed(1);
+            _data.SetSpeed(1);
 
             #endregion
 
             #region Игровой цикл
+
             Output.Clear();
-            Output.DrawMap(data.MapSize);
-            Output.DrawScores(data.Score,data.MapSize);            
+            Output.DrawMap(_data.MapSize);
+            Output.DrawScores(_data.Score, _data.MapSize);
 
             while (true)
             {
-                if (CanExit)
+                if (_canExit)
                 {
                     return;
                 }
 
-                if (data.FoodEaten)
+                if (_data.FoodEaten)
                 {
-                    Output.RedrawMapcell(data.Tail);
+                    Output.RedrawMapcell(_data.Tail);
                 }
                 else
                 {
-                    data.FoodEaten = true;
-                    data.CollidedWthFood = false;
-                    Functions.Grow(ref data.snake,data.FoodForEating);
+                    _data.FoodEaten = true;
+                    _data.CollidedWthFood = false;
+                    Functions.Grow(ref _data.Snake, _data.FoodForEating);
                 }
 
 
-                Output.DrawPlayer(data.snake);
-                Output.DrawFood(data.Food);
+                Output.DrawPlayer(_data.Snake);
+                Output.DrawFood(_data.Food);
 
-                ActionType action = input.AskForInput();
+                var action = input.AskForInput();
 
                 switch (action)
                 {
-                        case ActionType.Up:
-                        data.direction = EvaulateDirection(Direction.Up);
+                    case ActionType.Up:
+                        _data.Direction = EvaulateDirection(Direction.Up);
                         break;
                     case ActionType.Down:
-                        data.direction = EvaulateDirection(Direction.Down);
+                        _data.Direction = EvaulateDirection(Direction.Down);
                         break;
                     case ActionType.Left:
-                        data.direction = EvaulateDirection(Direction.Left);
+                        _data.Direction = EvaulateDirection(Direction.Left);
                         break;
-                        case ActionType.Right:
-                        data.direction = EvaulateDirection(Direction.Right);
+                    case ActionType.Right:
+                        _data.Direction = EvaulateDirection(Direction.Right);
                         break;
                     case ActionType.Exit:
-                        CanExit = true;
+                        _canExit = true;
                         break;
                     case ActionType.None:
                         break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
 
                 Do();
                 Check();
-                Thread.Sleep(data.GetSpeed());
+                Thread.Sleep(_data.GetSpeed());
             }
 
             #endregion
-
         }
     }
 }

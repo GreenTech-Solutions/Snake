@@ -1,55 +1,91 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Snake
 {
+    /// <summary>
+    /// Инкапсуляция механизма создания меню
+    /// </summary>
     class Menu
     {
-        private int count => MenuItems.Count;
+        /// <summary>
+        /// Количество элементов меню
+        /// </summary>
+        private int Count => _menuItems.Count;
 
-        private List<MenuItem> MenuItems = new List<MenuItem>();
+        /// <summary>
+        /// Элементы меню
+        /// </summary>
+        private readonly List<MenuItem> _menuItems;
 
+        /// <summary>
+        /// Заголовок меню
+        /// </summary>
         public string Title;
          
+        /// <summary>
+        /// Создаёт новое меню
+        /// </summary>
+        /// <param name="title">Заголовок</param>
+        /// <param name="count">Количество пунктов</param>
         public Menu(string title, int count = 1)
         {
             Title = title;
+            _menuItems = new List<MenuItem>(count);
         }
 
+        /// <summary>
+        /// Добавить элемент меню в конец списка (Совпадения по названию не допускаются)
+        /// </summary>
+        /// <param name="item">Элемент меню</param>
         public void Add(MenuItem item)
         {
-            if (MenuItems.Exists(x => x.Caption == item.Caption))
+            if (_menuItems.Exists(x => x.Caption == item.Caption))
             {
                 throw new ArgumentException("Каждый элемент меню должне иметь уникальное имя.");
             }
-            MenuItems.Add(item);
+            _menuItems.Add(item);
         }
 
+        /// <summary>
+        /// Удалить элемент меню с указанным названием
+        /// </summary>
+        /// <param name="caption">Название</param>
         public void Remove(string caption)
         {
-            MenuItems.RemoveAll(value => value.Caption == caption);
+            _menuItems.RemoveAll(value => value.Caption == caption);
         }
 
+        /// <summary>
+        /// Получить элемент меню по указанному индексу(с нулевого)
+        /// </summary>
+        /// <param name="index">Индекс</param>
+        /// <returns>Элемент меню</returns>
         public MenuItem Get(int index)
         {
-            return MenuItems[index];
+            return _menuItems[index];
         }
 
+        /// <summary>
+        /// Получить элемент меню по указанному названию
+        /// </summary>
+        /// <param name="caption">Название</param>
+        /// <returns>Элемент меню</returns>
         public MenuItem Get(string caption)
         {
-            return MenuItems.Find(x => x.Caption == caption);
+            return _menuItems.Find(x => x.Caption == caption);
         }
 
+        /// <summary>
+        /// Вывести меню в консоль
+        /// </summary>
         public void Out()
         {
             Console.Clear();
             Console.SetCursorPosition(Console.CursorLeft,Output.PaddingTop);
             Output.WriteLineCenter(Title);
-            foreach (var menuItem in MenuItems)
+            foreach (var menuItem in _menuItems)
             {
                 Output.WriteCenter($"   {menuItem} ");
                 if (menuItem.HasValue)
@@ -67,15 +103,21 @@ namespace Snake
             }
         }
 
+        /// <summary>
+        /// Номер предыдущего выделенного элемента
+        /// </summary>
         private int previousline = 1;
 
+        /// <summary>
+        /// Вывести меню в консоль и включить его функционал
+        /// </summary>
         public void Engage()
         {
-            int line = previousline;
+            var line = previousline;
             Out();
             DrawCursor(line);
 
-            Music music = new Music(new Audio(Resources.click));
+            var music = new Music(new Audio(Resources.click));
 
             while (true)
             {
@@ -85,7 +127,7 @@ namespace Snake
 
                 if (kInfo.Key == Config.DownKey || kInfo.Key == ConsoleKey.DownArrow)
                 {
-                    if (line < count)
+                    if (line < Count)
                         DrawCursor(++line);
                 }
                 else if (kInfo.Key == Config.UpKey || kInfo.Key == ConsoleKey.UpArrow)
@@ -95,17 +137,17 @@ namespace Snake
                 }
                 else if (kInfo.Key == ConsoleKey.Enter)
                 {
-                    if (MenuItems[line - 1].HasValue)
+                    if (_menuItems[line - 1].HasValue)
                     {
                         Edit(line - 1);
                     }
-                    else if (MenuItems[line - 1].IsExitItem)
+                    else if (_menuItems[line - 1].IsExitItem)
                     {
                         return;
                     }
                     else
                     {
-                        MenuItems[line - 1].Function();
+                        _menuItems[line - 1].Function();
                     }
                     Console.Clear();
                     Out();
@@ -115,21 +157,25 @@ namespace Snake
             }
         }
 
+        /// <summary>
+        /// Редактирование значения элемента меню
+        /// </summary>
+        /// <param name="number">Номер элемента</param>
         public void Edit(int number)
         {
-            int line = number+1;
-            string item = MenuItems[number].Caption;
+            var line = number+1;
+            var item = _menuItems[number].Caption;
             Console.SetCursorPosition(4 + item.Length + Output.Padding, line + Output.PaddingTop);
             Console.CursorVisible = true;
 
-            if (MenuItems[number].EditingFunction == null)
+            if (_menuItems[number].EditingFunction == null)
             {
-                List<int> value = new List<int>();
+                var value = new List<int>();
 
                 ConsoleKeyInfo key;
                 while ((key = Console.ReadKey(true)).Key != ConsoleKey.Enter)
                 {
-                    char kChar = key.KeyChar;
+                    var kChar = key.KeyChar;
                     try
                     {
                         value.Add((int) Convert.ToUInt32(kChar.ToString()));
@@ -137,20 +183,23 @@ namespace Snake
                     }
                     catch (Exception)
                     {
-                        continue;
                     }
                 }
 
-                MenuItems[number].Value = Convert.ToInt32(string.Concat(value));
+                _menuItems[number].Value = Convert.ToInt32(string.Concat(value));
             }
             else
             {
-                MenuItems[number].Value = MenuItems[number].EditingFunction.Invoke();
+                _menuItems[number].Value = _menuItems[number].EditingFunction.Invoke();
             }
 
             Console.CursorVisible = false;
         } 
 
+        /// <summary>
+        /// Устанавливает курсор на указанной линии
+        /// </summary>
+        /// <param name="line">Номер линии</param>
         void DrawCursor(int line)
         {
             Console.SetCursorPosition(Output.Padding,previousline + Output.PaddingTop);
@@ -160,44 +209,75 @@ namespace Snake
         }
     }
 
+    /// <summary>
+    /// Инкапсуляция элемента меню
+    /// </summary>
     class MenuItem
     {
+        /// <summary>
+        /// Название
+        /// </summary>
         public string Caption;
-        public Action Function = null;
+
+        /// <summary>
+        /// Функция, запускаемая при выборе
+        /// </summary>
+        public Action Function;
 
         /// <summary>
         /// Метод, инкапсулирующий процесс редактирования значения элемента меню
         /// <returns>Результат преобразования ввода пользователя</returns>
         /// </summary>
-        public Func<int> EditingFunction = null;
+        public Func<int> EditingFunction;
 
         /// <summary>
         /// Метод, переводящий число в дружелюбный формат
         /// </summary>
-        public Func<int,string> ConvertingFunction = null; 
+        public Func<int,string> ConvertingFunction; 
 
-        private int value;
 
+        private int _value;
+        /// <summary>
+        /// Значение элемента меню
+        /// </summary>
         public int Value
         {
             set
             {
-                this.value = value; 
+                this._value = value; 
                 ValueChanged?.Invoke(value);
             }
-            get { return value; }
+            get { return _value; }
         }
 
-        public bool IsExitItem = false;
+        /// <summary>
+        /// Указывает является ли элемент меню командой выхода из меню
+        /// </summary>
+        public bool IsExitItem;
 
-        public bool HasValue = false;
+        /// <summary>
+        /// Указывает, содержит ли элемент меню какое-либо значение
+        /// </summary>
+        public bool HasValue;
 
+        /// <summary>
+        /// Создаёт новый элемент меню
+        /// </summary>
+        /// <param name="caption">Название</param>
+        /// <param name="function">Функция при выборе</param>
         public MenuItem(string caption, Action function)
         {
             Caption = caption;
             Function = function;
         }
 
+        /// <summary>
+        /// Создаёт новый элемент меню
+        /// </summary>
+        /// <param name="caption">Название</param>
+        /// <param name="value">Значение</param>
+        /// <param name="editingFunction">Функция, для редактирования значения</param>
+        /// <param name="convertingFunction">Функция, для преобразования значения в дружелюбный формат</param>
         public MenuItem(string caption, int value, Func<int> editingFunction = null, Func<int,string> convertingFunction = null)
             : this(caption, null)
         {
@@ -207,12 +287,20 @@ namespace Snake
             ConvertingFunction = convertingFunction;
         }
 
+        /// <summary>
+        /// Создаёт новый элемент меню
+        /// </summary>
+        /// <param name="caption">Название</param>
+        /// <param name="isExitItem">Любое значение будет означать, что элемент является элементом выхода из меню</param>
         public MenuItem(string caption, bool isExitItem)
             :this(caption,null)
         {
             IsExitItem = true;
         }
 
+        /// <summary>
+        /// Вызов функции элемента меню
+        /// </summary>
         public void Invoke()
         {
             Function?.Invoke();

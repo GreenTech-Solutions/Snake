@@ -1,18 +1,12 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Snake;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Snake.Tests
+namespace SnakeUnitTest
 {
-    [TestClass()]
+    [TestClass]
     public class CoordTests
     {
-        [TestMethod()]
+        [TestMethod]
         public void CoordTest()
         {
             Coord testCoord = new Coord(0,0);
@@ -23,7 +17,7 @@ namespace Snake.Tests
             Assert.IsInstanceOfType(testCoord,typeof(Coord));
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void EqualsTest()
         {
             Coord obj1 = new Coord(0,0);
@@ -41,12 +35,11 @@ namespace Snake.Tests
             }
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void EqualsTest1()
         {
-            object obj1 = new Coord(0, 0);
             object obj2 = null;
-            obj1 = null;
+            object obj1 = null;
 
             if (!Equals(obj1, obj2))
             {
@@ -61,21 +54,21 @@ namespace Snake.Tests
             }
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void GetHashCodeTest()
         {
-            Coord coord = new Coord(0,0);
+            var coord = new Coord(0,0);
 
-            int hash = coord.GetHashCode();
+            var hash = coord.GetHashCode();
             Assert.IsNotNull(hash);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void ToStringTest()
         {
-            Coord coord = new Coord(0,0);
+            var coord = new Coord(0,0);
 
-            string line = coord.ToString();
+            var line = coord.ToString();
 
             Assert.IsNotNull(line);
         }

@@ -1,26 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Snake
 {
     /// <summary>
-    /// Класс для представления
+    /// Графический модуль
     /// </summary>
     class Output
     {
+        /// <summary>
+        /// Символ головы змеи
+        /// </summary>
         private static char SnakeHead = (char)64;
 
+        /// <summary>
+        /// Символ элемента туловища змеи
+        /// </summary>
         private static char SnakeBody = (char)42;
 
+        /// <summary>
+        /// Символ элемента карты
+        /// </summary>
         private static char MapCell = (char)183;
 
+        /// <summary>
+        /// Символ пищи
+        /// </summary>
         private static char Food = (char)35;
 
+        /// <summary>
+        /// Задний фон карты
+        /// </summary>
         private static ConsoleColor BackGround = ConsoleColor.DarkGreen;
 
+        /// <summary>
+        /// Очистка консоли
+        /// </summary>
         static public void Clear()
         {
             Console.Clear();
@@ -73,7 +88,7 @@ namespace Snake
         }
 
         /// <summary>
-        /// Отображает на указанных координатах знак -
+        /// Отображает на указанных координатах знак MapCell
         /// </summary>
         /// <param name="cell">Координаты</param>
         static public void RedrawMapcell(Coord cell)
@@ -123,41 +138,51 @@ namespace Snake
         /// <summary>
         /// Отрисовывает экран конца игры
         /// </summary>
-        static public void DrawGameover(Coord MapSize)
+        static public void DrawGameover(Coord mapSize)
         {
             Console.ForegroundColor = ConsoleColor.Red;
 
-            Console.SetCursorPosition(MapSize.X + 2 + Padding, 3 + PaddingTop);
+            Console.SetCursorPosition(mapSize.X + 2 + Padding, 3 + PaddingTop);
             Console.Write("Game over!");
 
-            Console.SetCursorPosition(MapSize.X + 2 + Padding, 4 + PaddingTop);
+            Console.SetCursorPosition(mapSize.X + 2 + Padding, 4 + PaddingTop);
             Console.Write("Quit to main menu..");
             Console.ResetColor();
             Console.ReadKey();
         }
 
+        /// <summary>
+        /// Вывод текста в центр консоли с переходом на следующую строку
+        /// </summary>
+        /// <param name="text">Текст для вывода</param>
         static public void WriteLineCenter(string text)
         {
-            var width = Console.WindowWidth;
-            var padding = width / 2 + text.Length / 2;
             Console.SetCursorPosition(Padding,Console.CursorTop);
             Console.WriteLine(text);
         }
 
+        /// <summary>
+        /// Вывод текста в центр консоли
+        /// </summary>
+        /// <param name="text">Текст для вывода</param>
         static public void WriteCenter(string text)
         {
-            var width = Console.WindowWidth;
-            var padding = width / 2 + text.Length / 2;
             Console.SetCursorPosition(Padding,Console.CursorTop);
             Console.Write(text);
         }
 
+        /// <summary>
+        /// Отступ для центрирования текста
+        /// </summary>
         static public int Padding { get
             {
                 var width = Console.WindowWidth;
                 return width *3/ 8;
             } }
 
+        /// <summary>
+        /// Вертикальный отступ для центрирования текста
+        /// </summary>
         public static int PaddingTop
         {
             get

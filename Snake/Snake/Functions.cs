@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Snake
 {
+    /// <summary>
+    /// Копилка независимых функций для расчётов в игровой логике
+    /// </summary>
     class Functions
     {
         /// <summary>
         /// Добавляет точку в начало списка и удаляет с конца
         /// </summary>
         /// <param name="coord">Координаты</param>
+        /// <param name="playerCoords">Координаты игрока</param>
         public static void AddNewHead(Coord coord, LinkedList<Coord> playerCoords)
         {
             if (coord == null) throw new ArgumentNullException(nameof(coord));
@@ -23,16 +24,16 @@ namespace Snake
         /// <summary>
         /// Возвращает случайные координаты клетки с едой или null, если свободное место найти не удалось
         /// </summary>
-        public static Coord GenerateFood(LinkedList<Coord> playerCoords, Coord MapSize)
+        public static Coord GenerateFood(LinkedList<Coord> playerCoords, Coord mapSize)
         {
-            Random r = new Random(DateTime.Now.Millisecond);
+            var r = new Random(DateTime.Now.Millisecond);
 
-            int randomNumber = r.Next(1, (MapSize.X*MapSize.Y) - playerCoords.Count);
+            var randomNumber = r.Next(1, (mapSize.X*mapSize.Y) - playerCoords.Count);
 
-            int h = 0;
-            for (int i = 0; i < MapSize.Y; i++)
+            var h = 0;
+            for (var i = 0; i < mapSize.Y; i++)
             {
-                for (int j = 0; j < MapSize.X; j++)
+                for (var j = 0; j < mapSize.X; j++)
                 {
                     if (!playerCoords.Contains(new Coord(j, i)))
                     {
@@ -48,7 +49,11 @@ namespace Snake
             return null;
         }
 
-
+        /// <summary>
+        /// Увеличивает размер змеи на одну клетку
+        /// </summary>
+        /// <param name="playerCoords">Координаты ячеек игрока</param>
+        /// <param name="foodCoords">Координаты пищи</param>
         public static void Grow(ref LinkedList<Coord> playerCoords, Coord foodCoords)
         {
             playerCoords.AddLast(foodCoords);

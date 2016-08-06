@@ -1,13 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Snake
 {
+    /// <summary>
+    /// Модуль ввода
+    /// </summary>
     class Input
     {
+        // Клавиши управления
         public ConsoleKey UpKey;
 
         public ConsoleKey DownKey;
@@ -17,6 +17,13 @@ namespace Snake
         public ConsoleKey RightKey;
         
         // TODO В дальнейшем создать отдельный класс с полями клавишами и передавать его в этот конструктор
+        /// <summary>
+        /// Создаёт новый модуль ввода с указанными стандартными клавишами
+        /// </summary>
+        /// <param name="upKey"></param>
+        /// <param name="downKey"></param>
+        /// <param name="leftKey"></param>
+        /// <param name="rightKey"></param>
         public Input(ConsoleKey upKey, ConsoleKey downKey, ConsoleKey leftKey, ConsoleKey rightKey)
         {
             UpKey = upKey;
@@ -25,6 +32,9 @@ namespace Snake
             RightKey = rightKey;
         }
 
+        /// <summary>
+        /// Создаёт новый модуль ввода с клавишами по умолчанию
+        /// </summary>
         public Input()
         {
             UpKey = Config.UpKey;
@@ -43,26 +53,23 @@ namespace Snake
             {
                 return ActionType.Right;
             }
-            else if (kInfo.Key == LeftKey)
+            if (kInfo.Key == LeftKey)
             {
                 return ActionType.Left;
             }
-            else if (kInfo.Key == UpKey)
+            if (kInfo.Key == UpKey)
             {
                 return ActionType.Up;
             }
-            else if (kInfo.Key == DownKey)
+            if (kInfo.Key == DownKey)
             {
                 return ActionType.Down;
             }
-            else if (kInfo.Key == ConsoleKey.Escape)
+            if (kInfo.Key == ConsoleKey.Escape)
             {
                 return ActionType.Exit;
             }
-            else
-            {
-                return ActionType.None;
-            }
+            return ActionType.None;
         }
 
         /// <summary>
@@ -71,19 +78,18 @@ namespace Snake
         /// <returns></returns>
         public ActionType AskForInput()
         {
-            ConsoleKeyInfo kInfo;
-            if (Console.KeyAvailable == true)
+            if (Console.KeyAvailable)
             {
-                kInfo = Console.ReadKey(true);
+                var kInfo = Console.ReadKey(true);
                 return KeyHandler(kInfo);
             }
-            else
-            {
-                return ActionType.None;
-            }
+            return ActionType.None;
         }
     }
 
+    /// <summary>
+    /// Класс-хранилище клавиш управления
+    /// </summary>
     static class Config
     {
         public static ConsoleKey UpKey;
