@@ -15,7 +15,7 @@ namespace Snake
         /// <summary>
         /// Игровое поле
         /// </summary>
-        public int[,] Map;
+        public Cell[,] Map;
 
         /// <summary>
         /// Координаты ячеек змеи
@@ -30,7 +30,7 @@ namespace Snake
         /// <summary>
         /// Направление движения
         /// </summary>
-        public Direction Direction;
+        public Direction Direction = Direction.Right;
 
         /// <summary>
         /// Координаты хвоста змеи

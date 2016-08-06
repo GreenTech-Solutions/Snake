@@ -3,6 +3,7 @@
 using System;
 using System.Configuration;
 using System.Drawing;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
@@ -135,31 +136,66 @@ namespace Snake
                 _music = new Music(new Audio(Resources.MainMenu));
 
                 Menu MainMenu = new Menu("Snake by Alex_Green ©");
-                MainMenu.Add(new MenuItem("New Game", delegate
-                {
-                    var core = new Core();
-
-                    _music.Stop();
-                    _music.Load(new Audio(Resources.InGame));
-                    _music.PlayLoop();
-                    core.Start();
-                    _music.Stop();
-                    _music.Load(new Audio(Resources.MainMenu));
-                    _music.PlayLoop();
-                }));
+                MainMenu.Add(new MenuItem("New Game", () => StartLevel()));
+                MainMenu.Add(new MenuItem("Levels",Levels));
                 MainMenu.Add(new MenuItem("Settings", Settings));
                 MainMenu.Add(new MenuItem("Exit", true));
 
                 _music.PlayLoop();
                 MainMenu.Engage();
             }
-            catch
-            {
-                throw;
-            }
+            //catch
+            //{
+            //    throw;
+            //}
             finally
             {
             }
+        }
+
+        static void StartLevel(Level level = null)
+        {
+            var core = new Core();
+            _music.Stop();
+            _music.Load(new Audio(Resources.InGame));
+            _music.PlayLoop();
+            if (Equals(level, null))
+            {
+                core.Initialize();
+                core.Start();
+            }
+            else
+            {
+                core.Start(level);
+            }
+            _music.Stop();
+            _music.Load(new Audio(Resources.MainMenu));
+            _music.PlayLoop();
+        }
+
+        static void Levels()
+        {
+            Menu Levels = new Menu("Levels");
+
+            try
+            {
+                var folder = new DirectoryInfo(Application.StartupPath + @"\Levels");
+                FileSystemInfo[] files = folder.GetFileSystemInfos("*.lvl");
+                if (files.Length >= 1)
+                {
+                    foreach (var file in files)
+                    {
+                        Levels.Add(new MenuItem(file.Name, () => StartLevel(Level.GetLevelFromFile(file.FullName))));
+                    }
+                }
+            }
+            catch
+            {
+                MessageBox.Show("Возникла проблема при открытии файлов уровней.");
+            }
+            Levels.Add(new MenuItem("Back",true));
+
+            Levels.Engage();
         }
 
         /// <summary>

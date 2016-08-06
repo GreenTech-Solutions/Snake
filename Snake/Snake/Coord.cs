@@ -2,6 +2,7 @@
 
 namespace Snake
 {
+    [Serializable]
     public class Coord : IEquatable<Coord>
     {
         public int X { get; }

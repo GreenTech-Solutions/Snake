@@ -59,6 +59,7 @@
     <Compile Include="Enumerables.cs" />
     <Compile Include="Functions.cs" />
     <Compile Include="Input.cs" />
+    <Compile Include="Level.cs" />
     <Compile Include="Menu.cs" />
     <Compile Include="Music.cs" />
     <Compile Include="Output.cs" />
@@ -77,6 +78,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Levels\test3.lvl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
     <None Include="SnakeSettings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -100,6 +104,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

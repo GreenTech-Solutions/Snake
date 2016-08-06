@@ -23,6 +23,8 @@ namespace Snake
         /// </summary>
         private static char MapCell = (char)183;
 
+        private static char Obstacle = (char) 140;
+
         /// <summary>
         /// Символ пищи
         /// </summary>
@@ -44,13 +46,9 @@ namespace Snake
         /// <summary>
         /// Отрисовывает карту указанного размера
         /// </summary>
-        static public void DrawMap(Coord size)
+        static public void DrawMap(Coord size, Cell[,] Map)
         {
             if (size == null) throw new ArgumentNullException(nameof(size));
-
-
-            Console.BackgroundColor = BackGround;
-            Console.ForegroundColor = ConsoleColor.Black;
 
             // Рисование игрового поля
             for (int i = 0; i < size.Y; i++)
@@ -58,7 +56,18 @@ namespace Snake
                 for (int j = 0; j < size.X; j++)
                 {
                     Console.SetCursorPosition(j + Padding, i + PaddingTop);
-                    Console.Write(MapCell);
+                    if (Map[j, i].CellType == CellType.Empty)
+                    {
+                        Console.BackgroundColor = BackGround;
+                        Console.ForegroundColor = ConsoleColor.Black;
+                        Console.Write(MapCell);
+                    }
+                    else if (Map[j,i].CellType == CellType.Brick)
+                    {
+                        Console.BackgroundColor = ConsoleColor.Gray;
+                        Console.ForegroundColor = ConsoleColor.Black;
+                        Console.Write(Obstacle);
+                    }
                 }
             }
 

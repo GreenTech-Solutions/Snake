@@ -30,9 +30,9 @@ namespace Snake
         private event Collided CollidedWithFood;
 
         /// <summary>
-        /// Происходит при столкновении с собственным телом
+        /// Происходит при столкновении с собственным телом или другим препятствием
         /// </summary>
-        private event Collided CollidedWithBody;
+        private event Collided CollidedWithObstacle;
 
         /// <summary>
         /// Проверка возможности поворота змеи, проверка проигрыша и съедания еды
@@ -40,9 +40,22 @@ namespace Snake
         /// <returns></returns>
         public void Check()
         {
+            List<Coord> obstaclesList = new List<Coord>();
+
+            foreach (var cell in _data.Map)
+            {
+                if (cell.CellType == CellType.Brick)
+                {
+                    obstaclesList.Add(new Coord(cell.Y, cell.X));
+                }
+            }
             if (_data.Snake.SkipWhile(value => value==_data.Snake.First.Value).Any(coord => coord == _data.Snake.First.Value))
             {
-                CollidedWithBody?.Invoke();
+                CollidedWithObstacle?.Invoke();
+            }
+            else if (_data.Snake.Any(coord => obstaclesList.Any(item => item == coord)))
+            {
+                CollidedWithObstacle?.Invoke();
             }
 
             if (_data.Snake.First.Value == _data.Food)
@@ -184,10 +197,7 @@ namespace Snake
             return newDirection;
         }
 
-        /// <summary>
-        /// Инициализация, начало, конец, перезагрузка, подключение стилей
-        /// </summary>
-        public void Start()
+        public void Initialize()
         {
             #region Инициализация
 
@@ -197,7 +207,7 @@ namespace Snake
             _data.MapSize = sizeOfMap;
 
             // Выделение памяти для карты и змеи
-            _data.Map = new int[_data.MapSize.X, _data.MapSize.Y];
+            _data.Map = new Cell[_data.MapSize.X, _data.MapSize.Y];
             _data.Snake = new LinkedList<Coord>();
 
             // Создание змеи
@@ -213,11 +223,11 @@ namespace Snake
             {
                 for (var j = 0; j < _data.MapSize.X; j++)
                 {
-                    _data.Map[j, i] = 0;
+                    _data.Map[j, i] = new Cell(CellType.Empty, j,i);
                 }
             }
 
-            _data.Food = Functions.GenerateFood(_data.Snake, _data.MapSize);
+            _data.Food = Functions.GenerateFood(_data.Snake, _data.MapSize, _data.Map);
 
             _data.ScoreChanged += () => { Output.DrawScores(_data.Score, _data.MapSize); };
 
@@ -228,28 +238,31 @@ namespace Snake
                 _data.CollidedWthFood = true;
                 SetScore();
                 _data.FoodForEating = _data.Food;
-                _data.Food = Functions.GenerateFood(_data.Snake, _data.MapSize);
+                _data.Food = Functions.GenerateFood(_data.Snake, _data.MapSize, _data.Map);
             };
 
             var lose = new Music(new Audio(Resources.lose));
-            CollidedWithBody += delegate
+            CollidedWithObstacle += delegate
             {
                 lose.PlayOnce();
                 Output.DrawGameover(_data.MapSize);
                 _canExit = true;
             };
 
-            var input = new Input();
-
-
             _data.SetSpeed(1);
 
             #endregion
+        }
 
-            #region Игровой цикл
+        /// <summary>
+        /// Начать игровой цикл
+        /// </summary>
+        public void Start()
+        {
+            var input = new Input();
 
             Output.Clear();
-            Output.DrawMap(_data.MapSize);
+            Output.DrawMap(_data.MapSize, _data.Map);
             Output.DrawScores(_data.Score, _data.MapSize);
 
             while (true)
@@ -303,8 +316,64 @@ namespace Snake
                 Check();
                 Thread.Sleep(_data.GetSpeed());
             }
+        }
 
-            #endregion
+        /// <summary>
+        /// Начать игровой цикл с указанным уровнем
+        /// </summary>
+        /// <param name="level">Объект уровня</param>
+        public void Start(Level level)
+        {
+            _data.MapSize = new Coord(level.MapWidth,level.MapHeight);
+
+            // Выделение памяти для карты и змеи
+            _data.Map = new Cell[_data.MapSize.X, _data.MapSize.Y];
+            _data.Snake = new LinkedList<Coord>();
+
+
+            foreach (var playerInitCoord in level.PlayerInitCoords)
+            {
+                _data.Snake.AddFirst(playerInitCoord);
+            }
+
+            _data.Tail = _data.Snake.Last.Value;
+
+            // Заполнение карты
+            for (var i = 0; i < _data.MapSize.Y; i++)
+            {
+                for (var j = 0; j < _data.MapSize.X; j++)
+                {
+                    _data.Map[j,i] = new Cell(level.CellsInfo.cells.FindAll(e => e.X == j && e.Y == i)[0].CellType,j,i);
+                }
+            }
+
+            _data.Food = Functions.GenerateFood(_data.Snake, _data.MapSize, _data.Map);
+
+            _data.ScoreChanged += () => { Output.DrawScores(_data.Score, _data.MapSize); };
+
+            var apple = new Music(new Audio(Resources.apple));
+            CollidedWithFood += delegate
+            {
+                apple.PlayOnce();
+                _data.CollidedWthFood = true;
+                SetScore();
+                _data.FoodForEating = _data.Food;
+                _data.Food = Functions.GenerateFood(_data.Snake, _data.MapSize, _data.Map);
+            };
+
+            var lose = new Music(new Audio(Resources.lose));
+            CollidedWithObstacle += delegate
+            {
+                lose.PlayOnce();
+                Output.DrawGameover(_data.MapSize);
+                _canExit = true;
+            };
+
+            _data.SetSpeed(1);
+
+            _data.Direction = level.Direction;
+
+            Start();
         }
     }
 }
