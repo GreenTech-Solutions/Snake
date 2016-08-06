@@ -1,63 +1,82 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Media;
-using System.Net.Mime;
-using System.Resources;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media;
+﻿using System.IO;
 using NAudio.Wave;
 
 namespace Snake
 {
+    /// <summary>
+    /// Класс для управления музыкой и звуками
+    /// </summary>
     class Music
     {
-        private NAudio.Wave.WaveFileReader wave = null;
+        /// <summary>
+        /// Обработчик Wave файлов
+        /// </summary>
+        private WaveFileReader _wave;
 
-        private WaveFileWriter writer = null;
+        /// <summary>
+        /// Плеер для проигрывания
+        /// </summary>
+        private DirectSoundOut _player;
 
-        private NAudio.Wave.DirectSoundOut output = null;
+        /// <summary>
+        /// Откалиброванный звуковой файл
+        /// </summary>
+        private WaveChannel32 _waveChannel32;
 
-        private WaveChannel32 waveChannel32;
+        private bool _canPlay;
+        public bool CanPlay {
+            get
+            {
+                return _canPlay;
+            }
+            set {
+                _canPlay = value;
+                CanPlayChanged?.Invoke(value);
+            }
+        }
 
-        private Stream file = null;
+        public delegate void ValueChanged(dynamic value);
 
-        private Audio song;
+        public event ValueChanged CanPlayChanged;
 
-        private bool canPlay;
-        public bool CanPlay { get {return canPlay;} set { canPlay = value;
-            CanPlayChanged(value);
-        } }
-
-        public delegate void valueChanged(dynamic value);
-
-        public event valueChanged CanPlayChanged;
-
-
+        /// <summary>
+        /// Создание нового экзепляра Music
+        /// </summary>
+        /// <param name="audio">Аудио файл</param>
         public Music(Audio audio)
         {
             Load(audio);
             CanPlayChanged += value =>
             {
-                if (canPlay)
-                {
-                    waveChannel32.Volume = 1;
-                }
-                else
-                {
-                    waveChannel32.Volume = 0;
-                }
+                _waveChannel32.Volume = _canPlay ? 1 : 0;
             };
 
             CanPlay = true;
         }
 
+        /// <summary>
+        /// Загрузка аудио файла в память
+        /// </summary>
+        /// <param name="audio">Аудио файл</param>
+        public void Load(Audio audio)
+        {
+            _wave = new WaveFileReader(audio.File);
+
+            _player = new DirectSoundOut();
+            _waveChannel32 = new WaveChannel32(_wave)
+            {
+                Volume = _canPlay ? 1 : 0
+            };
+
+            _player.Init(_waveChannel32);
+        }
+
+        /// <summary>
+        /// Играть файл в бесконечном цикле
+        /// </summary>
         public void PlayLoop()
         {
-            output.PlaybackStopped += PlayerOnPlaybackStopped;
+            _player.PlaybackStopped += PlayerOnPlaybackStopped;
             PlayOnce();
         }
 
@@ -66,60 +85,74 @@ namespace Snake
             PlayOnce();
         }
 
+        /// <summary>
+        /// Играть файл один раз
+        /// </summary>
         public void PlayOnce()
         {
-            wave.Position = 0;
-            output.Play();
+            _wave.Position = 0;
+            _player.Play();
         }
 
+        /// <summary>
+        /// Остановить проигрыш файла
+        /// </summary>
         public void Stop()
         {
-            output.PlaybackStopped -= PlayerOnPlaybackStopped;
-            output.Stop();
+            _player.PlaybackStopped -= PlayerOnPlaybackStopped;
+            _player.Stop();
         }
 
-        public void Load(Audio audio)
-        {
-            file = audio.File;
-            song = audio;
-            wave = new NAudio.Wave.WaveFileReader(audio.File);
-
-            output = new NAudio.Wave.DirectSoundOut();
-            waveChannel32 = new WaveChannel32(wave);
-
-            waveChannel32.Volume = canPlay ? 1 : 0;
-            output.Init(waveChannel32);
-        }
-
+        /// <summary>
+        /// Удаление экземпляра Music
+        /// </summary>
         ~Music()
         {
-            if (output != null)
+            if (_player != null)
             {
-                if (output.PlaybackState == NAudio.Wave.PlaybackState.Playing) output.Stop();
-                output.Dispose();
-                output = null;
+                if (_player.PlaybackState == PlaybackState.Playing) _player.Stop();
+                _player.Dispose();
+                _player = null;
             }
-            if (wave != null)
+            if (_wave != null)
             {
-                wave.Close();
-                wave.Dispose();
-                wave = null;
+                _wave.Close();
+                _wave.Dispose();
+                _wave = null;
             }
         }
     }
 
+    /// <summary>
+    /// Инкапсуляция аудио файла
+    /// </summary>
     class Audio
     {
+        /// <summary>
+        /// Имя файла
+        /// </summary>
         public readonly string Name;
 
+        /// <summary>
+        /// Ссылка на аудио-файл в памяти
+        /// </summary>
         public readonly Stream File;
 
+        /// <summary>
+        /// Создаёт новый экземпляр класса Audio
+        /// </summary>
+        /// <param name="name">Имя файла</param>
+        /// <param name="file">Ссылка на файл в памяти</param>
         public Audio(string name, Stream file)
         {
             Name = name;
             File = file;
         }
 
+        /// <summary>
+        /// Создаёт новый экземпляр класса Audio с именем файла, из полученного потока
+        /// </summary>
+        /// <param name="file">Ссылка на поток с файлом</param>
         public Audio(Stream file)
             : this(nameof(file),file)
         {
@@ -130,7 +163,6 @@ namespace Snake
         {
             File.Close();
             File.Dispose();
-
         }
 
         public override string ToString()

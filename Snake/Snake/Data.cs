@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Snake
 {
+    /// <summary>
+    /// Игровое хранилище
+    /// </summary>
     class Data
     {
         /// <summary>
@@ -18,12 +15,12 @@ namespace Snake
         /// <summary>
         /// Игровое поле
         /// </summary>
-        public int[,] map;
+        public int[,] Map;
 
         /// <summary>
         /// Координаты ячеек змеи
         /// </summary>
-        public LinkedList<Coord> snake;
+        public LinkedList<Coord> Snake;
 
         /// <summary>
         /// Размер карты
@@ -33,7 +30,7 @@ namespace Snake
         /// <summary>
         /// Направление движения
         /// </summary>
-        public Direction direction;
+        public Direction Direction;
 
         /// <summary>
         /// Координаты хвоста змеи
@@ -50,36 +47,59 @@ namespace Snake
         /// </summary>
         public Coord FoodForEating;
 
+        /// <summary>
+        /// Указывает произошло ли столкновение с пищей
+        /// </summary>
         public bool CollidedWthFood;
 
+        /// <summary>
+        /// Указывает, была ли съедена предыдущая еда(первое значение true)
+        /// </summary>
         public bool FoodEaten = true;
 
 
-        private int score = 0;
+        private int _score;
+        /// <summary>
+        /// Количество набранных очков
+        /// </summary>
         public int Score
         {
-            get { return score; }
+            get { return _score; }
             set
             {
-                score = value;
+                _score = value;
                 ScoreChanged?.Invoke();
             }
         }
 
-        private double speed;
+        /// <summary>
+        /// Скорость перемещения змеи
+        /// </summary>
+        private double _speed;
 
+        /// <summary>
+        /// Установка значения скорости
+        /// </summary>
+        /// <param name="speed">Новое значение скорости</param>
         public void SetSpeed(double speed)
         {
-            this.speed = speed*100;
+            _speed = speed*100;
         }
 
+        /// <summary>
+        /// Получение значения скорости
+        /// </summary>
+        /// <returns>Скорость перемещения змеи</returns>
         public int GetSpeed()
         {
-            return (int) speed;
+            return (int) _speed;
         }
 
 
         public delegate void ValueChanged();
+        /// <summary>
+        /// Происходит при изменении набранных очков
+        /// </summary>
         public event ValueChanged ScoreChanged;
 
         public int HighScore;
