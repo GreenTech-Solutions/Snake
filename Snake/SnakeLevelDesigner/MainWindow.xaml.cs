@@ -18,6 +18,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Xml.Serialization;
 using Microsoft.Win32;
+using Snake;
 
 namespace SnakeLevelDesigner
 {
@@ -40,6 +41,7 @@ namespace SnakeLevelDesigner
                 OpenFile(args[1]);
                 bSave.IsEnabled = true;
             }
+            cbDirection.SelectedIndex = 0;
         }
 
         private int width, height;
@@ -81,7 +83,7 @@ namespace SnakeLevelDesigner
             Map.MouseDown += MapOnMouseDown;
         }
 
-        private void CreateMap(Cells cells = null)
+        private void CreateMap(CellsInfo cells = null)
         {
             if (Equals(cells, null))
             {
@@ -91,6 +93,10 @@ namespace SnakeLevelDesigner
 
             width = cells.width;
             height = cells.height;
+
+            tWidth.Text = width.ToString();
+            tHeight.Text = height.ToString();
+
 
             Map.Children.RemoveRange(0, Map.Children.Count);
 
@@ -148,15 +154,15 @@ namespace SnakeLevelDesigner
 
                     if (rEmpty.IsChecked == true)
                     {
-                        cell.cellType = CellType.Empty;
+                        cell.CellType = CellType.Empty;
                     }
                     else if (rObstacle.IsChecked == true)
                     {
-                        cell.cellType = CellType.Brick;
+                        cell.CellType = CellType.Brick;
                     }
                     else if (rPlayer.IsChecked == true)
                     {
-                        cell.cellType = CellType.Player;
+                        cell.CellType = CellType.Player;
                     }
 
                     ChangeCellColor(label);
@@ -170,7 +176,7 @@ namespace SnakeLevelDesigner
         private void ChangeCellColor(Label label)
         {
             var cell = label.Tag as Cell;
-            switch (cell.cellType)
+            switch (cell.CellType)
             {
                 case CellType.Empty:
                     label.Background = Brushes.WhiteSmoke;
@@ -202,12 +208,18 @@ namespace SnakeLevelDesigner
                     listCells.Add(label.Tag as Cell);
                 }
 
-                var cells = new Cells(listCells,width,height);
+                var cellsInfo = new CellsInfo(listCells,width,height);
+
+                var direction = (Direction)(cbDirection.SelectedIndex);
+
+
+
+                var level = new Level(cellsInfo,Convert.ToInt32(tFinishingScore.Text), direction);
 
                 var bf = new BinaryFormatter();
                 using (Stream fs = new FileStream(fileName,FileMode.Create,FileAccess.Write,FileShare.None))
                 {
-                    bf.Serialize(fs,cells);
+                    bf.Serialize(fs,level);
                 }
 
             }
@@ -229,59 +241,18 @@ namespace SnakeLevelDesigner
 
         private void OpenFile(string path)
         {
-            Cells cells;
+            Level level;
 
             var bf = new BinaryFormatter();
             using (Stream fs = File.OpenRead(path))
             {
-                cells = bf.Deserialize(fs) as Cells;
+                level = bf.Deserialize(fs) as Level;
             }
 
-            CreateMap(cells);
-        }
-    }
+            CreateMap(level.CellsInfo);
 
-    public enum CellType
-    {
-        Empty,
-        Brick,
-        Player
-    }
-
-    [Serializable]
-    class Cell
-    {
-        public CellType cellType;
-
-        public int X;
-        public int Y;
-
-        public Cell(CellType cellType, int x, int y)
-        {
-            this.cellType = cellType;
-            X = x;
-            Y = y;
-        }
-
-        public override string ToString()
-        {
-            return $"{X};{Y};{cellType}";
-        }
-    }
-
-    [Serializable]
-    class Cells
-    {
-        public List<Cell> cells;
-
-        public int width;
-        public int height;
-
-        public Cells(List<Cell> cells, int width, int height)
-        {
-            this.cells = cells;
-            this.width = width;
-            this.height = height;
+            tFinishingScore.Text = level.FinishingScore.ToString();
+            cbDirection.SelectedIndex = (int) level.Direction;
         }
     }
 }

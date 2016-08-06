@@ -30,6 +30,15 @@
                 <RadioButton Name="rObstacle" GroupName="CellType">Obstacle</RadioButton>
                 <RadioButton Name="rPlayer" GroupName="CellType">Player</RadioButton>
             </StackPanel>
+            <Label>Finishing Score</Label>
+            <TextBox Name="tFinishingScore" MinWidth="45" Margin="0,5,0,5">100</TextBox>
+            <Label>Direction</Label>
+            <ComboBox Name="cbDirection" Margin="4,4,0,4">
+                <ComboBoxItem >Up</ComboBoxItem>
+                <ComboBoxItem >Left</ComboBoxItem>
+                <ComboBoxItem >Right</ComboBoxItem>
+                <ComboBoxItem >Down</ComboBoxItem>
+            </ComboBox>
             <Button Margin="4,4,0,4" Click="Create_OnClick">Create</Button>
             <Button Margin="4,4,0,4" Click="Open_OnClick">Open</Button>
             <Button Margin="4,4,0,4" Name="bSave" Click="Save_OnClick">Save</Button>
