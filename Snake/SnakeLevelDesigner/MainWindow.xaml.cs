@@ -213,8 +213,7 @@ namespace SnakeLevelDesigner
                 var direction = (Direction)(cbDirection.SelectedIndex);
 
 
-
-                var level = new Level(cellsInfo,Convert.ToInt32(tFinishingScore.Text), direction);
+                var level = new Level(cellsInfo,Convert.ToInt32(tFinishingScore.Text), direction, _backgroundMusic);
 
                 var bf = new BinaryFormatter();
                 using (Stream fs = new FileStream(fileName,FileMode.Create,FileAccess.Write,FileShare.None))
@@ -255,6 +254,31 @@ namespace SnakeLevelDesigner
 
             tFinishingScore.Text = level.FinishingScore.ToString();
             cbDirection.SelectedIndex = (int) level.Direction;
+
+            lBackgroundMusic.Content = level.BackgroundMusic;
+        }
+
+        private byte[] _backgroundMusic;
+
+        private void LoadBackgroundMusic_OnClick(object sender, RoutedEventArgs e)
+        {
+            var ofd = new OpenFileDialog
+            {
+                Filter = "WAV files (*.wav)|*.wav"
+            };
+
+            if (ofd.ShowDialog() == true)
+            {
+
+                using (var file = File.OpenRead(ofd.FileName))
+                {
+                    _backgroundMusic = new byte[file.Length];
+                    file.Read(_backgroundMusic, 0, _backgroundMusic.Length);
+                }
+
+                lBackgroundMusic.Content = ofd.FileName;
+            }
+
         }
     }
 }

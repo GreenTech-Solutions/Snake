@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SnakeLevelDesigner"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525"
+        Title="MainWindow"
         WindowState="Maximized">
     <Grid>
         <Grid.RowDefinitions>
@@ -39,6 +39,8 @@
                 <ComboBoxItem >Right</ComboBoxItem>
                 <ComboBoxItem >Down</ComboBoxItem>
             </ComboBox>
+            <Label Name="lBackgroundMusic">Background Music</Label>
+            <Button Margin="4,4,0,4" Click="LoadBackgroundMusic_OnClick">Load Music</Button>
             <Button Margin="4,4,0,4" Click="Create_OnClick">Create</Button>
             <Button Margin="4,4,0,4" Click="Open_OnClick">Open</Button>
             <Button Margin="4,4,0,4" Name="bSave" Click="Save_OnClick">Save</Button>
