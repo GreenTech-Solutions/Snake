@@ -69,6 +69,10 @@ namespace Snake
             {
                 _score = value;
                 ScoreChanged?.Invoke();
+                if (_score == FinishingScore)
+                {
+                    FinishingScoreReached?.Invoke();
+                }
             }
         }
 
@@ -102,6 +106,8 @@ namespace Snake
         /// </summary>
         public event ValueChanged ScoreChanged;
 
-        public int HighScore;
+        public event ValueChanged FinishingScoreReached;
+
+        public int FinishingScore;
     }
 }

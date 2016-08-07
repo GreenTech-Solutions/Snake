@@ -4,6 +4,7 @@ using System;
 using System.Configuration;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
@@ -185,7 +186,7 @@ namespace Snake
                 {
                     foreach (var file in files)
                     {
-                        Levels.Add(new MenuItem(file.Name, () => StartLevel(Level.GetLevelFromFile(file.FullName))));
+                        Levels.Add(new MenuItem(file.Name.Split('.')[0], () => StartLevel(Level.GetLevelFromFile(file.FullName))));
                     }
                 }
             }

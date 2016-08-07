@@ -40,15 +40,9 @@ namespace Snake
         /// <returns></returns>
         public void Check()
         {
-            List<Coord> obstaclesList = new List<Coord>();
+            List<Coord> obstaclesList = (from Cell cell in _data.Map where cell.CellType == CellType.Brick select new Coord(cell.Y, cell.X)).ToList();
 
-            foreach (var cell in _data.Map)
-            {
-                if (cell.CellType == CellType.Brick)
-                {
-                    obstaclesList.Add(new Coord(cell.Y, cell.X));
-                }
-            }
+            //Все кроме самой головы сталкиваются с частями змеи
             if (_data.Snake.SkipWhile(value => value==_data.Snake.First.Value).Any(coord => coord == _data.Snake.First.Value))
             {
                 CollidedWithObstacle?.Invoke();
@@ -231,9 +225,9 @@ namespace Snake
 
             _data.ScoreChanged += () => { Output.DrawScores(_data.Score, _data.MapSize); };
 
-            var apple = new Music(new Audio(Resources.apple));
             CollidedWithFood += delegate
             {
+                var apple = new Music(new Audio(Resources.apple));
                 apple.PlayOnce();
                 _data.CollidedWthFood = true;
                 SetScore();
@@ -241,11 +235,19 @@ namespace Snake
                 _data.Food = Functions.GenerateFood(_data.Snake, _data.MapSize, _data.Map);
             };
 
-            var lose = new Music(new Audio(Resources.lose));
             CollidedWithObstacle += delegate
             {
+                var lose = new Music(new Audio(Resources.lose));
                 lose.PlayOnce();
-                Output.DrawGameover(_data.MapSize);
+                Output.DrawGameover(_data.MapSize,false);
+                _canExit = true;
+            };
+
+            _data.FinishingScore = Int32.MaxValue;
+
+            _data.FinishingScoreReached += () =>
+            {
+                Output.DrawGameover(_data.MapSize, true);
                 _canExit = true;
             };
 
@@ -343,7 +345,7 @@ namespace Snake
             {
                 for (var j = 0; j < _data.MapSize.X; j++)
                 {
-                    _data.Map[j,i] = new Cell(level.CellsInfo.cells.FindAll(e => e.X == j && e.Y == i)[0].CellType,j,i);
+                    _data.Map[j,i] = new Cell(level.CellsInfo.cells.Find(e => e.X == j && e.Y == i).CellType,j,i);
                 }
             }
 
@@ -351,9 +353,9 @@ namespace Snake
 
             _data.ScoreChanged += () => { Output.DrawScores(_data.Score, _data.MapSize); };
 
-            var apple = new Music(new Audio(Resources.apple));
             CollidedWithFood += delegate
             {
+                var apple = new Music(new Audio(Resources.apple));
                 apple.PlayOnce();
                 _data.CollidedWthFood = true;
                 SetScore();
@@ -361,11 +363,19 @@ namespace Snake
                 _data.Food = Functions.GenerateFood(_data.Snake, _data.MapSize, _data.Map);
             };
 
-            var lose = new Music(new Audio(Resources.lose));
             CollidedWithObstacle += delegate
             {
+                var lose = new Music(new Audio(Resources.lose));
                 lose.PlayOnce();
-                Output.DrawGameover(_data.MapSize);
+                Output.DrawGameover(_data.MapSize,false);
+                _canExit = true;
+            };
+
+            _data.FinishingScore = level.FinishingScore;
+
+            _data.FinishingScoreReached += () =>
+            {
+                Output.DrawGameover(_data.MapSize, true);
                 _canExit = true;
             };
 

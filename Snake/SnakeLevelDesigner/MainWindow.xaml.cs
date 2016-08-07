@@ -222,6 +222,8 @@ namespace SnakeLevelDesigner
                     bf.Serialize(fs,level);
                 }
 
+                MessageBox.Show("File was successfully saved!");
+
             }
         }
 
