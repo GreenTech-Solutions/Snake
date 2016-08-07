@@ -40,7 +40,7 @@ namespace Snake
         /// <returns></returns>
         public void Check()
         {
-            List<Coord> obstaclesList = (from Cell cell in _data.Map where cell.CellType == CellType.Brick select new Coord(cell.Y, cell.X)).ToList();
+            List<Coord> obstaclesList = (from Cell cell in _data.Map where cell.CellType == CellType.Brick select new Coord(cell.X, cell.Y)).ToList();
 
             //Все кроме самой головы сталкиваются с частями змеи
             if (_data.Snake.SkipWhile(value => value==_data.Snake.First.Value).Any(coord => coord == _data.Snake.First.Value))
@@ -253,8 +253,12 @@ namespace Snake
 
             _data.SetSpeed(1);
 
+            _music = new Music(new Audio(Resources.InGame));
+
             #endregion
         }
+
+        private Music _music;
 
         /// <summary>
         /// Начать игровой цикл
@@ -267,10 +271,13 @@ namespace Snake
             Output.DrawMap(_data.MapSize, _data.Map);
             Output.DrawScores(_data.Score, _data.MapSize);
 
+            _music.PlayLoop();
+
             while (true)
             {
                 if (_canExit)
                 {
+                    _music.Stop();
                     return;
                 }
 
@@ -382,6 +389,8 @@ namespace Snake
             _data.SetSpeed(1);
 
             _data.Direction = level.Direction;
+
+            _music = new Music(new Audio(Audio.ConvertBytesToStream(level.BackgroundMusic)));
 
             Start();
         }

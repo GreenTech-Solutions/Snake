@@ -109,5 +109,7 @@ namespace Snake
         public event ValueChanged FinishingScoreReached;
 
         public int FinishingScore;
+
+        public Music BackgroundMusic;
     }
 }

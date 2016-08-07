@@ -29,7 +29,9 @@ namespace Snake
 
         public List<Coord> ObstaclesCoords = new List<Coord>();
 
-        public Level(CellsInfo cellsInfo, int finishingScore, Direction direction)
+        public byte[] BackgroundMusic;
+
+        public Level(CellsInfo cellsInfo, int finishingScore, Direction direction, byte[] backgroundMusic)
         {
             CellsInfo = cellsInfo;
             FinishingScore = finishingScore;
@@ -51,6 +53,8 @@ namespace Snake
             MapHeight = cellsInfo.height;
 
             Direction = direction;
+
+            BackgroundMusic = backgroundMusic;
         }
 
         public static Level GetLevelFromFile(string path)

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using NAudio.Wave;
 
 namespace Snake
@@ -6,7 +7,7 @@ namespace Snake
     /// <summary>
     /// Класс для управления музыкой и звуками
     /// </summary>
-    class Music
+    class Music : IDisposable
     {
         /// <summary>
         /// Обработчик Wave файлов
@@ -60,8 +61,10 @@ namespace Snake
         /// <param name="audio">Аудио файл</param>
         public void Load(Audio audio)
         {
+            
             _wave = new WaveFileReader(audio.File);
 
+            this.audio = audio;
             _player = new DirectSoundOut();
             _waveChannel32 = new WaveChannel32(_wave)
             {
@@ -90,9 +93,18 @@ namespace Snake
         /// </summary>
         public void PlayOnce()
         {
-            _wave.Position = 0;
+            try
+            {
+                _wave.Position = 0;
+            }
+            catch (ObjectDisposedException ex)
+            {
+                throw;
+            }
             _player.Play();
         }
+
+        public Audio audio;
 
         /// <summary>
         /// Остановить проигрыш файла
@@ -102,6 +114,8 @@ namespace Snake
             _player.PlaybackStopped -= PlayerOnPlaybackStopped;
             _player.Stop();
         }
+
+        
 
         /// <summary>
         /// Удаление экземпляра Music
@@ -121,12 +135,29 @@ namespace Snake
                 _wave = null;
             }
         }
+
+        public void Dispose()
+        {
+            if (_player != null)
+            {
+                if (_player.PlaybackState == PlaybackState.Playing) _player.Stop();
+                _player.Dispose();
+                _player = null;
+            }
+            if (_wave != null)
+            {
+                _wave.Close();
+                _wave.Dispose();
+                _wave = null;
+            }
+        }
     }
 
     /// <summary>
     /// Инкапсуляция аудио файла
     /// </summary>
-    class Audio
+    [Serializable]
+    public class Audio
     {
         /// <summary>
         /// Имя файла
@@ -168,6 +199,14 @@ namespace Snake
         public override string ToString()
         {
             return Name;
+        }
+
+        public static Stream ConvertBytesToStream(byte[] bytes)
+        {
+            Stream s = new MemoryStream(bytes);
+            
+                return s;
+            
         }
     }
 }

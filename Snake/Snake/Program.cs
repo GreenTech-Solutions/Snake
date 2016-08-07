@@ -158,8 +158,6 @@ namespace Snake
         {
             var core = new Core();
             _music.Stop();
-            _music.Load(new Audio(Resources.InGame));
-            _music.PlayLoop();
             if (Equals(level, null))
             {
                 core.Initialize();
@@ -169,7 +167,6 @@ namespace Snake
             {
                 core.Start(level);
             }
-            _music.Stop();
             _music.Load(new Audio(Resources.MainMenu));
             _music.PlayLoop();
         }
