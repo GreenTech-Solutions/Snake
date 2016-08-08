@@ -15,7 +15,7 @@ namespace Snake
         /// <summary>
         /// Игровое поле
         /// </summary>
-        public Cell[,] Map;
+        public List<Cell> Map;
 
         /// <summary>
         /// Координаты ячеек змеи

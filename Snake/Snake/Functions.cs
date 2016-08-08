@@ -25,7 +25,7 @@ namespace Snake
         /// <summary>
         /// Возвращает случайные координаты клетки с едой или null, если свободное место найти не удалось
         /// </summary>
-        public static Coord GenerateFood(LinkedList<Coord> playerCoords, Coord mapSize, Cell[,] Map)
+        public static Coord GenerateFood(LinkedList<Coord> playerCoords, Coord mapSize, List<Cell> Map)
         {
             var r = new Random(DateTime.Now.Millisecond);
 

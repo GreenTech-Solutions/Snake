@@ -201,7 +201,7 @@ namespace Snake
             _data.MapSize = sizeOfMap;
 
             // Выделение памяти для карты и змеи
-            _data.Map = new Cell[_data.MapSize.X, _data.MapSize.Y];
+            _data.Map = new List<Cell>();
             _data.Snake = new LinkedList<Coord>();
 
             // Создание змеи
@@ -217,7 +217,7 @@ namespace Snake
             {
                 for (var j = 0; j < _data.MapSize.X; j++)
                 {
-                    _data.Map[j, i] = new Cell(CellType.Empty, j,i);
+                    _data.Map.Add(new Cell(CellType.Empty, j, i));
                 }
             }
 
@@ -336,7 +336,7 @@ namespace Snake
             _data.MapSize = new Coord(level.MapWidth,level.MapHeight);
 
             // Выделение памяти для карты и змеи
-            _data.Map = new Cell[_data.MapSize.X, _data.MapSize.Y];
+            _data.Map = new List<Cell>();
             _data.Snake = new LinkedList<Coord>();
 
 
@@ -348,13 +348,7 @@ namespace Snake
             _data.Tail = _data.Snake.Last.Value;
 
             // Заполнение карты
-            for (var i = 0; i < _data.MapSize.Y; i++)
-            {
-                for (var j = 0; j < _data.MapSize.X; j++)
-                {
-                    _data.Map[j,i] = new Cell(level.CellsInfo.cells.Find(e => e.X == j && e.Y == i).CellType,j,i);
-                }
-            }
+            _data.Map = level.CellsInfo.cells;
 
             _data.Food = Functions.GenerateFood(_data.Snake, _data.MapSize, _data.Map);
 

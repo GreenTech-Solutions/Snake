@@ -46,30 +46,30 @@ namespace Snake
         /// <summary>
         /// Отрисовывает карту указанного размера
         /// </summary>
-        static public void DrawMap(Coord size, Cell[,] Map)
+        static public void DrawMap(Coord size, List<Cell> Map)
         {
             if (size == null) throw new ArgumentNullException(nameof(size));
 
-            // Рисование игрового поля
-            for (int i = 0; i < size.Y; i++)
+
+            foreach (var cell in Map)
             {
-                for (int j = 0; j < size.X; j++)
+                Console.SetCursorPosition(cell.X+Padding,cell.Y + PaddingTop);
+                if (cell.CellType == CellType.Empty)
                 {
-                    Console.SetCursorPosition(j + Padding, i + PaddingTop);
-                    if (Map[j, i].CellType == CellType.Empty)
-                    {
-                        Console.BackgroundColor = BackGround;
-                        Console.ForegroundColor = ConsoleColor.Black;
-                        Console.Write(MapCell);
-                    }
-                    else if (Map[j,i].CellType == CellType.Brick)
-                    {
-                        Console.BackgroundColor = ConsoleColor.Gray;
-                        Console.ForegroundColor = ConsoleColor.Black;
-                        Console.Write(Obstacle);
-                    }
+                    Console.BackgroundColor = BackGround;
+                    Console.ForegroundColor = ConsoleColor.Black;
+                    Console.Write(MapCell);
+                }
+                else if (cell.CellType == CellType.Brick)
+                {
+                    Console.BackgroundColor = ConsoleColor.Gray;
+                    Console.ForegroundColor = ConsoleColor.Black;
+                    Console.Write(Obstacle);
                 }
             }
+
+            int k = 0;
+            // Рисование игрового поля
 
             Console.ResetColor();
         }
