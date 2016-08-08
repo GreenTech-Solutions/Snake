@@ -59,8 +59,8 @@ namespace SnakeLevelDesigner
 
             Map.Children.RemoveRange(0, Map.Children.Count);
 
-            Map.Rows = width;
-            Map.Columns = height;
+            Map.Rows = height;
+            Map.Columns = width;
 
             for (int i = 0; i < Map.Rows; i++)
             {
@@ -100,8 +100,8 @@ namespace SnakeLevelDesigner
 
             Map.Children.RemoveRange(0, Map.Children.Count);
 
-            Map.Rows = width;
-            Map.Columns = height;
+            Map.Rows = height;
+            Map.Columns = width;
 
             foreach (var tag in cells.cells)
             {
@@ -197,9 +197,9 @@ namespace SnakeLevelDesigner
 
             if (sfd.ShowDialog(this) == true)
             {
-                string fileName = sfd.FileName;
+                var fileName = sfd.FileName;
 
-                List<Cell> listCells = new List<Cell>();
+                var listCells = new List<Cell>();
 
                 foreach (var child in Map.Children)
                 {
