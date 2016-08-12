@@ -75,6 +75,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>SnakeSettings.settings</DependentUpon>
     </Compile>
+    <Compile Include="StateManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

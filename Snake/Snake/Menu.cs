@@ -117,26 +117,27 @@ namespace Snake
             Out();
             DrawCursor(line);
 
-            var music = new Music(new Audio(Resources.click));
+            MusicManager.Add(new Audio("Click",Resources.click),SoundType.Effect );
 
             while (true)
             {
                 var kInfo = Console.ReadKey(true);
 
-                music.PlayOnce();
-
                 if (kInfo.Key == Config.DownKey || kInfo.Key == ConsoleKey.DownArrow)
                 {
+                    MusicManager.Play("Click", SoundType.Effect);
                     if (line < Count)
                         DrawCursor(++line);
                 }
                 else if (kInfo.Key == Config.UpKey || kInfo.Key == ConsoleKey.UpArrow)
                 {
+                    MusicManager.Play("Click", SoundType.Effect);
                     if (line > 1)
                         DrawCursor(--line);
                 }
                 else if (kInfo.Key == ConsoleKey.Enter)
                 {
+                    MusicManager.Play("Click", SoundType.Effect);
                     if (_menuItems[line - 1].HasValue)
                     {
                         Edit(line - 1);

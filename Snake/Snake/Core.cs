@@ -228,20 +228,22 @@ namespace Snake
 
             _data.ScoreChanged += () => { Output.DrawScores(_data.Score, sizeOfMap); };
 
+            MusicManager.Add(new Audio("Apple", Resources.apple), SoundType.Effect);
+
             CollidedWithFood += delegate
             {
-                var apple = new Music(new Audio(Resources.apple));
-                apple.PlayOnce();
+                MusicManager.Play("Apple",SoundType.Effect);
                 _data.CollidedWthFood = true;
                 SetScore();
                 _data.FoodForEating = _data.Food;
                 _data.Food = Functions.GenerateFood(_data.Snake, sizeOfMap, map);
             };
 
+            MusicManager.Add(new Audio("Lose",Resources.lose),SoundType.Effect);
+
             CollidedWithObstacle += delegate
             {
-                var lose = new Music(new Audio(Resources.lose));
-                lose.PlayOnce();
+                MusicManager.Play("Lose",SoundType.Effect);
                 Output.DrawGameover(sizeOfMap,false);
                 _canExit = true;
             };
@@ -262,12 +264,10 @@ namespace Snake
 
             _data.Level = level;
 
-            _music = new Music(level.BackgroundMusic);
+            MusicManager.Add(level.BackgroundMusic,SoundType.Music);
 
             #endregion
         }
-
-        private Music _music;
 
         /// <summary>
         /// Начать игровой цикл
@@ -280,13 +280,13 @@ namespace Snake
             Output.DrawMap(_data.Level.MapSize, _data.Level.MapCellsInfo.cells);
             Output.DrawScores(_data.Score, _data.Level.MapSize);
 
-            _music.PlayLoop();
+            MusicManager.Play(_data.Level.BackgroundMusic.Name,SoundType.Music);
 
             while (true)
             {
                 if (_canExit)
                 {
-                    _music.Stop();
+                    MusicManager.StopAll();
                     return;
                 }
 
@@ -358,20 +358,22 @@ namespace Snake
 
             _data.ScoreChanged += () => { Output.DrawScores(_data.Score, sizeOfMap); };
 
+            MusicManager.Add(new Audio("Apple", Resources.apple), SoundType.Effect);
+
             CollidedWithFood += delegate
             {
-                var apple = new Music(new Audio(Resources.apple));
-                apple.PlayOnce();
+                MusicManager.Play("Apple",SoundType.Effect);
                 _data.CollidedWthFood = true;
                 SetScore();
                 _data.FoodForEating = _data.Food;
                 _data.Food = Functions.GenerateFood(_data.Snake, sizeOfMap, level.MapCellsInfo.cells);
             };
 
+            MusicManager.Add(new Audio("Lose",Resources.lose), SoundType.Effect);
+
             CollidedWithObstacle += delegate
             {
-                var lose = new Music(new Audio(Resources.lose));
-                lose.PlayOnce();
+                MusicManager.Play("Lose",SoundType.Effect);
                 Output.DrawGameover(sizeOfMap,false);
                 _canExit = true;
             };
@@ -386,7 +388,7 @@ namespace Snake
 
             _data.Direction = level.Direction;
 
-            _music = new Music(level.BackgroundMusic);
+            MusicManager.Add(level.BackgroundMusic,SoundType.Music);
 
             Start();
         }

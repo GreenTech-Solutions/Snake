@@ -74,7 +74,7 @@ namespace Snake
                 }
                 catch
                 {
-                    MessageBox.Show("Ошибка чтения файла.");
+                    throw new FileFormatException("Ошибка при чтении файла.");
                     return null;
                 }
             }
