@@ -40,7 +40,7 @@ namespace Snake
         /// <returns></returns>
         public void Check()
         {
-            List<Coord> obstaclesList = (from Cell cell in _data.Map where cell.CellType == CellType.Brick select new Coord(cell.X, cell.Y)).ToList();
+            List<Coord> obstaclesList = (from Cell cell in _data.Level.MapCellsInfo.cells where cell.CellType == CellType.Brick select new Coord(cell.X, cell.Y)).ToList();
 
             //Все кроме самой головы сталкиваются с частями змеи
             if (_data.Snake.SkipWhile(value => value==_data.Snake.First.Value).Any(coord => coord == _data.Snake.First.Value))
@@ -75,8 +75,8 @@ namespace Snake
             var x = _data.Snake.First.Value.X;
             var y = _data.Snake.First.Value.Y;
 
-            var maxX = _data.MapSize.X-1;
-            var maxY = _data.MapSize.Y-1;
+            var maxX = _data.Level.MapSize.X-1;
+            var maxY = _data.Level.MapSize.Y-1;
 
             Coord temp;
             _data.Tail = _data.Snake.Last.Value;
@@ -195,17 +195,18 @@ namespace Snake
         {
             #region Инициализация
 
+            Level level;
+
             var settings = GetAppSettings();
 
             var sizeOfMap = new Coord(Convert.ToInt32(settings["MapWidth"]), Convert.ToInt32(settings["MapHeight"]));
-            _data.MapSize = sizeOfMap;
 
             // Выделение памяти для карты и змеи
-            _data.Map = new List<Cell>();
+            var map = new List<Cell>();
             _data.Snake = new LinkedList<Coord>();
 
             // Создание змеи
-            for (var i = 0; i < _data.Size; i++)
+            for (var i = 0; i < 3; i++)
             {
                 _data.Snake.AddFirst(new Coord( /* TODO Значение выставляется не здесь */i + 3, 0));
             }
@@ -213,17 +214,19 @@ namespace Snake
             _data.Tail = _data.Snake.Last.Value;
 
             // Заполнение карты
-            for (var i = 0; i < _data.MapSize.Y; i++)
+            for (var i = 0; i < sizeOfMap.Y; i++)
             {
-                for (var j = 0; j < _data.MapSize.X; j++)
+                for (var j = 0; j < sizeOfMap.X; j++)
                 {
-                    _data.Map.Add(new Cell(CellType.Empty, j, i));
+                    map.Add(new Cell(CellType.Empty, j, i));
                 }
             }
 
-            _data.Food = Functions.GenerateFood(_data.Snake, _data.MapSize, _data.Map);
+            CellsInfo cellsInfo = new CellsInfo(map,sizeOfMap.X,sizeOfMap.Y);
 
-            _data.ScoreChanged += () => { Output.DrawScores(_data.Score, _data.MapSize); };
+            _data.Food = Functions.GenerateFood(_data.Snake, sizeOfMap, map);
+
+            _data.ScoreChanged += () => { Output.DrawScores(_data.Score, sizeOfMap); };
 
             CollidedWithFood += delegate
             {
@@ -232,28 +235,34 @@ namespace Snake
                 _data.CollidedWthFood = true;
                 SetScore();
                 _data.FoodForEating = _data.Food;
-                _data.Food = Functions.GenerateFood(_data.Snake, _data.MapSize, _data.Map);
+                _data.Food = Functions.GenerateFood(_data.Snake, sizeOfMap, map);
             };
 
             CollidedWithObstacle += delegate
             {
                 var lose = new Music(new Audio(Resources.lose));
                 lose.PlayOnce();
-                Output.DrawGameover(_data.MapSize,false);
+                Output.DrawGameover(sizeOfMap,false);
                 _canExit = true;
             };
 
-            _data.FinishingScore = Int32.MaxValue;
-
             _data.FinishingScoreReached += () =>
             {
-                Output.DrawGameover(_data.MapSize, true);
+                Output.DrawGameover(sizeOfMap, true);
                 _canExit = true;
             };
 
             _data.SetSpeed(1);
 
-            _music = new Music(new Audio(Resources.InGame));
+            var backgroundMusic = new Audio(nameof(Resources.InGame),Resources.InGame);
+
+            level = new Level(cellsInfo,int.MaxValue,_data.Direction,backgroundMusic);
+
+            level.FinishingScore = Int32.MaxValue;
+
+            _data.Level = level;
+
+            _music = new Music(level.BackgroundMusic);
 
             #endregion
         }
@@ -268,8 +277,8 @@ namespace Snake
             var input = new Input();
 
             Output.Clear();
-            Output.DrawMap(_data.MapSize, _data.Map);
-            Output.DrawScores(_data.Score, _data.MapSize);
+            Output.DrawMap(_data.Level.MapSize, _data.Level.MapCellsInfo.cells);
+            Output.DrawScores(_data.Score, _data.Level.MapSize);
 
             _music.PlayLoop();
 
@@ -333,12 +342,10 @@ namespace Snake
         /// <param name="level">Объект уровня</param>
         public void Start(Level level)
         {
-            _data.MapSize = new Coord(level.MapWidth,level.MapHeight);
+            var sizeOfMap = level.MapSize;
 
             // Выделение памяти для карты и змеи
-            _data.Map = new List<Cell>();
             _data.Snake = new LinkedList<Coord>();
-
 
             foreach (var playerInitCoord in level.PlayerInitCoords)
             {
@@ -347,12 +354,9 @@ namespace Snake
 
             _data.Tail = _data.Snake.Last.Value;
 
-            // Заполнение карты
-            _data.Map = level.CellsInfo.cells;
+            _data.Food = Functions.GenerateFood(_data.Snake, level.MapSize, level.MapCellsInfo.cells);
 
-            _data.Food = Functions.GenerateFood(_data.Snake, _data.MapSize, _data.Map);
-
-            _data.ScoreChanged += () => { Output.DrawScores(_data.Score, _data.MapSize); };
+            _data.ScoreChanged += () => { Output.DrawScores(_data.Score, sizeOfMap); };
 
             CollidedWithFood += delegate
             {
@@ -361,22 +365,20 @@ namespace Snake
                 _data.CollidedWthFood = true;
                 SetScore();
                 _data.FoodForEating = _data.Food;
-                _data.Food = Functions.GenerateFood(_data.Snake, _data.MapSize, _data.Map);
+                _data.Food = Functions.GenerateFood(_data.Snake, sizeOfMap, level.MapCellsInfo.cells);
             };
 
             CollidedWithObstacle += delegate
             {
                 var lose = new Music(new Audio(Resources.lose));
                 lose.PlayOnce();
-                Output.DrawGameover(_data.MapSize,false);
+                Output.DrawGameover(sizeOfMap,false);
                 _canExit = true;
             };
 
-            _data.FinishingScore = level.FinishingScore;
-
             _data.FinishingScoreReached += () =>
             {
-                Output.DrawGameover(_data.MapSize, true);
+                Output.DrawGameover(sizeOfMap, true);
                 _canExit = true;
             };
 
@@ -384,7 +386,7 @@ namespace Snake
 
             _data.Direction = level.Direction;
 
-            _music = new Music(new Audio(Audio.ConvertBytesToStream(level.BackgroundMusic)));
+            _music = new Music(level.BackgroundMusic);
 
             Start();
         }

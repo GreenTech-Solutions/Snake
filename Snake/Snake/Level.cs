@@ -13,7 +13,7 @@ namespace Snake
     [Serializable]
     public class Level
     {
-        public CellsInfo CellsInfo;
+        public CellsInfo MapCellsInfo;
 
         /// <summary>
         /// Количество очков для прохождения уровня
@@ -23,17 +23,19 @@ namespace Snake
         public int MapWidth;
         public int MapHeight;
 
+        public Coord MapSize;
+
         public Direction Direction;
 
         public List<Coord> PlayerInitCoords = new List<Coord>();
 
         public List<Coord> ObstaclesCoords = new List<Coord>();
 
-        public byte[] BackgroundMusic;
+        public Audio BackgroundMusic;
 
-        public Level(CellsInfo cellsInfo, int finishingScore, Direction direction, byte[] backgroundMusic)
+        public Level(CellsInfo cellsInfo, int finishingScore, Direction direction, Audio backgroundMusic)
         {
-            CellsInfo = cellsInfo;
+            MapCellsInfo = cellsInfo;
             FinishingScore = finishingScore;
 
             foreach (var cell in cellsInfo.cells)
@@ -51,6 +53,8 @@ namespace Snake
 
             MapWidth = cellsInfo.width;
             MapHeight = cellsInfo.height;
+
+            MapSize = new Coord(MapWidth,MapHeight);
 
             Direction = direction;
 

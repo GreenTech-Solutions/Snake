@@ -10,22 +10,12 @@ namespace Snake
         /// <summary>
         /// Размер змеи
         /// </summary>
-        public int Size = 3;
-
-        /// <summary>
-        /// Игровое поле
-        /// </summary>
-        public List<Cell> Map;
+        public int Size;
 
         /// <summary>
         /// Координаты ячеек змеи
         /// </summary>
         public LinkedList<Coord> Snake;
-
-        /// <summary>
-        /// Размер карты
-        /// </summary>
-        public Coord MapSize;
 
         /// <summary>
         /// Направление движения
@@ -69,7 +59,7 @@ namespace Snake
             {
                 _score = value;
                 ScoreChanged?.Invoke();
-                if (_score == FinishingScore)
+                if (_score == Level.FinishingScore)
                 {
                     FinishingScoreReached?.Invoke();
                 }
@@ -108,8 +98,6 @@ namespace Snake
 
         public event ValueChanged FinishingScoreReached;
 
-        public int FinishingScore;
-
-        public Music BackgroundMusic;
+        public Level Level;
     }
 }

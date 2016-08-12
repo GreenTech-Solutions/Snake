@@ -136,7 +136,7 @@ namespace Snake
 
                 _music = new Music(new Audio(Resources.MainMenu));
 
-                Menu MainMenu = new Menu("Snake by Alex_Green ©");
+                Menu MainMenu = new Menu("Snake by Alex_Green ©  v" + GetVersion());
                 MainMenu.Add(new MenuItem("New Game", () => StartLevel()));
                 MainMenu.Add(new MenuItem("Levels",Levels));
                 MainMenu.Add(new MenuItem("Settings", Settings));

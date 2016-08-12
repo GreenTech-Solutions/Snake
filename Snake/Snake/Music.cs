@@ -162,7 +162,7 @@ namespace Snake
         /// <summary>
         /// Имя файла
         /// </summary>
-        public readonly string Name;
+        public readonly string Name = "Some AudioFile Name";
 
         /// <summary>
         /// Ссылка на аудио-файл в памяти
@@ -170,24 +170,39 @@ namespace Snake
         public readonly Stream File;
 
         /// <summary>
-        /// Создаёт новый экземпляр класса Audio
+        /// Сериализованный музыкальный файл
         /// </summary>
-        /// <param name="name">Имя файла</param>
-        /// <param name="file">Ссылка на файл в памяти</param>
-        public Audio(string name, Stream file)
-        {
-            Name = name;
-            File = file;
-        }
+        public byte[] FileBytes;
 
         /// <summary>
         /// Создаёт новый экземпляр класса Audio с именем файла, из полученного потока
         /// </summary>
         /// <param name="file">Ссылка на поток с файлом</param>
         public Audio(Stream file)
-            : this(nameof(file),file)
         {
-            
+            File = file;
+        }
+
+        /// <summary>
+        /// Создаёт новый экземпляр класса Audio
+        /// </summary>
+        /// <param name="name">Имя файла</param>
+        /// <param name="file">Ссылка на файл в памяти</param>
+        public Audio(string name, Stream file)
+            :this(file)
+        {
+            Name = name;
+        }
+
+        public Audio(byte[] file)
+        {
+            this.FileBytes = file;
+        }
+
+        public Audio(string name, byte[] file)
+            : this(file)
+        {
+            Name = name;
         }
 
         ~Audio()
