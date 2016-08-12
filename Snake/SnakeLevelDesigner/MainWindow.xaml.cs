@@ -212,8 +212,9 @@ namespace SnakeLevelDesigner
 
                 var direction = (Direction)(cbDirection.SelectedIndex);
 
+                var audio = new Audio(_backgroundMusic);
 
-                var level = new Level(cellsInfo,Convert.ToInt32(tFinishingScore.Text), direction, _backgroundMusic);
+                var level = new Level(cellsInfo,Convert.ToInt32(tFinishingScore.Text), direction, audio);
 
                 var bf = new BinaryFormatter();
                 using (Stream fs = new FileStream(fileName,FileMode.Create,FileAccess.Write,FileShare.None))
@@ -250,7 +251,7 @@ namespace SnakeLevelDesigner
                 level = bf.Deserialize(fs) as Level;
             }
 
-            CreateMap(level.CellsInfo);
+            CreateMap(level.MapCellsInfo);
 
             tFinishingScore.Text = level.FinishingScore.ToString();
             cbDirection.SelectedIndex = (int) level.Direction;
