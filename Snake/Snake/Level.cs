@@ -33,10 +33,13 @@ namespace Snake
 
         public Audio BackgroundMusic;
 
-        public Level(CellsInfo cellsInfo, int finishingScore, Direction direction, Audio backgroundMusic)
+        public int Speed;
+
+        public Level(CellsInfo cellsInfo, int finishingScore, Direction direction, Audio backgroundMusic, int speed)
         {
             MapCellsInfo = cellsInfo;
             FinishingScore = finishingScore;
+            Speed = speed;
 
             foreach (var cell in cellsInfo.cells)
             {

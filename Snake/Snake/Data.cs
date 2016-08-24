@@ -7,6 +7,10 @@ namespace Snake
     /// </summary>
     class Data
     {
+        public Data()
+        {
+        }
+
         /// <summary>
         /// Размер змеи
         /// </summary>
@@ -75,9 +79,9 @@ namespace Snake
         /// Установка значения скорости
         /// </summary>
         /// <param name="speed">Новое значение скорости</param>
-        public void SetSpeed(double speed)
+        public void SetSpeed(int speed)
         {
-            _speed = speed*100;
+            _speed = speed/10;
         }
 
         /// <summary>
@@ -86,7 +90,7 @@ namespace Snake
         /// <returns>Скорость перемещения змеи</returns>
         public int GetSpeed()
         {
-            return (int) _speed;
+            return (int) _speed*10;
         }
 
 

@@ -70,7 +70,7 @@ namespace Snake
             Config.DownKey = (ConsoleKey)Enum.Parse(typeof(ConsoleKey), settings["ControlsDown"]);
             Config.LeftKey = (ConsoleKey)Enum.Parse(typeof(ConsoleKey), settings["Controlsleft"]);
             Config.RightKey = (ConsoleKey)Enum.Parse(typeof(ConsoleKey), settings["ControlsRight"]);
-
+            MusicManager.Mute = Convert.ToInt32(settings["AudioMusic"]) <= 0;
         }
 
         /// <summary>
@@ -146,15 +146,7 @@ namespace Snake
         static void StartLevel(Level level = null)
         {
             var core = new Core();
-            if (Equals(level, null))
-            {
-                core.Initialize();
-                core.Start();
-            }
-            else
-            {
-                core.Start(level);
-            }
+            core.Start(level);
         }
 
         static void MainMenu()
@@ -164,10 +156,16 @@ namespace Snake
             MainMenu.Add(new MenuItem("New Game", () =>
             {
                 MusicManager.Stop("MainMenu",SoundType.Music);
-                StartLevel();
+                Story story = new Story();
                 MusicManager.Play("MainMenu",SoundType.Music);
             }));
             MainMenu.Add(new MenuItem("Levels", Levels));
+            MainMenu.Add(new MenuItem("Free Play", () =>
+            {
+                MusicManager.Stop("MainMenu", SoundType.Music);
+                StartLevel();
+                MusicManager.Play("MainMenu", SoundType.Music);
+            }));
             MainMenu.Add(new MenuItem("Settings", Settings));
             MainMenu.Add(new MenuItem("Exit", true));
 
@@ -228,6 +226,7 @@ namespace Snake
             Menu Settings = new Menu("Settings");
             Settings.Add(new MenuItem("Map Width",Convert.ToInt32(settings["MapWidth"])));
             Settings.Add(new MenuItem("Map Height",Convert.ToInt32(settings["MapHeight"])));
+            Settings.Add(new MenuItem("Speed",Convert.ToInt32(settings["Speed"])));
             Settings.Add(new MenuItem("Controls",Controls));
             Settings.Add(new MenuItem("Audio",Audio));
             Settings.Add(new MenuItem("Back",true));
@@ -240,6 +239,11 @@ namespace Snake
             Settings.Get("Map Height").ValueChanged += value =>
             {
                 settings["MapWidth"] = value.ToString();
+            };
+
+            Settings.Get("Speed").ValueChanged += value =>
+            {
+                settings["Speed"] = value.ToString();
             };
 
             Settings.Engage();

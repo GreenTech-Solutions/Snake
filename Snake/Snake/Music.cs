@@ -354,7 +354,7 @@ namespace Snake
         /// <summary>
         /// Имя файла
         /// </summary>
-        public readonly string Name = "Some AudioFile Name";
+        public string Name = "Some AudioFile Name";
 
         /// <summary>
         /// Ссылка на аудио-файл в памяти
@@ -389,6 +389,7 @@ namespace Snake
         public Audio(byte[] file)
         {
             this.FileBytes = file;
+            this.File = ConvertBytesToStream(file);
         }
 
         public Audio(string name, byte[] file)
@@ -399,8 +400,8 @@ namespace Snake
 
         ~Audio()
         {
-            File.Close();
-            File.Dispose();
+            File?.Close();
+            File?.Dispose();
         }
 
         public override string ToString()

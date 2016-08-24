@@ -76,6 +76,7 @@
       <DependentUpon>SnakeSettings.settings</DependentUpon>
     </Compile>
     <Compile Include="StateManager.cs" />
+    <Compile Include="Story.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

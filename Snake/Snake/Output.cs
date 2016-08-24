@@ -189,6 +189,14 @@ namespace Snake
             Console.Write(text);
         }
 
+        static public void WriteInfo(string text)
+        {
+            Console.ForegroundColor = ConsoleColor.DarkGreen;
+            Console.SetCursorPosition(0,0);
+            Console.Write(text);
+            Console.ResetColor();
+        }
+
         /// <summary>
         /// Отступ для центрирования текста
         /// </summary>
