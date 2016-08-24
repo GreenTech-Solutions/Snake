@@ -32,6 +32,8 @@
             </StackPanel>
             <Label>Finishing Score</Label>
             <TextBox Name="tFinishingScore" MinWidth="45" Margin="0,5,0,5">100</TextBox>
+            <Label>Speed</Label>
+            <TextBox Name="tSpeed" MinWidth="45" Margin="0,5,0,5">100</TextBox>
             <Label>Direction</Label>
             <ComboBox Name="cbDirection" Margin="4,4,0,4">
                 <ComboBoxItem >Up</ComboBoxItem>
