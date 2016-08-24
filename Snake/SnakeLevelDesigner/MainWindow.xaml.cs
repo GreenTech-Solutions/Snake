@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -213,8 +214,11 @@ namespace SnakeLevelDesigner
                 var direction = (Direction)(cbDirection.SelectedIndex);
 
                 var audio = new Audio(_backgroundMusic);
+                audio.Name = lBackgroundMusic.Content.ToString();
 
-                var level = new Level(cellsInfo,Convert.ToInt32(tFinishingScore.Text), direction, audio);
+                var speed = Convert.ToInt32(tSpeed.Text);
+
+                var level = new Level(cellsInfo,Convert.ToInt32(tFinishingScore.Text), direction, audio,speed);
 
                 var bf = new BinaryFormatter();
                 using (Stream fs = new FileStream(fileName,FileMode.Create,FileAccess.Write,FileShare.None))
@@ -257,6 +261,8 @@ namespace SnakeLevelDesigner
             cbDirection.SelectedIndex = (int) level.Direction;
 
             lBackgroundMusic.Content = level.BackgroundMusic;
+
+            tSpeed.Text = level.Speed.ToString();
         }
 
         private byte[] _backgroundMusic;
