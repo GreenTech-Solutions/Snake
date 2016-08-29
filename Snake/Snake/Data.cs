@@ -7,15 +7,14 @@ namespace Snake
     /// </summary>
     class Data
     {
+        public Data()
+        {
+        }
+
         /// <summary>
         /// Размер змеи
         /// </summary>
-        public int Size = 3;
-
-        /// <summary>
-        /// Игровое поле
-        /// </summary>
-        public int[,] Map;
+        public int Size;
 
         /// <summary>
         /// Координаты ячеек змеи
@@ -23,14 +22,9 @@ namespace Snake
         public LinkedList<Coord> Snake;
 
         /// <summary>
-        /// Размер карты
-        /// </summary>
-        public Coord MapSize;
-
-        /// <summary>
         /// Направление движения
         /// </summary>
-        public Direction Direction;
+        public Direction Direction = Direction.Right;
 
         /// <summary>
         /// Координаты хвоста змеи
@@ -69,6 +63,10 @@ namespace Snake
             {
                 _score = value;
                 ScoreChanged?.Invoke();
+                if (_score == Level.FinishingScore)
+                {
+                    FinishingScoreReached?.Invoke();
+                }
             }
         }
 
@@ -81,9 +79,9 @@ namespace Snake
         /// Установка значения скорости
         /// </summary>
         /// <param name="speed">Новое значение скорости</param>
-        public void SetSpeed(double speed)
+        public void SetSpeed(int speed)
         {
-            _speed = speed*100;
+            _speed = speed/10;
         }
 
         /// <summary>
@@ -92,7 +90,7 @@ namespace Snake
         /// <returns>Скорость перемещения змеи</returns>
         public int GetSpeed()
         {
-            return (int) _speed;
+            return (int) _speed*10;
         }
 
 
@@ -102,6 +100,8 @@ namespace Snake
         /// </summary>
         public event ValueChanged ScoreChanged;
 
-        public int HighScore;
+        public event ValueChanged FinishingScoreReached;
+
+        public Level Level;
     }
 }

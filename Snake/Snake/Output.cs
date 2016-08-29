@@ -23,6 +23,8 @@ namespace Snake
         /// </summary>
         private static char MapCell = (char)183;
 
+        private static char Obstacle = (char) 140;
+
         /// <summary>
         /// Символ пищи
         /// </summary>
@@ -44,23 +46,30 @@ namespace Snake
         /// <summary>
         /// Отрисовывает карту указанного размера
         /// </summary>
-        static public void DrawMap(Coord size)
+        static public void DrawMap(Coord size, List<Cell> Map)
         {
             if (size == null) throw new ArgumentNullException(nameof(size));
 
 
-            Console.BackgroundColor = BackGround;
-            Console.ForegroundColor = ConsoleColor.Black;
-
-            // Рисование игрового поля
-            for (int i = 0; i < size.Y; i++)
+            foreach (var cell in Map)
             {
-                for (int j = 0; j < size.X; j++)
+                Console.SetCursorPosition(cell.X+Padding,cell.Y + PaddingTop);
+                if (cell.CellType == CellType.Empty)
                 {
-                    Console.SetCursorPosition(j + Padding, i + PaddingTop);
+                    Console.BackgroundColor = BackGround;
+                    Console.ForegroundColor = ConsoleColor.Black;
                     Console.Write(MapCell);
                 }
+                else if (cell.CellType == CellType.Brick)
+                {
+                    Console.BackgroundColor = ConsoleColor.Gray;
+                    Console.ForegroundColor = ConsoleColor.Black;
+                    Console.Write(Obstacle);
+                }
             }
+
+            int k = 0;
+            // Рисование игрового поля
 
             Console.ResetColor();
         }
@@ -130,7 +139,6 @@ namespace Snake
         static public void DrawScores(int score, Coord mapSize)
         {
             int x = mapSize.X;
-            int y = mapSize.Y;
             Console.SetCursorPosition(x + 1 + Padding, 0 + PaddingTop);
             Console.Write($"{score}pts");
         }
@@ -138,12 +146,22 @@ namespace Snake
         /// <summary>
         /// Отрисовывает экран конца игры
         /// </summary>
-        static public void DrawGameover(Coord mapSize)
+        static public void DrawGameover(Coord mapSize, bool isWinner)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
+            if (isWinner)
+            {
+                Console.ForegroundColor = ConsoleColor.Blue;
 
-            Console.SetCursorPosition(mapSize.X + 2 + Padding, 3 + PaddingTop);
-            Console.Write("Game over!");
+                Console.SetCursorPosition(mapSize.X + 2 + Padding, 3 + PaddingTop);
+                Console.Write("Level Cleared!");
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+
+                Console.SetCursorPosition(mapSize.X + 2 + Padding, 3 + PaddingTop);
+                Console.Write("Game over!");
+            }
 
             Console.SetCursorPosition(mapSize.X + 2 + Padding, 4 + PaddingTop);
             Console.Write("Quit to main menu..");
@@ -169,6 +187,14 @@ namespace Snake
         {
             Console.SetCursorPosition(Padding,Console.CursorTop);
             Console.Write(text);
+        }
+
+        static public void WriteInfo(string text)
+        {
+            Console.ForegroundColor = ConsoleColor.DarkGreen;
+            Console.SetCursorPosition(0,0);
+            Console.Write(text);
+            Console.ResetColor();
         }
 
         /// <summary>

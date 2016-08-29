@@ -1,0 +1,56 @@
+﻿<Window x:Class="SnakeLevelDesigner.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SnakeLevelDesigner"
+        mc:Ignorable="d"
+        Title="MainWindow"
+        WindowState="Maximized">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="23"></RowDefinition>
+            <RowDefinition Height="30"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        
+        <Menu Grid.Row="0" x:Name="menu">
+            <MenuItem Header="File">
+                <MenuItem Header="Exit"/>
+            </MenuItem>
+        </Menu>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <Label >Map Width</Label>
+            <TextBox Name="tWidth" MinWidth="45" Margin="0,5,0,5">10</TextBox>
+            <Label>Map height</Label>
+            <TextBox Name="tHeight"  MinWidth="45" Margin="0,5,0,5">10</TextBox>
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <RadioButton Name="rEmpty" GroupName="CellType">Empty</RadioButton>
+                <RadioButton Name="rObstacle" GroupName="CellType">Obstacle</RadioButton>
+                <RadioButton Name="rPlayer" GroupName="CellType">Player</RadioButton>
+            </StackPanel>
+            <Label>Finishing Score</Label>
+            <TextBox Name="tFinishingScore" MinWidth="45" Margin="0,5,0,5">100</TextBox>
+            <Label>Speed</Label>
+            <TextBox Name="tSpeed" MinWidth="45" Margin="0,5,0,5">100</TextBox>
+            <Label>Direction</Label>
+            <ComboBox Name="cbDirection" Margin="4,4,0,4">
+                <ComboBoxItem >Up</ComboBoxItem>
+                <ComboBoxItem >Left</ComboBoxItem>
+                <ComboBoxItem >Right</ComboBoxItem>
+                <ComboBoxItem >Down</ComboBoxItem>
+            </ComboBox>
+            <Label Name="lBackgroundMusic">Background Music</Label>
+            <Button Margin="4,4,0,4" Click="LoadBackgroundMusic_OnClick">Load Music</Button>
+            <Button Margin="4,4,0,4" Click="Create_OnClick">Create</Button>
+            <Button Margin="4,4,0,4" Click="Open_OnClick">Open</Button>
+            <Button Margin="4,4,0,4" Name="bSave" Click="Save_OnClick">Save</Button>
+        </StackPanel>
+
+        <UniformGrid Name="Map" Grid.Row="2">
+
+        </UniformGrid>
+
+    </Grid>
+</Window>

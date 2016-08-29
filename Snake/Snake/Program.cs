@@ -3,12 +3,13 @@
 using System;
 using System.Configuration;
 using System.Drawing;
+using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 
 // TODO Изменение скорости
-// TODO Добавить концепцию уровней
 // TODO Настройки громкости
 // TODO Возможность изменения стилей змеи (знака генерации тела и змеи)
 // TODO Создать менеджер состояний
@@ -69,7 +70,7 @@ namespace Snake
             Config.DownKey = (ConsoleKey)Enum.Parse(typeof(ConsoleKey), settings["ControlsDown"]);
             Config.LeftKey = (ConsoleKey)Enum.Parse(typeof(ConsoleKey), settings["Controlsleft"]);
             Config.RightKey = (ConsoleKey)Enum.Parse(typeof(ConsoleKey), settings["ControlsRight"]);
-
+            MusicManager.Mute = Convert.ToInt32(settings["AudioMusic"]) <= 0;
         }
 
         /// <summary>
@@ -85,10 +86,7 @@ namespace Snake
             return version;
         }
 
-        /// <summary>
-        /// Объект для работы с музыкой
-        /// </summary>
-        private static Music _music;
+        private static StateManager stateManager;
 
         static void Main(string[] args)
         {
@@ -132,34 +130,90 @@ namespace Snake
 
                 Configurate();
 
-                _music = new Music(new Audio(Resources.MainMenu));
-
-                Menu MainMenu = new Menu("Snake by Alex_Green ©");
-                MainMenu.Add(new MenuItem("New Game", delegate
-                {
-                    var core = new Core();
-
-                    _music.Stop();
-                    _music.Load(new Audio(Resources.InGame));
-                    _music.PlayLoop();
-                    core.Start();
-                    _music.Stop();
-                    _music.Load(new Audio(Resources.MainMenu));
-                    _music.PlayLoop();
-                }));
-                MainMenu.Add(new MenuItem("Settings", Settings));
-                MainMenu.Add(new MenuItem("Exit", true));
-
-                _music.PlayLoop();
-                MainMenu.Engage();
+                stateManager = new StateManager(MainMenu);
+                
+                stateManager.RunLastAddedState();
             }
-            catch
-            {
-                throw;
-            }
+            //catch
+            //{
+            //    throw;
+            //}
             finally
             {
             }
+        }
+
+        static void StartLevel(Level level = null)
+        {
+            var core = new Core();
+            core.Start(level);
+        }
+
+        static void MainMenu()
+        {
+            MusicManager.Add(new Audio("MainMenu",Resources.MainMenu),SoundType.Music);
+            Menu MainMenu = new Menu("Snake by Alex_Green ©  v" + GetVersion());
+            MainMenu.Add(new MenuItem("New Game", () =>
+            {
+                MusicManager.Stop("MainMenu",SoundType.Music);
+                Story story = new Story();
+                MusicManager.Play("MainMenu",SoundType.Music);
+            }));
+            MainMenu.Add(new MenuItem("Levels", Levels));
+            MainMenu.Add(new MenuItem("Free Play", () =>
+            {
+                MusicManager.Stop("MainMenu", SoundType.Music);
+                StartLevel();
+                MusicManager.Play("MainMenu", SoundType.Music);
+            }));
+            MainMenu.Add(new MenuItem("Settings", Settings));
+            MainMenu.Add(new MenuItem("Exit", true));
+
+            MusicManager.Play("MainMenu",SoundType.Music);
+            MainMenu.Engage();
+        }
+
+        static void Levels()
+        {
+            Menu Levels = new Menu("Levels");
+
+            try
+            {
+                var folder = new DirectoryInfo(Application.StartupPath + @"\Levels");
+                FileSystemInfo[] files = folder.GetFileSystemInfos("*.lvl");
+                if (files.Length >= 1)
+                {
+                    foreach (var file in files)
+                    {
+                        Levels.Add(new MenuItem(file.Name.Split('.')[0], () =>
+                        {
+                            try
+                            {
+                                var level = Level.GetLevelFromFile(file.FullName);
+                                if (Equals(level, null))
+                                {
+                                    return;
+                                }
+                                StartLevel(level);
+                            }
+                            catch (FileFormatException ex)
+                            {
+                                Console.SetCursorPosition(Output.Padding + file.Name.Split('.')[0].Count(), Output.PaddingTop + 1 + files.ToList().FindIndex(x => x == file));
+                                Console.Write(" - " + ex.Message);
+                                Console.ReadKey();
+                            }
+
+                        }));
+                    }
+                }
+            }
+            catch (FileFormatException)
+            {
+                Console.Write("Ошибка при открытии файла!");
+            }
+            Levels.Add(new MenuItem("Back",true));
+
+            Levels.Engage();
         }
 
         /// <summary>
@@ -172,6 +226,7 @@ namespace Snake
             Menu Settings = new Menu("Settings");
             Settings.Add(new MenuItem("Map Width",Convert.ToInt32(settings["MapWidth"])));
             Settings.Add(new MenuItem("Map Height",Convert.ToInt32(settings["MapHeight"])));
+            Settings.Add(new MenuItem("Speed",Convert.ToInt32(settings["Speed"])));
             Settings.Add(new MenuItem("Controls",Controls));
             Settings.Add(new MenuItem("Audio",Audio));
             Settings.Add(new MenuItem("Back",true));
@@ -184,6 +239,11 @@ namespace Snake
             Settings.Get("Map Height").ValueChanged += value =>
             {
                 settings["MapWidth"] = value.ToString();
+            };
+
+            Settings.Get("Speed").ValueChanged += value =>
+            {
+                settings["Speed"] = value.ToString();
             };
 
             Settings.Engage();
@@ -257,7 +317,7 @@ namespace Snake
                 }
                 if (key.Key == ConsoleKey.Enter)
                 {
-                    _music.CanPlay = bvalue;
+                    MusicManager.Mute = !bvalue;
                     return bvalue ? 1 : 0;
                 }
             }

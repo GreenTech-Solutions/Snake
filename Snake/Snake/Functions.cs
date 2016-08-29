@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Snake
 {
@@ -24,18 +25,22 @@ namespace Snake
         /// <summary>
         /// Возвращает случайные координаты клетки с едой или null, если свободное место найти не удалось
         /// </summary>
-        public static Coord GenerateFood(LinkedList<Coord> playerCoords, Coord mapSize)
+        public static Coord GenerateFood(LinkedList<Coord> playerCoords, Coord mapSize, List<Cell> Map)
         {
             var r = new Random(DateTime.Now.Millisecond);
 
-            var randomNumber = r.Next(1, (mapSize.X*mapSize.Y) - playerCoords.Count);
+            List<Coord> obstaclesList = (from Cell cell in Map where cell.CellType == CellType.Brick select new Coord(cell.X, cell.Y)).ToList();
+
+            var randomNumber = r.Next(1, (mapSize.X*mapSize.Y) - playerCoords.Count - obstaclesList.Count);
 
             var h = 0;
+
             for (var i = 0; i < mapSize.Y; i++)
             {
                 for (var j = 0; j < mapSize.X; j++)
                 {
-                    if (!playerCoords.Contains(new Coord(j, i)))
+                    Coord tempCoord = new Coord(j,i);
+                    if (!playerCoords.Contains(tempCoord) && !obstaclesList.Contains(tempCoord))
                     {
                         h++;
                     }
