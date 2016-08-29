@@ -43,14 +43,32 @@ namespace SnakeLevelDesigner
                 bSave.IsEnabled = true;
             }
             cbDirection.SelectedIndex = 0;
+
+            // Создание привязки
+            CommandBinding bind = new CommandBinding(ApplicationCommands.New);
+            // Присоединение обработчика событий
+            bind.Executed += Create_OnClick;
+            // Регистрация привязки
+            this.CommandBindings.Add(bind);
+            bind = new CommandBinding(ApplicationCommands.Open);
+            bind.Executed += Open_OnClick;
+            CommandBindings.Add(bind);
+
+            bind = new CommandBinding(ApplicationCommands.Save);
+            bind.Executed += Save_OnClick;
+            CommandBindings.Add(bind);
         }
 
         private int width, height;
 
         private void Create_OnClick(object sender, RoutedEventArgs e)
         {
+            this.IsEnabled = false;
+            var settings = new CreatingLevel();
+            settings.ShowDialog();
             CreateMap();
             bSave.IsEnabled = true;
+            this.IsEnabled = true;
         }
 
         private void CreateMap()

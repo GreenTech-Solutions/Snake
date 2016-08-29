@@ -6,18 +6,67 @@
         xmlns:local="clr-namespace:SnakeLevelDesigner"
         mc:Ignorable="d"
         Title="MainWindow"
-        WindowState="Maximized">
+        WindowState="Maximized" MinHeight="400" Width="1250">
+    <Window.Resources>
+        <LinearGradientBrush x:Key="NormalBrush" EndPoint="0,1" StartPoint="0,0">
+            <GradientStop Color="#5454EC" Offset="0.0"/>
+            <GradientStop Color="#1663D1" Offset="1.0"/>
+        </LinearGradientBrush>
+        <LinearGradientBrush x:Key="PressedBrush" EndPoint="0,1" StartPoint="0,0">
+            <GradientStop Color="#BBB" Offset="0.0"/>
+            <GradientStop Color="#EEE" Offset="0.1"/>
+            <GradientStop Color="#EEE" Offset="0.9"/>
+            <GradientStop Color="#FFF" Offset="1.0"/>
+        </LinearGradientBrush>
+        <LinearGradientBrush x:Key="NormalBorderBrush" EndPoint="0,1" StartPoint="0,0">
+            <GradientStop Color="#cccccc" Offset="0.0"/>
+            <GradientStop Color="#444" Offset="1.0"/>
+        </LinearGradientBrush>
+        <LinearGradientBrush x:Key="BorderBrush" EndPoint="0,1" StartPoint="0,0">
+            <GradientStop Color="#CCC" Offset="0.0"/>
+            <GradientStop Color="#444" Offset="1.0"/>
+        </LinearGradientBrush>
+        <LinearGradientBrush x:Key="PressedBorderBrush" EndPoint="0,1" StartPoint="0,0">
+            <GradientStop Color="#444" Offset="0.0"/>
+            <GradientStop Color="#888" Offset="1.0"/>
+        </LinearGradientBrush>
+        <Style x:Key="Hover">
+            <Setter Property="Control.Background" Value="#33FFFFFF"></Setter>
+        </Style>
+        
+        <Style TargetType="{x:Type Button}" BasedOn="{x:Null}">
+            <Setter Property="Background" Value="{StaticResource NormalBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource NormalBorderBrush}"/>
+            <Setter Property="MinWidth" Value="100"/>
+            <Setter Property="MinHeight" Value="15"/>
+            <Setter Property="Foreground" Value="#ffffff"/>
+        </Style>
+
+        <Style x:Key="Header">
+            <Setter Property="Control.Background" Value="{StaticResource NormalBrush}"/>
+            <Setter Property="Control.BorderBrush" Value="{StaticResource NormalBorderBrush}"/>
+            <Setter Property="Control.MinWidth" Value="100"/>
+            <Setter Property="Control.MinHeight" Value="25"/>
+        </Style>
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="23"></RowDefinition>
-            <RowDefinition Height="30"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
         
         <Menu Grid.Row="0" x:Name="menu">
-            <MenuItem Header="File">
+            <MenuItem Header="File" Style="{StaticResource Header}">
+                <MenuItem Header="New level" Command="New" Click="Create_OnClick"/>
+                <MenuItem Header="Open Existing" Command="Open" Click="Open_OnClick"></MenuItem>
+                <MenuItem Header="Save" Command="Save" Click="Save_OnClick"></MenuItem>
+                <MenuItem Header="Save as" Command="SaveAs"></MenuItem>
+                <MenuItem Header="Open from Recent files"></MenuItem>
                 <MenuItem Header="Exit"/>
             </MenuItem>
+            <MenuItem Header="Settings" Style="{StaticResource Header}"></MenuItem>
+            <MenuItem Header="Help" Style="{StaticResource Header}"></MenuItem>
         </Menu>
 
         <StackPanel Grid.Row="1" Orientation="Horizontal">

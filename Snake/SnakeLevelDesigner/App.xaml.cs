@@ -13,5 +13,6 @@ namespace SnakeLevelDesigner
     /// </summary>
     public partial class App : Application
     {
+
     }
 }
