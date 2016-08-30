@@ -70,28 +70,11 @@
         </Menu>
 
         <StackPanel Grid.Row="1" Orientation="Horizontal">
-            <Label >Map Width</Label>
-            <TextBox Name="tWidth" MinWidth="45" Margin="0,5,0,5">10</TextBox>
-            <Label>Map height</Label>
-            <TextBox Name="tHeight"  MinWidth="45" Margin="0,5,0,5">10</TextBox>
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                 <RadioButton Name="rEmpty" GroupName="CellType">Empty</RadioButton>
                 <RadioButton Name="rObstacle" GroupName="CellType">Obstacle</RadioButton>
                 <RadioButton Name="rPlayer" GroupName="CellType">Player</RadioButton>
             </StackPanel>
-            <Label>Finishing Score</Label>
-            <TextBox Name="tFinishingScore" MinWidth="45" Margin="0,5,0,5">100</TextBox>
-            <Label>Speed</Label>
-            <TextBox Name="tSpeed" MinWidth="45" Margin="0,5,0,5">100</TextBox>
-            <Label>Direction</Label>
-            <ComboBox Name="cbDirection" Margin="4,4,0,4">
-                <ComboBoxItem >Up</ComboBoxItem>
-                <ComboBoxItem >Left</ComboBoxItem>
-                <ComboBoxItem >Right</ComboBoxItem>
-                <ComboBoxItem >Down</ComboBoxItem>
-            </ComboBox>
-            <Label Name="lBackgroundMusic">Background Music</Label>
-            <Button Margin="4,4,0,4" Click="LoadBackgroundMusic_OnClick">Load Music</Button>
             <Button Margin="4,4,0,4" Click="Create_OnClick">Create</Button>
             <Button Margin="4,4,0,4" Click="Open_OnClick">Open</Button>
             <Button Margin="4,4,0,4" Name="bSave" Click="Save_OnClick">Save</Button>

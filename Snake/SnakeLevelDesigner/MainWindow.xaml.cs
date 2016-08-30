@@ -42,8 +42,6 @@ namespace SnakeLevelDesigner
                 OpenFile(args[1]);
                 bSave.IsEnabled = true;
             }
-            cbDirection.SelectedIndex = 0;
-
             // Создание привязки
             CommandBinding bind = new CommandBinding(ApplicationCommands.New);
             // Присоединение обработчика событий
@@ -73,8 +71,8 @@ namespace SnakeLevelDesigner
 
         private void CreateMap()
         {
-            width = Convert.ToInt32(tWidth.Text);
-            height = Convert.ToInt32(tHeight.Text);
+            width = Data.MapWidth;
+            height = Data.MapHeight;
 
             Map.Children.RemoveRange(0, Map.Children.Count);
 
@@ -102,7 +100,7 @@ namespace SnakeLevelDesigner
             Map.MouseDown += MapOnMouseDown;
         }
 
-        private void CreateMap(CellsInfo cells = null)
+        private void CreateMap(CellsInfo cells)
         {
             if (Equals(cells, null))
             {
@@ -113,8 +111,8 @@ namespace SnakeLevelDesigner
             width = cells.width;
             height = cells.height;
 
-            tWidth.Text = width.ToString();
-            tHeight.Text = height.ToString();
+            Data.MapWidth = width;
+            Data.MapHeight = height;
 
 
             Map.Children.RemoveRange(0, Map.Children.Count);
@@ -229,14 +227,13 @@ namespace SnakeLevelDesigner
 
                 var cellsInfo = new CellsInfo(listCells,width,height);
 
-                var direction = (Direction)(cbDirection.SelectedIndex);
+                var direction = Data.Direction;
 
-                var audio = new Audio(_backgroundMusic);
-                audio.Name = lBackgroundMusic.Content.ToString();
+                var audio = Data.BackgroundMusic;
 
-                var speed = Convert.ToInt32(tSpeed.Text);
+                var speed = Data.Speed;
 
-                var level = new Level(cellsInfo,Convert.ToInt32(tFinishingScore.Text), direction, audio,speed);
+                var level = new Level(cellsInfo,Data.FinishingScore, direction, audio,speed);
 
                 var bf = new BinaryFormatter();
                 using (Stream fs = new FileStream(fileName,FileMode.Create,FileAccess.Write,FileShare.None))
@@ -275,35 +272,12 @@ namespace SnakeLevelDesigner
 
             CreateMap(level.MapCellsInfo);
 
-            tFinishingScore.Text = level.FinishingScore.ToString();
-            cbDirection.SelectedIndex = (int) level.Direction;
+            Data.FinishingScore = level.FinishingScore;
+            Data.Direction = level.Direction;
 
-            lBackgroundMusic.Content = level.BackgroundMusic;
+            Data.BackgroundMusic = level.BackgroundMusic;
 
-            tSpeed.Text = level.Speed.ToString();
-        }
-
-        private byte[] _backgroundMusic;
-
-        private void LoadBackgroundMusic_OnClick(object sender, RoutedEventArgs e)
-        {
-            var ofd = new OpenFileDialog
-            {
-                Filter = "WAV files (*.wav)|*.wav"
-            };
-
-            if (ofd.ShowDialog() == true)
-            {
-
-                using (var file = File.OpenRead(ofd.FileName))
-                {
-                    _backgroundMusic = new byte[file.Length];
-                    file.Read(_backgroundMusic, 0, _backgroundMusic.Length);
-                }
-
-                lBackgroundMusic.Content = ofd.FileName;
-            }
-
+            Data.Speed = level.Speed;
         }
     }
 }

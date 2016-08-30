@@ -5,55 +5,70 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SnakeLevelDesigner"
         mc:Ignorable="d"
-        Title="CreatingLevel" MinHeight="100" MinWidth="300" Height="369.925" Width="360.857">
+        Title="CreatingLevel" MinHeight="100" MinWidth="300" Height="356.982" Width="360.857"
+        WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize" Loaded="CreatingLevel_OnLoaded"
+        >
     <Window.Resources>
+        <Style TargetType="Label">
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"></Setter>
+        </Style>
         <Style TargetType="TextBox">
-            <Setter Property="Padding" Value="15"></Setter>
+            <Setter Property="Padding" Value="0"></Setter>
+            <Setter Property="MinWidth" Value="50"/>
+            <Setter Property="Height" Value="20"/>
+        </Style>
+        <Style TargetType="ComboBox">
+            <Setter Property="MinWidth" Value="50"/>
+            <Setter Property="Height" Value="25"/>
+        </Style>
+        <Style TargetType="Button">
+            <Setter Property="MaxHeight" Value="25"/>
+            <Setter Property="Padding" Value="2"/>
         </Style>
     </Window.Resources>
-    <Grid>
+    <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition></RowDefinition>
             <RowDefinition></RowDefinition>
             <RowDefinition></RowDefinition>
             <RowDefinition></RowDefinition>
             <RowDefinition></RowDefinition>
-            <RowDefinition></RowDefinition>
-            <RowDefinition></RowDefinition>
-            <RowDefinition></RowDefinition>
-            <RowDefinition></RowDefinition>
-            <RowDefinition></RowDefinition>
+            <RowDefinition Height="1.1*"></RowDefinition>
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal">
-            <Label>Map Width</Label>
-            <TextBox></TextBox>
-        </StackPanel>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
 
-        <StackPanel Grid.Row="2" Orientation="Horizontal">
-            <Label>Map Height</Label>
-            <TextBox></TextBox>
-        </StackPanel>
+        <Label>Map Width</Label>
+        <TextBox Name="tMapWidth" Grid.Row="0" Grid.Column="1" TextChanged="OnTextChanged"></TextBox>
 
-        <StackPanel Grid.Row="4" Orientation="Horizontal">
-            <Label>Finishing score</Label>
-            <TextBox></TextBox>
-        </StackPanel>
+        <Label Grid.Row="1">Map Height</Label>
+        <TextBox Name="tMapHeight" Grid.Row="1" Grid.Column="1" TextChanged="OnTextChanged"></TextBox>
 
-        <StackPanel Grid.Row="6" Orientation="Horizontal">
-            <Label>Direction</Label>
-            <ComboBox></ComboBox>
-        </StackPanel>
+        <Label Grid.Row="2">Finishing score</Label>
+        <TextBox Name="tFinishingScore" Grid.Row="2" Grid.Column="1" TextChanged="OnTextChanged"></TextBox>
 
-        <StackPanel Grid.Row="8" Orientation="Horizontal">
-            <Label>Background music</Label>
-            <Label>Choosen file</Label>
-            <Button>Load music</Button>
-        </StackPanel>
+        <Label Grid.Row="3">Direction</Label>
+        <ComboBox Name="cbDirection" Grid.Row="3" Grid.Column="1">
+            <ComboBoxItem>Up</ComboBoxItem>
+            <ComboBoxItem>Left</ComboBoxItem>
+            <ComboBoxItem>Right</ComboBoxItem>
+            <ComboBoxItem>Down</ComboBoxItem>
+        </ComboBox>
         
-        <StackPanel Grid.Row="10" Orientation="Horizontal">
-            <Button>Create</Button>
-            <Button>Cancel</Button>
+        <Label Grid.Row="4">Speed</Label>
+        <TextBox Name="tSpeed" Grid.Row="4" Grid.Column="1" TextChanged="OnTextChanged"></TextBox>
+
+        <Label Grid.Row="5">Background music</Label>
+        <StackPanel Grid.Row="5" Grid.Column="1">
+            <Button Click="LoadMusic_Click">Load music</Button>
+            <Label Name="lChoosenFile">Choosen file</Label>
         </StackPanel>
+
+        <Button Grid.Row="6" Click="Create_Click">Create</Button>
+        <Button Grid.Row="6" Grid.Column="1" Click="Cancel_Click">Cancel</Button>
     </Grid>
 </Window>
