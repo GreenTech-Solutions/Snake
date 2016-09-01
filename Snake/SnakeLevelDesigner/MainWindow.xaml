@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SnakeLevelDesigner"
         mc:Ignorable="d"
-        Title="MainWindow"
+        Title="Level Designer"
         WindowState="Maximized" MinHeight="400" Width="1250">
     <Window.Resources>
         <LinearGradientBrush x:Key="NormalBrush" EndPoint="0,1" StartPoint="0,0">
@@ -33,7 +33,7 @@
         <Style x:Key="Hover">
             <Setter Property="Control.Background" Value="#33FFFFFF"></Setter>
         </Style>
-        
+
         <Style TargetType="{x:Type Button}" BasedOn="{x:Null}">
             <Setter Property="Background" Value="{StaticResource NormalBrush}"/>
             <Setter Property="BorderBrush" Value="{StaticResource NormalBorderBrush}"/>
@@ -48,6 +48,7 @@
             <Setter Property="Control.MinWidth" Value="100"/>
             <Setter Property="Control.MinHeight" Value="25"/>
         </Style>
+       
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -55,17 +56,19 @@
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
-        
+
         <Menu Grid.Row="0" x:Name="menu">
             <MenuItem Header="File" Style="{StaticResource Header}">
                 <MenuItem Header="New level" Command="New"/>
                 <MenuItem Header="Open Existing" Command="Open"></MenuItem>
                 <MenuItem Header="Save" Command="Save"></MenuItem>
                 <MenuItem Header="Save as" Command="SaveAs"></MenuItem>
-                <MenuItem Header="Open from Recent files"></MenuItem>
+                <MenuItem Name="miRecentFiles"  Header="Open from Recent files">
+
+                </MenuItem>
                 <MenuItem Header="Exit"/>
             </MenuItem>
-            <MenuItem Header="Settings" Style="{StaticResource Header}"></MenuItem>
+            <MenuItem Header="Settings" Style="{StaticResource Header}" Click="Settings_OnClick"></MenuItem>
             <MenuItem Header="Help" Style="{StaticResource Header}"></MenuItem>
         </Menu>
 

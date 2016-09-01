@@ -43,7 +43,7 @@
         </Grid.ColumnDefinitions>
 
         <Label>Map Width</Label>
-        <TextBox Name="tMapWidth" Grid.Row="0" Grid.Column="1" TextChanged="OnTextChanged"></TextBox>
+        <TextBox Name="tMapWidth" Grid.Row="0" Grid.Column="1" TextChanged="OnTextChanged" FocusManager.FocusedElement="{Binding RelativeSource={RelativeSource Self}}"></TextBox>
 
         <Label Grid.Row="1">Map Height</Label>
         <TextBox Name="tMapHeight" Grid.Row="1" Grid.Column="1" TextChanged="OnTextChanged"></TextBox>

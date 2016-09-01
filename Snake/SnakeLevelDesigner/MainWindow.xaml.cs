@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.IO;
@@ -18,6 +19,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Shell;
 using System.Xml.Serialization;
 using Microsoft.Win32;
 using Snake;
@@ -41,6 +43,7 @@ namespace SnakeLevelDesigner
             {
                 OpenFile(args[1]);
             }
+
             // Создание привязки
             CommandBinding bind = new CommandBinding(ApplicationCommands.New);
             // Присоединение обработчика событий
@@ -63,6 +66,17 @@ namespace SnakeLevelDesigner
         private int width, height;
 
         private bool CanSave = false;
+
+        private string _currentfile = "Test Level";
+        private string CurrentFile
+        {
+            get { return _currentfile; }
+            set
+            {
+                _currentfile = "Level Designer - " + value;
+                this.Title = _currentfile;
+            }
+        }
 
         public Data data = new Data();
 
@@ -90,6 +104,7 @@ namespace SnakeLevelDesigner
             SaveFileDialog sfd = new SaveFileDialog();
             sfd.Filter = "Level files (*.lvl)|*.lvl";
             sfd.FileName = "Test Level";
+            sfd.InitialDirectory = Properties.Settings.Default.LevelSavePath;
             if (sfd.ShowDialog(this) == true)
             {
                 var fileName = sfd.FileName;
@@ -119,6 +134,9 @@ namespace SnakeLevelDesigner
                     bf.Serialize(fs, level);
                 }
 
+                AddFilePathToRecent(sfd.FileName);
+                CurrentFile = sfd.SafeFileName.Split('.')[0];
+
                 MessageBox.Show("File was successfully saved!");
 
             }
@@ -133,9 +151,12 @@ namespace SnakeLevelDesigner
                 string fileName = ofd.FileName;
 
                 OpenFile(fileName);
-            }
 
-            CanSave = true;
+                AddFilePathToRecent(ofd.FileName);
+                CurrentFile = ofd.SafeFileName.Split('.')[0];
+
+                CanSave = true;
+            }
         }
 
         private void ChangeSettings_OnClick(object sender, RoutedEventArgs e)
@@ -197,7 +218,55 @@ namespace SnakeLevelDesigner
             bSave.IsEnabled = true;
         }
 
+        private void AddFilePathToRecent(string path)
+        {
+            if (Properties.Settings.Default.RecentFiles == null)
+            {
+                Properties.Settings.Default.RecentFiles = new StringCollection();
+            }
+
+            var recent = Properties.Settings.Default.RecentFiles;
+            if (recent.Count == 10)
+            {
+                recent.RemoveAt(0);
+            }
+            recent.Add(path);
+
+            var strings = RecentFiles;
+            miRecentFiles.Items.Clear();
+            foreach (var recentFile in RecentFiles)
+            {
+                var menuitem = new MenuItem()
+                {
+                    Header = recentFile,
+                };
+
+                menuitem.Click += (sender, args) =>
+                {
+                    OpenFile(recentFile);
+                };
+                miRecentFiles.Items.Add(menuitem);
+            }
+
+        }
         #endregion
+
+        public List<string> RecentFiles
+        {
+            get
+            {
+                List<string> filesList = new List<string>();
+                if (Properties.Settings.Default.RecentFiles != null)
+                {
+                    foreach (var recentFile in Properties.Settings.Default.RecentFiles)
+                    {
+                        filesList.Add(recentFile);
+                    }
+                }
+
+                return filesList;
+            }
+        }
 
         #region Level painting
 
@@ -348,6 +417,11 @@ namespace SnakeLevelDesigner
 
         private void OpenFile(string path)
         {
+            if (!File.Exists(path))
+            {
+                MessageBox.Show("Файл " + path + " - не существует!","Ошибка", MessageBoxButton.OK,MessageBoxImage.Error);
+                return;
+            }
             Level level;
 
             var bf = new BinaryFormatter();
@@ -366,5 +440,13 @@ namespace SnakeLevelDesigner
             data.Speed = level.Speed;
         }
         #endregion
+
+        // Новые методы
+
+        private void Settings_OnClick(object sender, RoutedEventArgs e)
+        {
+            Settings settings = new Settings();
+            settings.ShowDialog();
+        }
     }
 }
