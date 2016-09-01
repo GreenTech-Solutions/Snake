@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -33,19 +34,17 @@ namespace SnakeLevelDesigner
             InitializeComponent();
 
             rObstacle.IsChecked = true;
-            bSave.IsEnabled = false;
 
             string[] args = Environment.GetCommandLineArgs();
 
             if (args.Length > 1)
             {
                 OpenFile(args[1]);
-                bSave.IsEnabled = true;
             }
             // Создание привязки
             CommandBinding bind = new CommandBinding(ApplicationCommands.New);
             // Присоединение обработчика событий
-            bind.Executed += Create_OnClick;
+            bind.Executed += CreateLevel_OnClick;
             // Регистрация привязки
             this.CommandBindings.Add(bind);
             bind = new CommandBinding(ApplicationCommands.Open);
@@ -55,29 +54,98 @@ namespace SnakeLevelDesigner
             bind = new CommandBinding(ApplicationCommands.Save);
             bind.Executed += Save_OnClick;
             CommandBindings.Add(bind);
+
+            bind = new CommandBinding(ApplicationCommands.ContextMenu);
+            bind.Executed += ChangeSettings_OnClick;
+            CommandBindings.Add(bind);
         }
 
         private int width, height;
 
-        private void Create_OnClick(object sender, RoutedEventArgs e)
+        private bool CanSave = false;
+
+        public Data data = new Data();
+
+        #region Buttons and commands
+
+        private void CreateLevel_OnClick(object sender, RoutedEventArgs e)
         {
-            this.IsEnabled = false;
             var settings = new CreatingLevel();
-            settings.ShowDialog();
-            CreateMap();
-            bSave.IsEnabled = true;
-            this.IsEnabled = true;
+            settings.Owner = this;
+
+
+            if (settings.ShowDialog() == true)
+            {
+                CreateMap();
+                CanSave = true;
+            }
         }
 
-        private void CreateMap()
+        private void Save_OnClick(object sender, RoutedEventArgs e)
         {
-            width = Data.MapWidth;
-            height = Data.MapHeight;
+            if (!CanSave)
+            {
+                return;
+            }
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Filter = "Level files (*.lvl)|*.lvl";
+            sfd.FileName = "Test Level";
+            if (sfd.ShowDialog(this) == true)
+            {
+                var fileName = sfd.FileName;
 
-            Map.Children.RemoveRange(0, Map.Children.Count);
+                var listCells = new List<Cell>();
 
-            Map.Rows = height;
-            Map.Columns = width;
+                foreach (var child in Map.Children)
+                {
+                    var border = child as Border;
+                    var label = border.Child as Label;
+                    listCells.Add(label.Tag as Cell);
+                }
+
+                var cellsInfo = new CellsInfo(listCells, width, height);
+
+                var direction = data.Direction;
+
+                var audio = data.BackgroundMusic;
+
+                var speed = data.Speed;
+
+                var level = new Level(cellsInfo, data.FinishingScore, direction, audio, speed);
+
+                var bf = new BinaryFormatter();
+                using (Stream fs = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.None))
+                {
+                    bf.Serialize(fs, level);
+                }
+
+                MessageBox.Show("File was successfully saved!");
+
+            }
+        }
+
+        private void Open_OnClick(object sender, RoutedEventArgs e)
+        {
+            var ofd = new OpenFileDialog();
+            ofd.Filter = "Level files (*.lvl)|*.lvl";
+            if (ofd.ShowDialog(this) == true)
+            {
+                string fileName = ofd.FileName;
+
+                OpenFile(fileName);
+            }
+
+            CanSave = true;
+        }
+
+        private void ChangeSettings_OnClick(object sender, RoutedEventArgs e)
+        {
+            var settings = new CreatingLevel();
+
+            Data oldData = this.data;
+            settings.Owner = this;
+            settings.bCreate.Content = "Change";
+            settings.ShowDialog();
 
             for (int i = 0; i < Map.Rows; i++)
             {
@@ -96,56 +164,48 @@ namespace SnakeLevelDesigner
                 }
             }
 
-            Map.MouseMove += MapOnMouseMove;
-            Map.MouseDown += MapOnMouseDown;
-        }
+            List<Cell> oldCellsListCutted = new List<Cell>();
 
-        private void CreateMap(CellsInfo cells)
-        {
-            if (Equals(cells, null))
+            if (data.MapWidth < oldData.MapWidth || data.MapHeight < oldData.MapHeight)
             {
-                CreateMap();
-                return;
-            }
-
-            width = cells.width;
-            height = cells.height;
-
-            Data.MapWidth = width;
-            Data.MapHeight = height;
-
-
-            Map.Children.RemoveRange(0, Map.Children.Count);
-
-            Map.Rows = height;
-            Map.Columns = width;
-
-            foreach (var tag in cells.cells)
-            {
-                var cell = new Label {Tag = tag};
-                cell.Content = cell.Tag;
-
-                ChangeCellColor(cell);
-
-
-                var border = new Border
+                foreach (var MapChild in Map.Children)
                 {
-                    BorderThickness = new Thickness(2),
-                    BorderBrush = Brushes.Gray,
-                    Child = cell
-                };
-                Map.Children.Add(border);
+                    var border = MapChild as Border;
+                    var label = border.Child as Label;
+                    var cell = label.Tag as Cell;
+                    if (cell.Y < data.MapWidth && cell.X < data.MapHeight)
+                    {
+                        oldCellsListCutted.Add(cell);
+                    }
+                }
+            }
+            else
+            {
+                foreach (var MapChild in Map.Children)
+                {
+                    var border = MapChild as Border;
+                    var label = border.Child as Label;
+                    var cell = label.Tag as Cell;
+                    oldCellsListCutted.Add(cell);
+                }
             }
 
-            Map.MouseMove += MapOnMouseMove;
-            Map.MouseDown += MapOnMouseDown;
+            CellsInfo oldCellsInfo = new CellsInfo(oldCellsListCutted, data.MapWidth, data.MapHeight);
+            CreateMap(oldCellsInfo);
+
+            //CreateMap();
+            bSave.IsEnabled = true;
         }
+
+        #endregion
+
+        #region Level painting
 
         private void MapOnMouseDown(object sender, MouseButtonEventArgs mouseButtonEventArgs)
         {
             if (mouseButtonEventArgs.LeftButton == MouseButtonState.Pressed)
             {
-                CellClicked();                
+                CellClicked();
             }
         }
 
@@ -206,58 +266,84 @@ namespace SnakeLevelDesigner
                     break;
             }
         }
+        #endregion
 
-        private void Save_OnClick(object sender, RoutedEventArgs e)
+        #region Controller
+        private void CreateMap()
         {
-            SaveFileDialog sfd = new SaveFileDialog();
-            sfd.Filter = "Level files (*.lvl)|*.lvl";
+            width = data.MapWidth;
+            height = data.MapHeight;
 
-            if (sfd.ShowDialog(this) == true)
+            Map.Children.RemoveRange(0, Map.Children.Count);
+
+            Map.Rows = height;
+            Map.Columns = width;
+
+            for (int i = 0; i < Map.Rows; i++)
             {
-                var fileName = sfd.FileName;
-
-                var listCells = new List<Cell>();
-
-                foreach (var child in Map.Children)
+                for (int j = 0; j < Map.Columns; j++)
                 {
-                    var border = child as Border;
-                    var label = border.Child as Label;
-                    listCells.Add(label.Tag as Cell);
+                    var label = new Label();
+                    label.Tag = new Cell(CellType.Empty, j, i);
+                    label.Content = label.Tag;
+                    ChangeCellColor(label);
+
+                    var border = new Border();
+                    border.BorderThickness = new Thickness(2);
+                    border.BorderBrush = Brushes.Gray;
+                    border.Child = label;
+                    Map.Children.Add(border);
                 }
-
-                var cellsInfo = new CellsInfo(listCells,width,height);
-
-                var direction = Data.Direction;
-
-                var audio = Data.BackgroundMusic;
-
-                var speed = Data.Speed;
-
-                var level = new Level(cellsInfo,Data.FinishingScore, direction, audio,speed);
-
-                var bf = new BinaryFormatter();
-                using (Stream fs = new FileStream(fileName,FileMode.Create,FileAccess.Write,FileShare.None))
-                {
-                    bf.Serialize(fs,level);
-                }
-
-                MessageBox.Show("File was successfully saved!");
-
             }
+
+            Map.MouseMove += MapOnMouseMove;
+            Map.MouseDown += MapOnMouseDown;
         }
 
-        private void Open_OnClick(object sender, RoutedEventArgs e)
+        private void CreateMap(CellsInfo cellsInfo)
         {
-            var ofd = new OpenFileDialog();
-            ofd.Filter = "Level files (*.lvl)|*.lvl";
-            if (ofd.ShowDialog(this) == true)
+            if (Equals(cellsInfo, null))
             {
-                string fileName = ofd.FileName;
-
-                OpenFile(fileName);
+                CreateMap();
+                return;
             }
 
-            bSave.IsEnabled = true;
+            width = cellsInfo.width;
+            height = cellsInfo.height;
+
+            data.MapWidth = width;
+            data.MapHeight = height;
+
+
+            Map.Children.RemoveRange(0, Map.Children.Count);
+
+            Map.Rows = height;
+            Map.Columns = width;
+
+
+            for (int i = 0; i < Map.Rows; i++)
+            {
+                for (int j = 0; j < Map.Columns; j++)
+                {
+                    var label = new Label();
+                    var cells = cellsInfo.cells;
+                    label.Tag = cells.Exists(cell => cell.X == j && cell.Y == i) ? cells.Find(cell => cell.X == j && cell.Y == i) : new Cell(CellType.Empty, j, i);
+                    label.Content = (label.Tag as Cell).CellType.ToString();
+                    label.ToolTip = label.Tag;
+                    ChangeCellColor(label);
+
+                    var border = new Border
+                    {
+                        BorderThickness = new Thickness(2),
+                        BorderBrush = Brushes.Gray,
+                        Child = label
+                    };
+                    Map.Children.Add(border);
+                }
+            }
+
+            Map.MouseMove += MapOnMouseMove;
+            Map.MouseDown += MapOnMouseDown;
         }
 
         private void OpenFile(string path)
@@ -272,12 +358,13 @@ namespace SnakeLevelDesigner
 
             CreateMap(level.MapCellsInfo);
 
-            Data.FinishingScore = level.FinishingScore;
-            Data.Direction = level.Direction;
+            data.FinishingScore = level.FinishingScore;
+            data.Direction = level.Direction;
 
-            Data.BackgroundMusic = level.BackgroundMusic;
+            data.BackgroundMusic = level.BackgroundMusic;
 
-            Data.Speed = level.Speed;
+            data.Speed = level.Speed;
         }
+        #endregion
     }
 }

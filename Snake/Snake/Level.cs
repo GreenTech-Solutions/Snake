@@ -123,9 +123,26 @@ namespace Snake
 
         public CellsInfo(List<Cell> cells, int width, int height)
         {
-            this.cells = cells;
             this.width = width;
             this.height = height;
+
+            if (cells.Count<(width*height))
+            {
+                for (int i = 0; i < height; i++)
+                {
+                    for (int j = 0; j < width; j++)
+                    {
+                        if (!cells.Exists(cell => cell.X == j && cell.Y == i))
+                        {
+                            int indexOfPrevious =
+                                cells.FindIndex(cell => cell.X == j - 1 || (cell.X == width - 1 && cell.Y == i - 1));
+                            cells.Insert(indexOfPrevious,new Cell(CellType.Empty, j,i));
+                        }
+                    }
+                }
+            }
+
+            this.cells = cells;
         }
     }
 }

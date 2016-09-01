@@ -28,6 +28,7 @@ namespace SnakeLevelDesigner
             InitializeComponent();
         }
 
+
         public static IEnumerable<T> FindVisualChildren<T>(DependencyObject depObj) where T : DependencyObject
         {
             if (depObj != null)
@@ -50,15 +51,18 @@ namespace SnakeLevelDesigner
 
         private void CreatingLevel_OnLoaded(object sender, RoutedEventArgs e)
         {
-            if (Data.IsInitialized)
+            var mainWindow = this.Owner as MainWindow;
+            var data = mainWindow.data;
+
+            if (data.IsInitialized)
             {
-                tMapWidth.Text = Data.MapWidth.ToString();
-                tMapHeight.Text = Data.MapHeight.ToString();
-                tFinishingScore.Text = Data.FinishingScore.ToString();
-                tSpeed.Text = Data.Speed.ToString();
-                cbDirection.SelectedIndex = (int)Data.Direction;
-                lChoosenFile.Content = Data.BackgroundMusic.Name;
-                _backgroundMusic = Data.BackgroundMusic;
+                tMapWidth.Text = data.MapWidth.ToString();
+                tMapHeight.Text = data.MapHeight.ToString();
+                tFinishingScore.Text = data.FinishingScore.ToString();
+                tSpeed.Text = data.Speed.ToString();
+                cbDirection.SelectedIndex = (int)data.Direction;
+                lChoosenFile.Content = data.BackgroundMusic.Name;
+                _backgroundMusic = data.BackgroundMusic;
                 CanCreate = true;
                 AudioLoaded = true;
             }
@@ -75,6 +79,7 @@ namespace SnakeLevelDesigner
             foreach (var textBox in textBoxes)
             {
                 CheckTextbox(textBox);
+                textBox.GotFocus += (o, args) => { textBox.SelectAll(); };
             }
         }
 
@@ -176,12 +181,17 @@ namespace SnakeLevelDesigner
             var finishingScore = Convert.ToInt32(tFinishingScore.Text);
             var direction = (Direction) cbDirection.SelectedIndex;
 
-            Data.SetProperties(MapSize,finishingScore,speed,direction,_backgroundMusic);
+
+            var mainWindow = this.Owner as MainWindow;
+            var data = mainWindow.data;
+            data.SetProperties(MapSize,finishingScore,speed,direction,_backgroundMusic);
+            this.DialogResult = true;
             this.Close();
         }
 
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
+            this.DialogResult = false;
             this.Close();
         }
     }

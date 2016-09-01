@@ -68,7 +68,7 @@
             <Label Name="lChoosenFile">Choosen file</Label>
         </StackPanel>
 
-        <Button Grid.Row="6" Click="Create_Click">Create</Button>
-        <Button Grid.Row="6" Grid.Column="1" Click="Cancel_Click">Cancel</Button>
+        <Button Grid.Row="6" Name="bCreate"  Click="Create_Click" IsDefault="True">Create</Button>
+        <Button Grid.Row="6" Grid.Column="1" Click="Cancel_Click" IsCancel="True">Cancel</Button>
     </Grid>
 </Window>

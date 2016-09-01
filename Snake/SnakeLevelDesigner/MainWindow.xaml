@@ -58,9 +58,9 @@
         
         <Menu Grid.Row="0" x:Name="menu">
             <MenuItem Header="File" Style="{StaticResource Header}">
-                <MenuItem Header="New level" Command="New" Click="Create_OnClick"/>
-                <MenuItem Header="Open Existing" Command="Open" Click="Open_OnClick"></MenuItem>
-                <MenuItem Header="Save" Command="Save" Click="Save_OnClick"></MenuItem>
+                <MenuItem Header="New level" Command="New"/>
+                <MenuItem Header="Open Existing" Command="Open"></MenuItem>
+                <MenuItem Header="Save" Command="Save"></MenuItem>
                 <MenuItem Header="Save as" Command="SaveAs"></MenuItem>
                 <MenuItem Header="Open from Recent files"></MenuItem>
                 <MenuItem Header="Exit"/>
@@ -70,14 +70,15 @@
         </Menu>
 
         <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <Button Margin="4,4,0,4"  Click="ChangeSettings_OnClick">Change settings</Button>
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                 <RadioButton Name="rEmpty" GroupName="CellType">Empty</RadioButton>
                 <RadioButton Name="rObstacle" GroupName="CellType">Obstacle</RadioButton>
                 <RadioButton Name="rPlayer" GroupName="CellType">Player</RadioButton>
             </StackPanel>
-            <Button Margin="4,4,0,4" Click="Create_OnClick">Create</Button>
+            <Button Margin="4,4,0,4" Command="New">Create</Button>
             <Button Margin="4,4,0,4" Click="Open_OnClick">Open</Button>
-            <Button Margin="4,4,0,4" Name="bSave" Click="Save_OnClick">Save</Button>
+            <Button Margin="4,4,0,4" Name="bSave" Command="Save">Save</Button>
         </StackPanel>
 
         <UniformGrid Name="Map" Grid.Row="2">

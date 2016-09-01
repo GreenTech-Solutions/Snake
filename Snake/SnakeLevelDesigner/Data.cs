@@ -7,21 +7,26 @@ using Snake;
 
 namespace SnakeLevelDesigner
 {
-    static class Data
+    public class Data
     {
-        public static int MapWidth;
+        public int MapWidth;
 
-        public static int MapHeight;
+        public int MapHeight;
 
-        public static int FinishingScore;
+        public int FinishingScore;
 
-        public static int Speed;
+        public int Speed;
 
-        public static Direction Direction;
+        public Direction Direction;
 
-        public static Audio BackgroundMusic;
+        public Audio BackgroundMusic;
 
-        public static void SetProperties(Coord mapSize, int finishingScore, int speed, Direction direction, Audio music)
+        public Data()
+        {
+            IsInitialized = false;
+        }
+
+        public void SetProperties(Coord mapSize, int finishingScore, int speed, Direction direction, Audio music)
         {
             IsInitialized = true;
             MapWidth = mapSize.X;
@@ -32,7 +37,7 @@ namespace SnakeLevelDesigner
             BackgroundMusic = music;
         }
 
-        public static bool IsInitialized = false;
+        public bool IsInitialized;
 
     }
 }
