@@ -5,8 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SnakeLevelDesigner"
         mc:Ignorable="d"
-        Title="CreatingLevel" MinHeight="100" MinWidth="300" Height="356.982" Width="360.857"
+        Title="CreatingLevel"  Height="370" Width="360"
         WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize" Loaded="CreatingLevel_OnLoaded"
+        Closing="CreatingLevel_OnClosing"
         >
     <Window.Resources>
         <Style TargetType="Label">
@@ -26,6 +27,101 @@
             <Setter Property="MaxHeight" Value="25"/>
             <Setter Property="Padding" Value="2"/>
         </Style>
+
+        <Style x:Key="RoundProgressBarStyle" TargetType="{x:Type ProgressBar}"
+       xmlns:sys="clr-namespace:System;assembly=mscorlib">
+            <Style.Resources>
+                <local:RoundProgressPathConverter x:Key="Conv"/>
+                <!-- нам понадобится пара констант -->
+                <!-- доля рабиуса для внутренней части -->
+                <sys:Double x:Key="RelativeThickness">0.75</sys:Double>
+                <!-- просто 0 -->
+                <sys:Double x:Key="Zero">0.0</sys:Double>
+                <!-- просто 1 -->
+                <sys:Double x:Key="One">1.0</sys:Double>
+                <!-- какой процент рисовать для неопределённого состояния -->
+                <sys:Double x:Key="IndeterminatePart">0.25</sys:Double>
+                <!-- обычно прогресс по умолчанию зелёный -->
+                <SolidColorBrush x:Key="ProgressBar.Progress" Color="#FF06B025"/>
+                <!-- стандартный фон -->
+                <SolidColorBrush x:Key="ProgressBar.Background" Color="#FFE6E6E6"/>
+                <!-- стандартный цвет границы -->
+                <SolidColorBrush x:Key="ProgressBar.Border" Color="#FFBCBCBC"/>
+            </Style.Resources>
+            <Setter Property="Foreground" Value="{StaticResource ProgressBar.Progress}"/>
+            <Setter Property="Background" Value="{StaticResource ProgressBar.Background}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource ProgressBar.Border}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ProgressBar}">
+                        <Grid x:Name="TemplateRoot">
+                            <!-- в неопределённом состоянии запускаем вращающуюся анимацию -->
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Determinate"/>
+                                    <VisualState x:Name="Indeterminate">
+                                        <Storyboard RepeatBehavior="Forever">
+                                            <DoubleAnimation 
+                                        Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)"
+                                        Storyboard.TargetName="Animation"
+                                        From="0" To="360" Duration="0:0:2"/>
+                                        </Storyboard>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+
+                            <!-- это фон, красим его в цвет фона-->
+                            <Path Fill="{TemplateBinding Background}" Stretch="Uniform"
+                          Stroke="{TemplateBinding BorderBrush}" StrokeThickness="{TemplateBinding BorderThickness}">
+                                <Path.Data>
+                                    <MultiBinding Converter="{StaticResource Conv}"
+                                          ConverterParameter="{StaticResource RelativeThickness}">
+                                        <!-- val=1, min=0, max=1 даёт полный круг -->
+                                        <Binding Source="{StaticResource One}"/>
+                                        <Binding Source="{StaticResource Zero}"/>
+                                        <Binding Source="{StaticResource One}"/>
+                                    </MultiBinding>
+                                </Path.Data>
+                            </Path>
+                            <Path Fill="{TemplateBinding Foreground}" Stretch="Uniform" Name="Indicator">
+                                <Path.Data>
+                                    <MultiBinding Converter="{StaticResource Conv}"
+                                          ConverterParameter="{StaticResource RelativeThickness}">
+                                        <Binding Path="Value" RelativeSource="{RelativeSource TemplatedParent}"/>
+                                        <Binding Path="Minimum" RelativeSource="{RelativeSource TemplatedParent}"/>
+                                        <Binding Path="Maximum" RelativeSource="{RelativeSource TemplatedParent}"/>
+                                    </MultiBinding>
+                                </Path.Data>
+                            </Path>
+                            <!-- это анимировнная штука, будет показываться в неопределённом состоянии -->
+                            <Path Fill="{TemplateBinding Foreground}" Stretch="Uniform" Name="Animation"
+                          Visibility="Collapsed" RenderTransformOrigin="0.5,0.5">
+                                <Path.Data>
+                                    <MultiBinding Converter="{StaticResource Conv}"
+                                          ConverterParameter="{StaticResource RelativeThickness}">
+                                        <Binding Source="{StaticResource IndeterminatePart}"/>
+                                        <Binding Source="{StaticResource Zero}"/>
+                                        <Binding Source="{StaticResource One}"/>
+                                    </MultiBinding>
+                                </Path.Data>
+                                <!-- положим пустое вращение, чтобы к нему цеплялась анимация -->
+                                <Path.RenderTransform>
+                                    <RotateTransform/>
+                                </Path.RenderTransform>
+                            </Path>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <!-- в случае неопределённого состояния уберём нормальный индикатор и покажем анимацию -->
+                            <Trigger Property="IsIndeterminate" Value="true">
+                                <Setter Property="Visibility" TargetName="Indicator" Value="Collapsed"/>
+                                <Setter Property="Visibility" TargetName="Animation" Value="Visible"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
     <Grid Margin="10">
         <Grid.RowDefinitions>
@@ -34,7 +130,7 @@
             <RowDefinition></RowDefinition>
             <RowDefinition></RowDefinition>
             <RowDefinition></RowDefinition>
-            <RowDefinition Height="1.1*"></RowDefinition>
+            <RowDefinition Height="1.2*"></RowDefinition>
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -65,7 +161,17 @@
         <Label Grid.Row="5">Background music</Label>
         <StackPanel Grid.Row="5" Grid.Column="1">
             <Button Click="LoadMusic_Click">Load music</Button>
-            <Label Name="lChoosenFile">Choosen file</Label>
+            <StackPanel Orientation="Horizontal">
+                <Button Click="OnPlayStop_Click" >
+                    <Image Name="iPlayerButtonImage"></Image>
+                </Button>
+                <Image Name="iLoading" Margin="3,0,2,0"  MaxHeight="15"></Image>
+                <ProgressBar Name="pbLoading" Margin="3,0,2,0" Value="0" Maximum="1"  Height="15" Width="15" 
+                 Style="{DynamicResource RoundProgressBarStyle}"
+                 Foreground="#241CED" Background="#B849EB"/>
+                
+                <Label Name="lChoosenFile">Choosen file</Label>
+            </StackPanel>
         </StackPanel>
 
         <Button Grid.Row="6" Name="bCreate"  Click="Create_Click" IsDefault="True">Create</Button>

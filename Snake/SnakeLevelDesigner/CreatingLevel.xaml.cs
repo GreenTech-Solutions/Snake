@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Media;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -10,11 +14,16 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using Microsoft.Win32;
 using Snake;
+using Brush = System.Windows.Media.Brush;
+using Brushes = System.Windows.Media.Brushes;
+using Point = System.Windows.Point;
 
 namespace SnakeLevelDesigner
 {
@@ -27,7 +36,6 @@ namespace SnakeLevelDesigner
         {
             InitializeComponent();
         }
-
 
         public static IEnumerable<T> FindVisualChildren<T>(DependencyObject depObj) where T : DependencyObject
         {
@@ -81,6 +89,10 @@ namespace SnakeLevelDesigner
                 CheckTextbox(textBox);
                 textBox.GotFocus += (o, args) => { textBox.SelectAll(); };
             }
+
+            iPlayerButtonImage.Source = CreateSourceFromBitmap(SnakeLevelDesigner.Resources.Play);
+            iLoading.Source = CreateSourceFromBitmap(SnakeLevelDesigner.Resources.Loading);
+            pbLoading.Visibility = Visibility.Collapsed;
         }
 
         private void OnTextChanged(object sender, TextChangedEventArgs args)
@@ -137,7 +149,11 @@ namespace SnakeLevelDesigner
 
             if (ofd.ShowDialog() == true)
             {
+                iLoading.Visibility = Visibility.Collapsed;
+                pbLoading.IsIndeterminate = true;
+                pbLoading.Visibility = Visibility.Visible;
 
+                MessageBox.Show("Animating");
                 using (var file = File.OpenRead(ofd.FileName))
                 {
                     var musicBytes = new byte[file.Length];
@@ -153,6 +169,13 @@ namespace SnakeLevelDesigner
                 lChoosenFile.ToolTip = ofd.FileName;
 
                 AudioLoaded = true;
+                pbLoading.IsIndeterminate = false;
+                pbLoading.Visibility = Visibility.Collapsed;
+                iLoading.Visibility = Visibility.Visible;
+                if (IsPlaying)
+                {
+                    OnPlayStop_Click(sender,e);
+                }
             }
         }
 
@@ -193,6 +216,136 @@ namespace SnakeLevelDesigner
         {
             this.DialogResult = false;
             this.Close();
+        }
+
+        private bool IsPlaying = false;
+
+        private SoundPlayer player = new SoundPlayer();
+
+        private Stream PlayingSong;
+
+        private void OnPlayStop_Click(object sender, RoutedEventArgs e)
+        {
+            if (!AudioLoaded)
+            {
+                return;
+            }
+            if (IsPlaying)
+            {
+                player.Stop();
+                iPlayerButtonImage.Source = CreateSourceFromBitmap(SnakeLevelDesigner.Resources.Play);
+            }
+            else
+            {
+                player.Stream = _backgroundMusic.File;
+                player.Play();
+                iPlayerButtonImage.Source = CreateSourceFromBitmap(SnakeLevelDesigner.Resources.Stop);
+            }
+
+            IsPlaying = !IsPlaying;
+        }
+
+        public static BitmapSource CreateSourceFromBitmap(Bitmap bmp)
+        {
+            System.Drawing.Bitmap br = bmp;
+            return Imaging.CreateBitmapSourceFromHBitmap(
+                       br.GetHbitmap(),
+                       IntPtr.Zero,
+                       Int32Rect.Empty,
+                       BitmapSizeOptions.FromEmptyOptions());
+        }
+
+        private void CreatingLevel_OnClosing(object sender, CancelEventArgs e)
+        {
+            player.Stop();
+        }
+    }
+
+    class RoundProgressPathConverter : IMultiValueConverter
+    {
+        public object Convert(object[] values, Type targetType, object parameter,
+                              CultureInfo culture)
+        {
+            if (values?.Contains(DependencyProperty.UnsetValue) != false)
+                return DependencyProperty.UnsetValue;
+
+            var v = (double)values[0]; // значение слайдера
+            var min = (double)values[1]; // минимальное значение
+            var max = (double)values[2]; // максимальное
+
+            var ratio = (v - min) / (max - min); // какую долю окружности закрашивать
+            var isFull = ratio >= 1; // для случая полной окружности нужна особая обработка
+            var angleRadians = 2 * Math.PI * ratio;
+            var angleDegrees = 360 * ratio;
+
+            // внешний радиус примем за 1, растянем в XAML'е.
+            var outerR = 1;
+            // как параметр передадим долю радиуса, которую занимает внутренняя часть
+            var innerR =
+                  System.Convert.ToDouble(parameter, CultureInfo.InvariantCulture) * outerR;
+            // вспомогательные штуки: вектор направления вверх
+            var vector1 = new Vector(0, -1);
+            // ... и на конечную точку дуги
+            var vector2 = new Vector(Math.Sin(angleRadians), -Math.Cos(angleRadians));
+            var center = new Point();
+
+            var geo = new StreamGeometry();
+            geo.FillRule = FillRule.EvenOdd;
+
+            using (var ctx = geo.Open())
+            {
+                System.Windows.Size outerSize = new System.Windows.Size(outerR, outerR),
+                     innerSize = new System.Windows.Size(innerR, innerR);
+
+                if (!isFull)
+                {
+                    Point p1 = center + vector1 * outerR, p2 = center + vector2 * outerR,
+                          p3 = center + vector2 * innerR, p4 = center + vector1 * innerR;
+
+                    ctx.BeginFigure(p1, isFilled: true, isClosed: true);
+                    ctx.ArcTo(p2, outerSize, angleDegrees, isLargeArc: angleDegrees > 180,
+                        sweepDirection: SweepDirection.Clockwise, isStroked: true,
+                        isSmoothJoin: false);
+                    ctx.LineTo(p3, isStroked: true, isSmoothJoin: false);
+                    ctx.ArcTo(p4, innerSize, -angleDegrees, isLargeArc: angleDegrees > 180,
+                        sweepDirection: SweepDirection.Counterclockwise, isStroked: true,
+                        isSmoothJoin: false);
+
+                    Point diag1 = new Point(-outerR, -outerR),
+                          diag2 = new Point(outerR, outerR);
+                    ctx.BeginFigure(diag1, isFilled: false, isClosed: false);
+                    ctx.LineTo(diag2, isStroked: false, isSmoothJoin: false);
+                }
+                else
+                {
+                    Point p1 = center + vector1 * outerR, p2 = center - vector1 * outerR,
+                          p3 = center + vector1 * innerR, p4 = center - vector1 * innerR;
+
+                    ctx.BeginFigure(p1, isFilled: true, isClosed: true);
+                    ctx.ArcTo(p2, outerSize, 180, isLargeArc: false,
+                        sweepDirection: SweepDirection.Clockwise, isStroked: true,
+                        isSmoothJoin: false);
+                    ctx.ArcTo(p1, outerSize, 180, isLargeArc: false,
+                        sweepDirection: SweepDirection.Clockwise, isStroked: true,
+                        isSmoothJoin: false);
+                    ctx.BeginFigure(p3, isFilled: true, isClosed: true);
+                    ctx.ArcTo(p4, innerSize, 180, isLargeArc: false,
+                        sweepDirection: SweepDirection.Clockwise, isStroked: true,
+                        isSmoothJoin: false);
+                    ctx.ArcTo(p3, innerSize, 180, isLargeArc: false,
+                        sweepDirection: SweepDirection.Clockwise, isStroked: true,
+                        isSmoothJoin: false);
+                }
+            }
+
+            geo.Freeze();
+            return geo;
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter,
+                                    CultureInfo culture)
+        {
+            throw new NotSupportedException();
         }
     }
 }
