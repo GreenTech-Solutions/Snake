@@ -8,6 +8,7 @@ using System.Linq;
 using System.Media;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -73,6 +74,7 @@ namespace SnakeLevelDesigner
                 _backgroundMusic = data.BackgroundMusic;
                 CanCreate = true;
                 AudioLoaded = true;
+                iLoading.Source = CreateSourceFromBitmap(SnakeLevelDesigner.Resources.Completed);
             }
             else
             {
@@ -81,6 +83,8 @@ namespace SnakeLevelDesigner
                 tFinishingScore.Text = "100";
                 tSpeed.Text = "1";
                 cbDirection.SelectedIndex = 0;
+                iLoading.Source = CreateSourceFromBitmap(SnakeLevelDesigner.Resources.Uncompleted);
+
             }
 
             var textBoxes = FindVisualChildren<TextBox>(this);
@@ -91,7 +95,6 @@ namespace SnakeLevelDesigner
             }
 
             iPlayerButtonImage.Source = CreateSourceFromBitmap(SnakeLevelDesigner.Resources.Play);
-            iLoading.Source = CreateSourceFromBitmap(SnakeLevelDesigner.Resources.Loading);
             pbLoading.Visibility = Visibility.Collapsed;
         }
 
@@ -139,7 +142,6 @@ namespace SnakeLevelDesigner
             CanCreate = true;
         }
 
-
         private void LoadMusic_Click(object sender, RoutedEventArgs e)
         {
             var ofd = new OpenFileDialog
@@ -149,26 +151,34 @@ namespace SnakeLevelDesigner
 
             if (ofd.ShowDialog() == true)
             {
+                AudioLoaded = false;
                 iLoading.Visibility = Visibility.Collapsed;
                 pbLoading.IsIndeterminate = true;
                 pbLoading.Visibility = Visibility.Visible;
 
-                MessageBox.Show("Animating");
-                using (var file = File.OpenRead(ofd.FileName))
+
+                Thread t = new Thread(() =>
                 {
-                    var musicBytes = new byte[file.Length];
-                    file.Read(musicBytes, 0, musicBytes.Length);
+                    using (var file = File.OpenRead(ofd.FileName))
+                    {
+                        var musicBytes = new byte[file.Length];
+                        file.Read(musicBytes, 0, musicBytes.Length);
 
-                    string fileName = ofd.SafeFileName;
-                    fileName = fileName.Split('.').First();
-                    _backgroundMusic = new Audio(fileName, musicBytes);
+                        string fileName = ofd.SafeFileName;
+                        fileName = fileName.Split('.').First();
+                        _backgroundMusic = new Audio(fileName, musicBytes);
+                    }
+                    AudioLoaded = true;
+                });
+                t.Start();
+
+                while (!AudioLoaded)
+                {
                 }
-
 
                 lChoosenFile.Content = _backgroundMusic.Name;
                 lChoosenFile.ToolTip = ofd.FileName;
 
-                AudioLoaded = true;
                 pbLoading.IsIndeterminate = false;
                 pbLoading.Visibility = Visibility.Collapsed;
                 iLoading.Visibility = Visibility.Visible;
@@ -176,6 +186,8 @@ namespace SnakeLevelDesigner
                 {
                     OnPlayStop_Click(sender,e);
                 }
+
+                iLoading.Source = CreateSourceFromBitmap(SnakeLevelDesigner.Resources.Completed);
             }
         }
 

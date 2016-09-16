@@ -61,6 +61,10 @@ namespace SnakeLevelDesigner
             bind = new CommandBinding(ApplicationCommands.ContextMenu);
             bind.Executed += ChangeSettings_OnClick;
             CommandBindings.Add(bind);
+
+            bChangeSettings.Content = "Create";
+            bChangeSettings.Click -= ChangeSettings_OnClick;
+            bChangeSettings.Click += CreateLevel_OnClick;
         }
 
         private int width, height;
@@ -92,6 +96,9 @@ namespace SnakeLevelDesigner
             {
                 CreateMap();
                 CanSave = true;
+                bChangeSettings.Content = "Change settings";
+                bChangeSettings.Click -= CreateLevel_OnClick;
+                bChangeSettings.Click += ChangeSettings_OnClick;
             }
         }
 
@@ -150,12 +157,19 @@ namespace SnakeLevelDesigner
             {
                 string fileName = ofd.FileName;
 
-                OpenFile(fileName);
+                bool succeded = OpenFile(fileName);
+                if (!succeded)
+                {
+                    return;
+                }
 
                 AddFilePathToRecent(ofd.FileName);
                 CurrentFile = ofd.SafeFileName.Split('.')[0];
 
                 CanSave = true;
+                bChangeSettings.Content = "Change settings";
+                bChangeSettings.Click -= CreateLevel_OnClick;
+                bChangeSettings.Click += ChangeSettings_OnClick;
             }
         }
 
@@ -172,15 +186,16 @@ namespace SnakeLevelDesigner
             {
                 for (int j = 0; j < Map.Columns; j++)
                 {
-                    var cell = new Label();
-                    cell.Tag = new Cell(CellType.Empty, j, i);
-                    cell.Content = cell.Tag;
-                    ChangeCellColor(cell);
+                    var label = new Label();
+                    label.Tag = new Cell(CellType.Empty, j, i);
+                    label.Content = (label.Tag as Cell).CellType.ToString();
+                    label.ToolTip = label.Tag;
+                    ChangeCellColor(label);
 
                     var border = new Border();
                     border.BorderThickness = new Thickness(2);
                     border.BorderBrush = Brushes.Gray;
-                    border.Child = cell;
+                    border.Child = label;
                     Map.Children.Add(border);
                 }
             }
@@ -213,9 +228,6 @@ namespace SnakeLevelDesigner
 
             CellsInfo oldCellsInfo = new CellsInfo(oldCellsListCutted, data.MapWidth, data.MapHeight);
             CreateMap(oldCellsInfo);
-
-            //CreateMap();
-            bSave.IsEnabled = true;
         }
 
         private void AddFilePathToRecent(string path)
@@ -300,7 +312,30 @@ namespace SnakeLevelDesigner
 
                     if (rEmpty.IsChecked == true)
                     {
-                        cell.CellType = CellType.Empty;
+                        bool CanPlaceEmptyCell = false;
+                        if (Player.Count == 0)
+                        {
+                            CanPlaceEmptyCell = true;
+                        }
+                        else
+                        {
+                            var HeadTailList = new List<Coord>();
+                            HeadTailList.Add(Player.First());
+                            HeadTailList.Add(Player.Last());
+
+                            CanPlaceEmptyCell = new Coord(cell.X, cell.Y) == Player.First() || new Coord(cell.X, cell.Y) == Player.Last();
+
+                            if (Player.All(coord => coord.X != cell.X && coord.Y != cell.Y))
+                            {
+                                CanPlaceEmptyCell = true;
+                            }
+                        }
+
+                        if (CanPlaceEmptyCell)
+                        {
+                            Player.Remove(new Coord(cell.X, cell.Y));
+                            cell.CellType = CellType.Empty;
+                        }
                     }
                     else if (rObstacle.IsChecked == true)
                     {
@@ -308,15 +343,86 @@ namespace SnakeLevelDesigner
                     }
                     else if (rPlayer.IsChecked == true)
                     {
-                        cell.CellType = CellType.Player;
+                        bool CanPlacePlayerCell = false;
+                        bool CanPlaceToEnd = true;
+                        if (Player.Count == 0)
+                        {
+                            CanPlacePlayerCell = true;
+                        }
+                        else
+                        {
+                            var HeadTailList = new List<Coord>();
+                            HeadTailList.Add(Player.First());
+                            HeadTailList.Add(Player.Last());
+
+                            var coord = Player.Last();
+                            if (coord.X == cell.X)
+                            {
+                                if (coord.Y + 1 == cell.Y || coord.Y - 1 == cell.Y)
+                                {
+                                    CanPlacePlayerCell = true;
+                                }
+                            }
+                            if (coord.Y == cell.Y)
+                            {
+                                if (coord.X + 1 == cell.X || coord.X - 1 == cell.X)
+                                {
+                                    CanPlacePlayerCell = true;
+                                }
+                            }
+
+                            coord = Player.First();
+                            if (coord.X == cell.X)
+                            {
+                                if (coord.Y + 1 == cell.Y || coord.Y - 1 == cell.Y)
+                                {
+                                    CanPlacePlayerCell = true;
+                                    CanPlaceToEnd = false;
+                                }
+                            }
+                            if (coord.Y == cell.Y)
+                            {
+                                if (coord.X + 1 == cell.X || coord.X - 1 == cell.X)
+                                {
+                                    CanPlacePlayerCell = true;
+                                    CanPlaceToEnd = false;
+                                }
+                            }
+                        }
+
+                        if (Player.Any(coord => coord.X == cell.X && coord.Y == cell.Y))
+                        {
+                            CanPlacePlayerCell = false;
+                        }
+
+                        if (CanPlacePlayerCell)
+                        {
+                            if (CanPlaceToEnd)
+                            {
+                                Player.Add(new Coord(cell.X, cell.Y));
+                            }
+                            else
+                            {
+                                Player.Insert(0,new Coord(cell.X, cell.Y));
+                            }
+                            cell.CellType = CellType.Player;
+                        }
                     }
 
                     ChangeCellColor(label);
 
-                    label.Tag = cell;
-                    label.Content = label.Tag.ToString();
+                    label.Content = (label.Tag as Cell).CellType.ToString();
+                    label.ToolTip = label.Tag;
                 }
             }
+
+            //tbDebug.Visibility = Visibility.Visible;
+            //String debugInfo = "";
+            //foreach (var coord in Player)
+            //{
+            //    debugInfo += coord.ToString() +"; ";
+            //}
+            //tbDebug.Text = debugInfo;
         }
 
         private void ChangeCellColor(Label label)
@@ -335,6 +441,8 @@ namespace SnakeLevelDesigner
                     break;
             }
         }
+
+        private List<Coord> Player = new List<Coord>();
         #endregion
 
         #region Controller
@@ -354,7 +462,8 @@ namespace SnakeLevelDesigner
                 {
                     var label = new Label();
                     label.Tag = new Cell(CellType.Empty, j, i);
-                    label.Content = label.Tag;
+                    label.Content = (label.Tag as Cell).CellType.ToString();
+                    label.ToolTip = label.Tag;
                     ChangeCellColor(label);
 
                     var border = new Border();
@@ -367,6 +476,7 @@ namespace SnakeLevelDesigner
 
             Map.MouseMove += MapOnMouseMove;
             Map.MouseDown += MapOnMouseDown;
+            Player = new List<Coord>();
         }
 
         private void CreateMap(CellsInfo cellsInfo)
@@ -415,29 +525,41 @@ namespace SnakeLevelDesigner
             Map.MouseDown += MapOnMouseDown;
         }
 
-        private void OpenFile(string path)
+        private bool OpenFile(string path)
         {
             if (!File.Exists(path))
             {
-                MessageBox.Show("Файл " + path + " - не существует!","Ошибка", MessageBoxButton.OK,MessageBoxImage.Error);
-                return;
+                MessageBox.Show("Файл " + path + " - не существует!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
             }
-            Level level;
-
-            var bf = new BinaryFormatter();
-            using (Stream fs = File.OpenRead(path))
+            try
             {
-                level = bf.Deserialize(fs) as Level;
+
+                Level level;
+
+                var bf = new BinaryFormatter();
+                using (Stream fs = File.OpenRead(path))
+                {
+                    level = bf.Deserialize(fs) as Level;
+                }
+
+                CreateMap(level.MapCellsInfo);
+
+                data.FinishingScore = level.FinishingScore;
+                data.Direction = level.Direction;
+
+                data.BackgroundMusic = level.BackgroundMusic;
+
+                data.Speed = level.Speed;
+
+                Player = level.PlayerInitCoords;
+                return true;
             }
-
-            CreateMap(level.MapCellsInfo);
-
-            data.FinishingScore = level.FinishingScore;
-            data.Direction = level.Direction;
-
-            data.BackgroundMusic = level.BackgroundMusic;
-
-            data.Speed = level.Speed;
+            catch (Exception)
+            {
+                MessageBox.Show("Выбранный файл имеет неверный формат данных.");
+                return false;
+            }
         }
         #endregion
 

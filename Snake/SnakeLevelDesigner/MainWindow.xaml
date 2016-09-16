@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:SnakeLevelDesigner"
         mc:Ignorable="d"
         Title="Level Designer"
-        WindowState="Maximized" MinHeight="400" Width="1250">
+        WindowState="Maximized" MinHeight="400" MinWidth="400">
     <Window.Resources>
         <LinearGradientBrush x:Key="NormalBrush" EndPoint="0,1" StartPoint="0,0">
             <GradientStop Color="#5454EC" Offset="0.0"/>
@@ -39,7 +39,6 @@
             <Setter Property="BorderBrush" Value="{StaticResource NormalBorderBrush}"/>
             <Setter Property="MinWidth" Value="100"/>
             <Setter Property="MinHeight" Value="15"/>
-            <Setter Property="Foreground" Value="#ffffff"/>
         </Style>
 
         <Style x:Key="Header">
@@ -73,15 +72,13 @@
         </Menu>
 
         <StackPanel Grid.Row="1" Orientation="Horizontal">
-            <Button Margin="4,4,0,4"  Click="ChangeSettings_OnClick">Change settings</Button>
+            <Button Margin="4,4,4,4" Name="bChangeSettings" Click="ChangeSettings_OnClick">Change settings</Button>
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                 <RadioButton Name="rEmpty" GroupName="CellType">Empty</RadioButton>
                 <RadioButton Name="rObstacle" GroupName="CellType">Obstacle</RadioButton>
                 <RadioButton Name="rPlayer" GroupName="CellType">Player</RadioButton>
             </StackPanel>
-            <Button Margin="4,4,0,4" Command="New">Create</Button>
-            <Button Margin="4,4,0,4" Click="Open_OnClick">Open</Button>
-            <Button Margin="4,4,0,4" Name="bSave" Command="Save">Save</Button>
+            <TextBlock Name="tbDebug" Visibility="Hidden"></TextBlock>
         </StackPanel>
 
         <UniformGrid Name="Map" Grid.Row="2">
