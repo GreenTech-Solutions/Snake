@@ -7,6 +7,17 @@
         mc:Ignorable="d"
         Title="Level Designer"
         WindowState="Maximized" MinHeight="400" MinWidth="400">
+    <Window.CommandBindings>
+        <CommandBinding Command="local:MyCommands._Alt1" Executed="On_Alt1_Executed"></CommandBinding>
+        <CommandBinding Command="local:MyCommands._Alt2" Executed="On_Alt2_Executed"></CommandBinding>
+        <CommandBinding Command="local:MyCommands._Alt3" Executed="On_Alt3_Executed"></CommandBinding>
+    </Window.CommandBindings>
+    <Window.InputBindings>
+        <KeyBinding Command="local:MyCommands._Alt1" Key="D1" Modifiers="Alt"/>
+        <KeyBinding Command="local:MyCommands._Alt2" Key="D2" Modifiers="Alt"/>
+        <KeyBinding Command="local:MyCommands._Alt3" Key="D3" Modifiers="Alt"/>
+    </Window.InputBindings>
+    
     <Window.Resources>
         <LinearGradientBrush x:Key="NormalBrush" EndPoint="0,1" StartPoint="0,0">
             <GradientStop Color="#5454EC" Offset="0.0"/>
@@ -74,9 +85,9 @@
         <StackPanel Grid.Row="1" Orientation="Horizontal">
             <Button Margin="4,4,4,4" Name="bChangeSettings" Click="ChangeSettings_OnClick">Change settings</Button>
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                <RadioButton Name="rEmpty" GroupName="CellType">Empty</RadioButton>
-                <RadioButton Name="rObstacle" GroupName="CellType">Obstacle</RadioButton>
-                <RadioButton Name="rPlayer" GroupName="CellType">Player</RadioButton>
+                <RadioButton Name="rEmpty" Command="local:MyCommands._Alt1" GroupName="CellType">Empty</RadioButton>
+                <RadioButton Name="rObstacle" Command="local:MyCommands._Alt2" GroupName="CellType">Obstacle</RadioButton>
+                <RadioButton Name="rPlayer" Command="local:MyCommands._Alt3" GroupName="CellType">Player</RadioButton>
             </StackPanel>
             <TextBlock Name="tbDebug" Visibility="Hidden"></TextBlock>
         </StackPanel>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,6 +25,9 @@ namespace SnakeLevelDesigner
         public Settings()
         {
             InitializeComponent();
+            SaveFilePath = Properties.Settings.Default.LevelSavePath;
+            lSelectedPath.Content = SaveFilePath;
+            lSelectedPath.ToolTip = SaveFilePath;
         }
 
         private string SaveFilePath;
@@ -31,9 +35,12 @@ namespace SnakeLevelDesigner
         private void SelectPath_OnClick(object sender, RoutedEventArgs e)
         {
             FolderBrowserDialog fbd = new FolderBrowserDialog();
+            fbd.SelectedPath = SaveFilePath;
+
             fbd.ShowDialog();
             SaveFilePath = fbd.SelectedPath;
             lSelectedPath.Content = SaveFilePath;
+            lSelectedPath.ToolTip = SaveFilePath;
         }
 
         private void Save_OnClick(object sender, RoutedEventArgs e)

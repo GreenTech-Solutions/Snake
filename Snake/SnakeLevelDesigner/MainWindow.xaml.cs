@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
@@ -65,6 +66,10 @@ namespace SnakeLevelDesigner
             bChangeSettings.Content = "Create";
             bChangeSettings.Click -= ChangeSettings_OnClick;
             bChangeSettings.Click += CreateLevel_OnClick;
+
+            Title += " " + Assembly.GetExecutingAssembly().GetName().Version;
+
+            Properties.Settings.Default.LevelSavePath = Environment.CurrentDirectory + @"\Levels";
         }
 
         private int width, height;
@@ -570,5 +575,40 @@ namespace SnakeLevelDesigner
             Settings settings = new Settings();
             settings.ShowDialog();
         }
+
+        private void On_Alt1_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            rEmpty.IsChecked = true;
+        }
+
+        private void On_Alt2_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            rObstacle.IsChecked = true;
+        }
+
+        private void On_Alt3_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            rPlayer.IsChecked = true;
+        }
+    }
+
+    public class MyCommands
+    {
+        static MyCommands()
+        {
+            _Alt1 = new RoutedCommand("_Alt1Command", typeof(MainWindow));
+
+            _Alt2 = new RoutedCommand("_Alt2Command", typeof(MainWindow));
+
+            _Alt3 = new RoutedCommand("_Alt3Command", typeof(MainWindow));
+        }
+
+        public static RoutedCommand _Alt1 { get; set; }
+
+        public static RoutedCommand _Alt2 { get; set; }
+
+        public static RoutedCommand _Alt3 { get; set; }
+
+
     }
 }
