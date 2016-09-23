@@ -1,27 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.ComponentModel;
-using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Windows.Shell;
-using System.Xml.Serialization;
 using Microsoft.Win32;
 using Snake;
 
@@ -172,6 +159,7 @@ namespace SnakeLevelDesigner
                 CurrentFile = ofd.SafeFileName.Split('.')[0];
 
                 CanSave = true;
+                data.IsInitialized = true;
                 bChangeSettings.Content = "Change settings";
                 bChangeSettings.Click -= CreateLevel_OnClick;
                 bChangeSettings.Click += ChangeSettings_OnClick;

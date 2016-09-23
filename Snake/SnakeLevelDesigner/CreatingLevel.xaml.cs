@@ -81,7 +81,7 @@ namespace SnakeLevelDesigner
                 tMapWidth.Text = "10";
                 tMapHeight.Text = "10";
                 tFinishingScore.Text = "100";
-                tSpeed.Text = "1";
+                tSpeed.Text = "100";
                 cbDirection.SelectedIndex = 0;
                 iLoading.Source = CreateSourceFromBitmap(SnakeLevelDesigner.Resources.Uncompleted);
 
@@ -130,9 +130,9 @@ namespace SnakeLevelDesigner
             if (textbox.Name == "tSpeed")
             {
                 var value = Convert.ToInt32(textbox.Text);
-                if (value > 10)
+                if (value > 120 && value < 50)
                 {
-                    textbox.ToolTip = "Значение должно быть в пределах 1-10";
+                    textbox.ToolTip = "Значение должно быть в пределах 50-120";
                     textbox.BorderBrush = Brushes.Red;
                     CanCreate = false;
                     return;
