@@ -1,6 +1,7 @@
 ﻿#define TEST
 #undef TEST
 using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Drawing;
 using System.IO;
@@ -156,7 +157,24 @@ namespace Snake
             MainMenu.Add(new MenuItem("New Game", () =>
             {
                 MusicManager.Stop("MainMenu",SoundType.Music);
-                Story story = new Story();
+                var folder = new DirectoryInfo(Application.StartupPath + @"\Levels");
+                FileSystemInfo[] files = folder.GetFileSystemInfos("*.lvl");
+                var LevelsList = new List<Level>();
+                foreach (var file in files)
+                {
+                    if (file.Name.ToLower().StartsWith("level"))
+                    {
+                        var level = Level.GetLevelFromFile(file.FullName);
+                        LevelsList.Add(level);
+                    }
+                }
+                var LevelsPreviews = new List<string>();
+                for (int i = 0; i < LevelsList.Count; i++)
+                {
+                    LevelsPreviews.Add("Level" + (i+1));
+                }
+                Story story = new Story(LevelsPreviews,LevelsList);
+                story.Begin();
                 MusicManager.Play("MainMenu",SoundType.Music);
             }));
             MainMenu.Add(new MenuItem("Levels", Levels));
@@ -194,7 +212,9 @@ namespace Snake
                                 {
                                     return;
                                 }
+                                MusicManager.Stop("MainMenu", SoundType.Music);
                                 StartLevel(level);
+                                MusicManager.Play("MainMenu", SoundType.Music);
                             }
                             catch (FileFormatException ex)
                             {

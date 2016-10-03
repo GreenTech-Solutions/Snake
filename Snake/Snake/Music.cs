@@ -239,7 +239,18 @@ namespace Snake
         }
     }
 
-    class Player
+    interface IPlayer
+    {
+        void Play();
+
+        void Stop();
+
+        void Mute();
+
+        void UnMute();
+    }
+
+    class Player : IPlayer
     {
         /// <summary>
         /// Обработчик Wave файлов
@@ -258,6 +269,7 @@ namespace Snake
 
         public Player(Audio audio)
         {
+            audio.File.Position = 0;
             _wave = new WaveFileReader(audio.File);
 
             _player = new DirectSoundOut();

@@ -12,7 +12,7 @@ namespace Snake
 
         private List<Level> Levels;
 
-        public string FinishingText;
+        public string FinishingText = "";
 
         public Story()
         {
@@ -25,6 +25,9 @@ namespace Snake
             this.Levels = levels;
         }
 
+        /// <summary>
+        /// Начинает цикл истории
+        /// </summary>
         public void Begin()
         {
             bool isAlive = true;
@@ -45,6 +48,10 @@ namespace Snake
             DrawLevelPreview(FinishingText);
         }
 
+        /// <summary>
+        /// Выводит на экран описание предстоящего уровня
+        /// </summary>
+        /// <param name="text">Сообщение описания</param>
         private void DrawLevelPreview(string text)
         {
             Output.Clear();

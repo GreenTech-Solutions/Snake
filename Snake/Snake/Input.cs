@@ -2,10 +2,20 @@
 
 namespace Snake
 {
+    interface IInput
+    {
+        /// <summary>
+        /// Ожидает нажатия клавиши и возвращает ассоциативный тип действия
+        /// </summary>
+        /// <returns></returns>
+        ActionType AskForInput();
+
+    }
+
     /// <summary>
     /// Модуль ввода
     /// </summary>
-    class Input
+    class Input : IInput
     {
         // Клавиши управления
         public ConsoleKey UpKey;

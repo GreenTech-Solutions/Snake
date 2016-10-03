@@ -199,6 +199,7 @@ namespace Snake
                 if (_canExit)
                 {
                     MusicManager.StopAll();
+                    _canExit = false;
                     return;
                 }
             }
