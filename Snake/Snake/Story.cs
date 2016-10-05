@@ -55,8 +55,9 @@ namespace Snake
         private void DrawLevelPreview(string text)
         {
             Output.Clear();
-            Output.WriteCenter(text);
+            Output.WriteLineCenter(text);
             Console.ReadKey(true);
+            Output.Clear();
         }
     }
 }

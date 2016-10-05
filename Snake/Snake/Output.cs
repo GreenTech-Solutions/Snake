@@ -185,6 +185,7 @@ namespace Snake
         /// <param name="text">Текст для вывода</param>
         static public void WriteCenter(string text)
         {
+            //Console.SetCursorPosition(Padding,Console.CursorTop);
             Console.SetCursorPosition(Padding,Console.CursorTop);
             Console.Write(text);
         }
