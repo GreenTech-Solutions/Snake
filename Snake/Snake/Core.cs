@@ -24,7 +24,7 @@ namespace Snake
         /// </summary>
         private bool _canExit;
 
-        public Nullable<bool> IsAlive; 
+        public bool? IsAlive; 
 
         delegate void Collided(params dynamic []args);
 

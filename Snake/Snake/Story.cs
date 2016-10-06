@@ -12,6 +12,8 @@ namespace Snake
 
         private List<Level> Levels;
 
+        private int CurrentLevel = 0;
+
         public string FinishingText = "";
 
         public Story()
@@ -37,8 +39,11 @@ namespace Snake
             for (int i = 0; i < levelCount; i++)
             {
                 DrawLevelPreview(LevelPreviews[i]);
+                CurrentLevel = i;
                 core.Start(Levels[i]);
                 isAlive = core.IsAlive.Value;
+                Input input = new Input();
+                var action = input.AskForInput();
                 if (!isAlive)
                 {
                     return;
@@ -55,7 +60,7 @@ namespace Snake
         private void DrawLevelPreview(string text)
         {
             Output.Clear();
-            Output.WriteLineCenter(text);
+            Output.WriteCenter(text);
             Console.ReadKey(true);
             Output.Clear();
         }
