@@ -255,3 +255,7 @@ sysinfo.txt
 Snake/Library/AnnotationManager
 Snake/Library
 Snake/Temp
+*.lock
+*.ide
+*.ide-shm
+*.ide-wal
