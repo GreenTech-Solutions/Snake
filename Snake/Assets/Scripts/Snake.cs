@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -14,7 +15,7 @@ public class Snake : MonoBehaviour
 
 
     public AudioClip AppleBiting;
-
+    public AudioClip Ouch;
     private float speed = 0.1f;
 
     public Text Position;
@@ -60,10 +61,19 @@ public class Snake : MonoBehaviour
             }
     }
 
+    bool IsInt(object some)
+    {
+        int intv = Convert.ToInt32(some);
+        double doublev = Convert.ToDouble(some);
+
+        return intv==doublev;
+    }
+
     void Move()
     {
-
         var v = transform.position;
+
+
 
         if (ate)
         {
@@ -82,23 +92,26 @@ public class Snake : MonoBehaviour
             tail.RemoveAt(tail.Count - 1);
         }
 
-        if (v.x == 14 && direction == Vector2.right)
+        v.x = (int)v.x;
+        v.y = (int)v.y;
+
+        if (v.x >= 14 && direction == Vector2.right)
         {
             v.x = -15;
             transform.position = v;
         }
-        else if (v.x == -15 && direction == Vector2.left)
+        else if (v.x <= -15 && direction == Vector2.left)
         {
             v.x = 14;
             transform.position = v;
 
         }
-        else if (v.y == 15 && direction == Vector2.up)
+        else if (v.y >= 15 && direction == Vector2.up)
         {
             v.y = -14;
             transform.position = v;
         }
-        else if (v.y == -14 && direction == Vector2.down)
+        else if (v.y <= -14 && direction == Vector2.down)
         {
             v.y = 15;
             transform.position = v;
@@ -120,8 +133,9 @@ public class Snake : MonoBehaviour
 
             Destroy(col.gameObject);
         }
-        else
+        else if (col.gameObject.name == "Rock")
         {
+            source.PlayOneShot(Ouch,1);
             // ToDO LoseScreen
         }
     }
